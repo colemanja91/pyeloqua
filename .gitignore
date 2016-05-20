@@ -3,6 +3,7 @@
 bin
 lib
 include
+/venv/
 
 # python packages
 *.pyc
