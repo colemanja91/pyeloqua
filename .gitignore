@@ -3,3 +3,12 @@
 bin
 lib
 include
+
+# python packages
+*.pyc
+
+# egg metadata
+/*.egg-info
+
+# setuptools stuff
+/dist/
