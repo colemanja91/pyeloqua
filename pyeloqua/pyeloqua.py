@@ -143,7 +143,7 @@ class Eloqua(object):
         elif(entity!='contacts' and leadScoreModelId>0):
             raise TypeError("Lead Scoring fields can only be included with contact exports")
 
-        if (entity = 'activities'):
+        if (entity == 'activities'):
             if activityType in ('EmailSend', 'EmailOpen', 'EmailClickthrough', 'FormSubmit', 'Subscribe',
                                 'Unsubscribe', 'Bounceback', 'WebVisit', 'PageView'):
                 if len(addActivityFields)>0:
