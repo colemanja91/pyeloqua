@@ -48,10 +48,10 @@ class Eloqua(object):
                     self.urlBase = req.json()['urls']['base']
                     self.siteId = req.json()['site']['id']
 
-                    restBase = req.json()['urls']['rest']['standard']
+                    restBase = req.json()['urls']['apis']['rest']['standard']
                     self.restBase = restBase.replace('{version}', rest_api_version)
 
-                    bulkBase = req.json()['urls']['rest']['bulk']
+                    bulkBase = req.json()['urls']['apis']['rest']['bulk']
                     self.bulkBase = bulkBase.replace('{version}', bulk_api_version)
             else:
                 raise Exception('Unknown authentication error')
