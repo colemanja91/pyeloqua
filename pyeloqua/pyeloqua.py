@@ -255,6 +255,31 @@ class Eloqua(object):
         else:
             raise Exception("No matching " + existsType + " found")
 
+    def FilterDateRange(self, entity, field, start='', end='', cdoID=0):
+
+        if (start=='' and end==''):
+            raise ValueError("Please enter at least one datetime value: start, end")
+
+        try:
+            test1 = datetime.strptime(start, '%Y-%m-%d %H:%M:%S')
+            test2 = datetime.strptime(start, '%Y-%m-%d %H:%M:%S')
+        except:
+            raise ValueError("Invalid datetime format; use 'YYYY-MM-DD hh:mm:ss'")
+
+        fieldDef = self.GetFields(entity=entity, fields=field, cdoID=cdoID)
+
+        statement = ''
+
+        if (start!=''):
+            statement += " '" + fieldDef['statement'] + "' >= '" + start + "' "
+        if (start!='' and end!=''):
+            statement += ' AND '
+        if (end!=''):
+            statement += " '" + fieldDef['statement'] + "' <= '" + end + "' "
+
+        return statement
+
+
     def CreateDef(self, defType, entity, fields, cdoID=0, filters='', defName=str(datetime.now()), identifierFieldName='', isSyncTriggeredOnImport=False):
 
         """
