@@ -449,6 +449,34 @@ class Eloqua(object):
             else:
                 raise Exception("Export not finished syncing after " + str(waitTime) + " seconds: " + uri)
 
+    def GetSyncedRecordCount(self, defObject={}, defURI=''):
+
+        '''
+            Get number of synced records for an export
+
+            Arguments:
+
+            * defObject -- JSON object returned from CreateDef; optional if defURI is provided
+            * defURI -- URI of pre-existing import/export definition; optional if defObject is provided
+
+        '''
+
+        if ('uri' not in defObject):
+            if (len(defURI)==0):
+                raise Exception("Must include a valid defObject or defURI")
+            else:
+                uri = defURI
+        else:
+            uri = defObject['uri']
+
+        url = self.bulkBase + uri + '/data?limit=0&offset=0'
+
+        req = requests.get(url, auth=self.auth)
+
+        x = req.json()['totalResults']
+
+        return totalResults
+
     def GetSyncedData(self, defObject={}, defURI='', limit=50000, initOffset=0):
 
         """
