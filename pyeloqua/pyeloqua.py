@@ -92,15 +92,9 @@ class Eloqua(object):
                 for item in req.json()['items']:
 
                     if item['name'] in fields:
-
                         fieldsReturn.append(item)
-                    else:
-                        if item['internalName'] in fields:
-                            fieldsReturn.append(item)
-
-                if (len(fieldsReturn)<len(fields)):
-
-                    warnings.warn("Not all fields could be found") ## TODO: fix this
+                    elif item['internalName'] in fields:
+                        fieldsReturn.append(item)
 
             else:
 
@@ -254,6 +248,49 @@ class Eloqua(object):
             raise Exception("Multiple " + existsType + "s found")
         else:
             raise Exception("No matching " + existsType + " found")
+
+    def FilterDateRange(self, entity, field, start='', end='', cdoID=0):
+
+        '''
+            Given an Eloqua date field, create a bounded or open date range filter
+
+        '''
+
+        if (start=='' and end==''):
+            raise ValueError("Please enter at least one datetime value: start, end")
+
+        if (field=='' and entity!='activities'):
+            raise ValueError("Parameter 'field' is required for entity '" + entity + "'")
+
+        if (entity == 'activities'):
+            field = 'ActivityDate'
+
+        try:
+            test1 = datetime.strptime(start, '%Y-%m-%d %H:%M:%S')
+            test2 = datetime.strptime(start, '%Y-%m-%d %H:%M:%S')
+        except:
+            raise ValueError("Invalid datetime format; use 'YYYY-MM-DD hh:mm:ss'")
+
+        if (entity!='activities'):
+            fieldDef = self.GetFields(entity=entity, fields=[field], cdoID=cdoID)
+
+            if (fieldDef[0]['dataType'] != 'date'):
+                raise Exception("Field '" + field + "' is not a date field")
+            fieldStatement = fieldDef[0]['statement']
+        else:
+            fieldStatement = system_fields.ACTIVITY_FIELDS['CommonFields']['ActivityDate']
+
+        statement = ''
+
+        if (start!=''):
+            statement += " '" + fieldStatement + "' >= '" + start + "' "
+        if (start!='' and end!=''):
+            statement += ' AND '
+        if (end!=''):
+            statement += " '" + fieldStatement + "' <= '" + end + "' "
+
+        return statement
+
 
     def CreateDef(self, defType, entity, fields, cdoID=0, filters='', defName=str(datetime.now()), identifierFieldName='', isSyncTriggeredOnImport=False):
 
