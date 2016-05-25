@@ -221,7 +221,7 @@ class Eloqua(object):
 
             Arguments:
 
-            * name --
+            * name -- Name of object
             * existsType -- type of existence; one of ContactFilter, ContactList, ContactSegment, or AccountList
 
         """
@@ -253,6 +253,14 @@ class Eloqua(object):
 
         '''
             Given an Eloqua date field, create a bounded or open date range filter
+
+            Arguments:
+
+            * entity -- one of: contacts, customObjects, accounts, activities
+            * field -- field to filter by; must resolve to a date type field
+            * start -- beginning of date range
+            * end -- end of date range
+            * cdoID -- identifier of specific CDO; required if entity = 'customObjects'; use method GetCdoId to retrieve
 
         '''
 
@@ -441,7 +449,7 @@ class Eloqua(object):
             else:
                 raise Exception("Export not finished syncing after " + str(waitTime) + " seconds: " + uri)
 
-    def GetSyncedData(self, defObject={}, defURI='', limit=50000):
+    def GetSyncedData(self, defObject={}, defURI='', limit=50000, initOffset=0):
 
         """
             Retrieve data from a synced export
@@ -450,7 +458,8 @@ class Eloqua(object):
 
             * defObject -- JSON object returned from CreateDef; optional if defURI is provided
             * defURI -- URI of pre-existing import/export definition; optional if defObject is provided
-            * limit -- max number of records to retrieve (Eloqua max = 50,000)
+            * limit -- max number of records to retrieve (Eloqua max = 50,000); optional
+            * initOffset -- Starting offset to retrieve from; optional
 
         """
         if ('uri' not in defObject):
@@ -461,7 +470,7 @@ class Eloqua(object):
         else:
             uri = defObject['uri']
 
-        offset = 0
+        offset = initOffset
 
         url = self.bulkBase + uri + '/data?'
 
