@@ -221,7 +221,7 @@ class Eloqua(object):
 
             Arguments:
 
-            * name --
+            * name -- Name of object
             * existsType -- type of existence; one of ContactFilter, ContactList, ContactSegment, or AccountList
 
         """
@@ -253,6 +253,14 @@ class Eloqua(object):
 
         '''
             Given an Eloqua date field, create a bounded or open date range filter
+
+            Arguments:
+
+            * entity -- one of: contacts, customObjects, accounts, activities
+            * field -- field to filter by; must resolve to a date type field
+            * start -- beginning of date range
+            * end -- end of date range
+            * cdoID -- identifier of specific CDO; required if entity = 'customObjects'; use method GetCdoId to retrieve
 
         '''
 
