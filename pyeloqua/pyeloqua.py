@@ -92,15 +92,9 @@ class Eloqua(object):
                 for item in req.json()['items']:
 
                     if item['name'] in fields:
-
                         fieldsReturn.append(item)
-                    else:
-                        if item['internalName'] in fields:
-                            fieldsReturn.append(item)
-
-                if (len(fieldsReturn)<len(fields)):
-
-                    warnings.warn("Not all fields could be found") ## TODO: fix this
+                    elif item['internalName'] in fields:
+                        fieldsReturn.append(item)
 
             else:
 
@@ -227,7 +221,7 @@ class Eloqua(object):
 
             Arguments:
 
-            * name --
+            * name -- Name of object
             * existsType -- type of existence; one of ContactFilter, ContactList, ContactSegment, or AccountList
 
         """
@@ -254,6 +248,57 @@ class Eloqua(object):
             raise Exception("Multiple " + existsType + "s found")
         else:
             raise Exception("No matching " + existsType + " found")
+
+    def FilterDateRange(self, entity, field, start='', end='', cdoID=0):
+
+        '''
+            Given an Eloqua date field, create a bounded or open date range filter
+
+            Arguments:
+
+            * entity -- one of: contacts, customObjects, accounts, activities
+            * field -- field to filter by; must resolve to a date type field
+            * start -- beginning of date range
+            * end -- end of date range
+            * cdoID -- identifier of specific CDO; required if entity = 'customObjects'; use method GetCdoId to retrieve
+
+        '''
+
+        if (start=='' and end==''):
+            raise ValueError("Please enter at least one datetime value: start, end")
+
+        if (field=='' and entity!='activities'):
+            raise ValueError("Parameter 'field' is required for entity '" + entity + "'")
+
+        if (entity == 'activities'):
+            field = 'ActivityDate'
+
+        try:
+            test1 = datetime.strptime(start, '%Y-%m-%d %H:%M:%S')
+            test2 = datetime.strptime(start, '%Y-%m-%d %H:%M:%S')
+        except:
+            raise ValueError("Invalid datetime format; use 'YYYY-MM-DD hh:mm:ss'")
+
+        if (entity!='activities'):
+            fieldDef = self.GetFields(entity=entity, fields=[field], cdoID=cdoID)
+
+            if (fieldDef[0]['dataType'] != 'date'):
+                raise Exception("Field '" + field + "' is not a date field")
+            fieldStatement = fieldDef[0]['statement']
+        else:
+            fieldStatement = system_fields.ACTIVITY_FIELDS['CommonFields']['ActivityDate']
+
+        statement = ''
+
+        if (start!=''):
+            statement += " '" + fieldStatement + "' >= '" + start + "' "
+        if (start!='' and end!=''):
+            statement += ' AND '
+        if (end!=''):
+            statement += " '" + fieldStatement + "' <= '" + end + "' "
+
+        return statement
+
 
     def CreateDef(self, defType, entity, fields, cdoID=0, filters='', defName=str(datetime.now()), identifierFieldName='', isSyncTriggeredOnImport=False):
 
@@ -404,7 +449,35 @@ class Eloqua(object):
             else:
                 raise Exception("Export not finished syncing after " + str(waitTime) + " seconds: " + uri)
 
-    def GetSyncedData(self, defObject={}, defURI='', limit=50000):
+    def GetSyncedRecordCount(self, defObject={}, defURI=''):
+
+        '''
+            Get number of synced records for an export
+
+            Arguments:
+
+            * defObject -- JSON object returned from CreateDef; optional if defURI is provided
+            * defURI -- URI of pre-existing import/export definition; optional if defObject is provided
+
+        '''
+
+        if ('uri' not in defObject):
+            if (len(defURI)==0):
+                raise Exception("Must include a valid defObject or defURI")
+            else:
+                uri = defURI
+        else:
+            uri = defObject['uri']
+
+        url = self.bulkBase + uri + '/data?limit=0&offset=0'
+
+        req = requests.get(url, auth=self.auth)
+
+        x = req.json()['totalResults']
+
+        return totalResults
+
+    def GetSyncedData(self, defObject={}, defURI='', limit=50000, initOffset=0):
 
         """
             Retrieve data from a synced export
@@ -413,7 +486,8 @@ class Eloqua(object):
 
             * defObject -- JSON object returned from CreateDef; optional if defURI is provided
             * defURI -- URI of pre-existing import/export definition; optional if defObject is provided
-            * limit -- max number of records to retrieve (Eloqua max = 50,000)
+            * limit -- max number of records to retrieve (Eloqua max = 50,000); optional
+            * initOffset -- Starting offset to retrieve from; optional
 
         """
         if ('uri' not in defObject):
@@ -424,7 +498,7 @@ class Eloqua(object):
         else:
             uri = defObject['uri']
 
-        offset = 0
+        offset = initOffset
 
         url = self.bulkBase + uri + '/data?'
 

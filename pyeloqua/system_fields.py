@@ -142,5 +142,10 @@ ACTIVITY_FIELDS = {
        "RawData":"{{Activity.Field(RawData)}}",
        "CampaignId":"{{Activity.Campaign.Id}}",
        "ExternalId":"{{Activity.ExternalId}}"
+    },
+    "CommonFields": {
+        "ActivityId":"{{Activity.Id}}",
+        "ActivityType":"{{Activity.Type}}",
+        "ActivityDate":"{{Activity.CreatedAt}}"
     }
 }
