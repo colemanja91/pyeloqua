@@ -403,8 +403,7 @@ class Eloqua(object):
 
                     req = requests.get(url, auth = self.auth)
 
-                    for i in req.json()['items']:
-                        defs.append(i)
+                    defs.extend(req.json()['items'])
 
                     hasMore = req.json()['hasMore']
 
