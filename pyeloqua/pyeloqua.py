@@ -370,6 +370,52 @@ class Eloqua(object):
 
             raise Exception(req.json()['failures'][0])
 
+    def GetDef(self, defURI='', defType=''):
+
+        '''
+            Get a single export/import definition or all
+
+            Arguments:
+
+            * defURI -- URI of pre-existing import/export definition; optional if selecting all
+            * defType -- Definition type to retrieve; optional if defURI is provided
+        '''
+
+        defs = []
+
+        if defURI!='':
+            url = self.bulkBase + defURI
+
+            req = requests.get(url, auth = self.auth)
+
+            if req.status_code==200:
+                defs.append(req.json())
+            else:
+                raise Exception(req.json()['failures'][0])
+        elif defType!='':
+            if defType in ['exports', 'imports']:
+                hasMore = True
+                offset = 0
+
+                while hasMore:
+
+                    url = self.bulkBase + defType + '?offset=' + str(offset)
+
+                    req = requests.get(url, auth = self.auth)
+
+                    for i in req.json()['items']:
+                        defs.append(i)
+
+                    hasMore = req.json()['hasMore']
+
+            else:
+                raise ValueError("defType must be one of the following: 'exports', 'imports'")
+        else:
+            raise ValueError("Must specify one of the following: defURI, defType")
+
+        return defs
+
+
     def CreateSync(self, defObject={}, defURI=''):
 
         """
