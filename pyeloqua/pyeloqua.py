@@ -407,6 +407,8 @@ class Eloqua(object):
 
                     hasMore = req.json()['hasMore']
 
+                    offset += 1000
+
             else:
                 raise ValueError("defType must be one of the following: 'exports', 'imports'")
         else:
