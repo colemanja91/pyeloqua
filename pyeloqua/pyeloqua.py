@@ -58,6 +58,12 @@ class Eloqua(object):
         else:
             raise ValueError('Please enter all required login details: company, username, password')
 
+    '''
+        ###################################################
+        Bulk API 2.0
+        ###################################################
+    '''
+
     def GetFields(self, entity, cdoID=0, fields=[]):
 
         """
@@ -626,3 +632,73 @@ class Eloqua(object):
                     sendSet = []
             else:
                 raise Exception(req.json()['failures'][0]) #### TODO: Fix this error handling
+
+    '''
+        ###################################################
+        Form Data Processing
+        ###################################################
+    '''
+
+    def ValidateForm(self, formHtmlName='', formName=''):
+        if (formHtmlName=='' and formName==''):
+            raise ValueError("Value required for formHtmlName or formName")
+        if (formHtmlName!='' and formName!=''):
+            raise ValueError("Only provide value for one of formHtmlName or formName")
+
+        url = self.restBase + '/assets/forms?depth=complete&search="' + formName + formHtmlName + '"'
+
+        req = requests.get(url, auth=self.auth)
+
+        if (len(req.json()['elements'])>1):
+            raise Exception("Multiple matching forms found")
+        elif (len(req.json()['elements'])==0):
+            raise Exception("No matching forms found")
+
+        form = req.json()['elements'][0]
+
+        if form['name']==formName or form['htmlName']==formHtmlName:
+            id = form['id']
+            name = form['name']
+            htmlName = form['htmlName']
+            return id, name, htmlName
+        else:
+            raise Exception('No forms exactly matching "' + formName + formHtmlName + '" found')
+
+    def GetForm(self, formId=0, formHtmlName='', formName=''):
+        if (formId==0 and formName=='' and formHtmlName==''):
+            raise ValueError("Value required for one of: formId, formHtmlName, formName")
+        if (formId==0 and (formName!='' or formHtmlName!='')):
+            form = self.ValidateForm(formName=formName, formHtmlName=formHtmlName)
+
+        url = self.restBase + '/assets/form/' + str(form.id) + '?depth=complete'
+
+        req = requests.get(url, auth=self.auth)
+
+        if (req.status_code==200):
+            return req.json()
+        else:
+            raise Exception("Form not found: " + str(formId))
+
+    def ValidateFormFields(self, data, formId=0, formHtmlName='', formName=''):
+
+        form = self.GetForm(formId=formId, formName=formName, formHtmlName=formHtmlName)
+
+        dataFields = data[0].keys()
+
+        formFieldSet = form['elements']
+        formFields = []
+        formFieldsNotFound = []
+
+        for row in formFieldSet:
+            formFields.extend(row['name'])
+
+        for row in dataFields:
+            if row not in formFields:
+                formFieldsNotFound.extend(row)
+
+        if (len(formFieldsNotFound)>0):
+            raise Exception("Following fields not found: " + formFieldsNotFound)
+        else:
+            return 1
+
+    def PostToForm(self, data, formId=0, formHtmlName='', formName='', verbose=False):
