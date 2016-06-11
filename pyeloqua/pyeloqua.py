@@ -2,6 +2,7 @@ from datetime import datetime
 import requests
 import json
 import time
+import warnings
 from . import system_fields
 
 API_VERSION = '2.0'
@@ -635,70 +636,65 @@ class Eloqua(object):
 
     '''
         ###################################################
-        Form Data Processing
+        Eloqua Forms
         ###################################################
     '''
 
-    def ValidateForm(self, formHtmlName='', formName=''):
-        if (formHtmlName=='' and formName==''):
-            raise ValueError("Value required for formHtmlName or formName")
-        if (formHtmlName!='' and formName!=''):
-            raise ValueError("Only provide value for one of formHtmlName or formName")
-
-        url = self.restBase + '/assets/forms?depth=complete&search="' + formName + formHtmlName + '"'
-
-        req = requests.get(url, auth=self.auth)
-
-        if (len(req.json()['elements'])>1):
-            raise Exception("Multiple matching forms found")
-        elif (len(req.json()['elements'])==0):
-            raise Exception("No matching forms found")
-
-        form = req.json()['elements'][0]
-
-        if form['name']==formName or form['htmlName']==formHtmlName:
-            id = form['id']
-            name = form['name']
-            htmlName = form['htmlName']
-            return id, name, htmlName
-        else:
-            raise Exception('No forms exactly matching "' + formName + formHtmlName + '" found')
-
     def GetForm(self, formId=0, formHtmlName='', formName=''):
-        if (formId==0 and formName=='' and formHtmlName==''):
-            raise ValueError("Value required for one of: formId, formHtmlName, formName")
-        if (formId==0 and (formName!='' or formHtmlName!='')):
-            form = self.ValidateForm(formName=formName, formHtmlName=formHtmlName)
 
-        url = self.restBase + '/assets/form/' + str(form.id) + '?depth=complete'
+        if (formId==0 and formHtmlName=='' and formName==''):
+            raise ValueError("Value required for one of: formId, formHtmlName, formName")
+        if ((formId!=0 and (formHtmlName!='' or formName!='')) or (formHtmlName!='' and formName!='')):
+            raise ValueError("More than one form identifier entered")
+
+        if (formId!=0):
+            url = self.restBase + '/assets/form/' + str(form.id) + '?depth=complete'
+        else:
+            url = self.restBase + '/assets/forms?depth=complete&search="' + formName + formHtmlName + '"'
 
         req = requests.get(url, auth=self.auth)
 
         if (req.status_code==200):
-            return req.json()
+            form = req.json()
+            if ('elements' in form.keys()):
+                formElem = form['elements']
+                form = formElem[0]
+            return form
         else:
             raise Exception("Form not found: " + str(formId))
 
-    def ValidateFormFields(self, data, formId=0, formHtmlName='', formName=''):
-
-        form = self.GetForm(formId=formId, formName=formName, formHtmlName=formHtmlName)
-
-        dataFields = data[0].keys()
+    def ValidateFormFields(self, data, form):
 
         formFieldSet = form['elements']
         formFields = []
+        formFieldsHtml = []
         formFieldsNotFound = []
 
         for row in formFieldSet:
-            formFields.extend(row['name'])
+            formFields.append(row['name'])
+            formFieldsHtml.append(row['htmlName'])
 
-        for row in dataFields:
+        for row in data.keys():
             if row not in formFields:
-                formFieldsNotFound.extend(row)
+                if row not in formFieldsHtml:
+                    formFieldsNotFound.append(row)
 
         if (len(formFieldsNotFound)>0):
-            raise Exception("Following fields not found: " + formFieldsNotFound)
+            raise Exception("Following fields not found on form: " + ", ".join(formFieldsNotFound))
         else:
             return 1
 
-    def PostToForm(self, data, formId=0, formHtmlName='', formName='', verbose=False):
+    def PostToForm(self, data, formId=0, formHtmlName='', formName=''):
+
+        form = self.GetForm(formId=formId, formHtmlName=formHtmlName, formName=formName)
+
+        url = 'https://s' + str(self.siteId) + '.t.eloqua.com/e/f2'
+
+        if (isinstance(data, dict)):
+            data = [data]
+
+        for row in data:
+            val = self.ValidateFormFields(data = row, form = form)
+            row['elqSiteID'] = self.siteId
+            row['elqFormName'] = form['htmlName']
+            req = requests.post(url, params=row)
