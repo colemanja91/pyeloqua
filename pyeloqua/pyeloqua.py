@@ -2,6 +2,7 @@ from datetime import datetime
 import requests
 import json
 import time
+import warnings
 from . import system_fields
 
 API_VERSION = '2.0'
@@ -57,6 +58,12 @@ class Eloqua(object):
                 raise Exception('Unknown authentication error')
         else:
             raise ValueError('Please enter all required login details: company, username, password')
+
+    '''
+        ###################################################
+        Bulk API 2.0
+        ###################################################
+    '''
 
     def GetFields(self, entity, cdoID=0, fields=[]):
 
@@ -626,3 +633,68 @@ class Eloqua(object):
                     sendSet = []
             else:
                 raise Exception(req.json()['failures'][0]) #### TODO: Fix this error handling
+
+    '''
+        ###################################################
+        Eloqua Forms
+        ###################################################
+    '''
+
+    def GetForm(self, formId=0, formHtmlName='', formName=''):
+
+        if (formId==0 and formHtmlName=='' and formName==''):
+            raise ValueError("Value required for one of: formId, formHtmlName, formName")
+        if ((formId!=0 and (formHtmlName!='' or formName!='')) or (formHtmlName!='' and formName!='')):
+            raise ValueError("More than one form identifier entered")
+
+        if (formId!=0):
+            url = self.restBase + '/assets/form/' + str(form.id) + '?depth=complete'
+        else:
+            url = self.restBase + '/assets/forms?depth=complete&search="' + formName + formHtmlName + '"'
+
+        req = requests.get(url, auth=self.auth)
+
+        if (req.status_code==200):
+            form = req.json()
+            if ('elements' in form.keys()):
+                formElem = form['elements']
+                form = formElem[0]
+            return form
+        else:
+            raise Exception("Form not found: " + str(formId))
+
+    def ValidateFormFields(self, data, form):
+
+        formFieldSet = form['elements']
+        formFields = []
+        formFieldsHtml = []
+        formFieldsNotFound = []
+
+        for row in formFieldSet:
+            formFields.append(row['name'])
+            formFieldsHtml.append(row['htmlName'])
+
+        for row in data.keys():
+            if row not in formFields:
+                if row not in formFieldsHtml:
+                    formFieldsNotFound.append(row)
+
+        if (len(formFieldsNotFound)>0):
+            raise Exception("Following fields not found on form: " + ", ".join(formFieldsNotFound))
+        else:
+            return 1
+
+    def PostToForm(self, data, formId=0, formHtmlName='', formName=''):
+
+        form = self.GetForm(formId=formId, formHtmlName=formHtmlName, formName=formName)
+
+        url = 'https://s' + str(self.siteId) + '.t.eloqua.com/e/f2'
+
+        if (isinstance(data, dict)):
+            data = [data]
+
+        for row in data:
+            val = self.ValidateFormFields(data = row, form = form)
+            row['elqSiteID'] = self.siteId
+            row['elqFormName'] = form['htmlName']
+            req = requests.post(url, params=row)
