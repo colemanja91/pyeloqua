@@ -693,8 +693,17 @@ class Eloqua(object):
         if (isinstance(data, dict)):
             data = [data]
 
+        querystring = {'elqSiteID': self.siteId, 'elqFormName' = form['htmlName']}
+
+        successCount = 0
+        failCount = 0
+
         for row in data:
             val = self.ValidateFormFields(data = row, form = form)
-            row['elqSiteID'] = self.siteId
-            row['elqFormName'] = form['htmlName']
-            req = requests.post(url, params=row)
+            req = requests.post(url, params=querystring, data=row)
+            if (req.content=b'\r\n'):
+                successCount += 1
+            else:
+                failCount += 1
+
+        return {'success': successCount, 'failure': failCount}
