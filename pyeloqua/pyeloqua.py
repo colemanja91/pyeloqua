@@ -693,7 +693,7 @@ class Eloqua(object):
         if (isinstance(data, dict)):
             data = [data]
 
-        querystring = {'elqSiteID': self.siteId, 'elqFormName' = form['htmlName']}
+        querystring = {'elqSiteID': self.siteId, 'elqFormName': form['htmlName']}
 
         successCount = 0
         failCount = 0
@@ -701,7 +701,7 @@ class Eloqua(object):
         for row in data:
             val = self.ValidateFormFields(data = row, form = form)
             req = requests.post(url, params=querystring, data=row)
-            if (req.content=b'\r\n'):
+            if (req.content==b'\r\n'):
                 successCount += 1
             else:
                 failCount += 1
