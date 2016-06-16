@@ -570,25 +570,6 @@ class Eloqua(object):
 
         return rejects
 
-    def GetSyncedRejectCount(self, syncObject={}, syncURI=''):
-
-        if ('uri' not in syncObject):
-            if (len(syncURI)==0):
-                raise Exception("Must include a valid syncObject or syncURI")
-            else:
-                uri = syncURI
-        else:
-            uri = syncObject['uri']
-
-        url = self.bulkBase + uri + '/rejects?limit=1'
-
-        req = requests.get(url, auth=self.auth)
-
-        totalRejects = req.json()['totalResults']
-
-        return totalRejects
-
-
     def GetSyncedData(self, defObject={}, defURI='', limit=50000, initOffset=0):
 
         """
