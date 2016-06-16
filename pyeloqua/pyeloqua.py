@@ -681,6 +681,15 @@ class Eloqua(object):
 
     def GetForm(self, formId=0, formHtmlName='', formName=''):
 
+        '''
+            Retreive Eloqua form metadata
+
+            Arguments:
+            * formId -- ID key of Eloqua form
+            * formHtmlName -- HTML name of Eloqua form
+            * formName -- Display name of Eloqua form
+        '''
+
         if (formId==0 and formHtmlName=='' and formName==''):
             raise ValueError("Value required for one of: formId, formHtmlName, formName")
         if ((formId!=0 and (formHtmlName!='' or formName!='')) or (formHtmlName!='' and formName!='')):
@@ -704,6 +713,14 @@ class Eloqua(object):
 
     def ValidateFormFields(self, data, form):
 
+        '''
+            Given a single-record dictionary of data to submit, validate that all fields are present in the specified form
+
+            Arguments:
+            * data -- dictionary of data to post to an Eloqua form
+            * form -- Output from GetForm function
+        '''
+
         formFieldSet = form['elements']
         formFields = []
         formFieldsHtml = []
@@ -724,6 +741,16 @@ class Eloqua(object):
             return 1
 
     def PostToForm(self, data, formId=0, formHtmlName='', formName=''):
+
+        '''
+            Post a dictionary of data to an Eloqua form
+
+            Arguments:
+            * data -- dictionary of data to submit; can be either a dict (single record), or list of dict (multiple records). Keys must match HTML form names
+            * formId -- ID key of Eloqua form
+            * formHtmlName -- HTML name of Eloqua form
+            * formName -- Display name of Eloqua form
+        '''
 
         form = self.GetForm(formId=formId, formHtmlName=formHtmlName, formName=formName)
 
