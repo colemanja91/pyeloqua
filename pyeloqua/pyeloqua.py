@@ -541,7 +541,7 @@ class Eloqua(object):
         else:
             uri = syncObject['uri']
 
-        if (maxRecords>100):
+        if (maxRecords>1000):
             raise ValueError("maxRecords must be <= 1000")
 
         url = self.bulkBase + uri + '/rejects?limit=' + str(maxRecords)
