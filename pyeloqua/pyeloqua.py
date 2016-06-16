@@ -527,7 +527,7 @@ class Eloqua(object):
 
         req = requests.get(url, auth=self.auth)
 
-        x = req.json()['totalResults']
+        totalResults = req.json()['totalResults']
 
         return totalResults
 
