@@ -206,6 +206,9 @@ class Eloqua(object):
             raise Exception("No matching CDOs found")
 
     def getLeadScoreModelId(self, modelName):
+        '''
+            Returns model ID for a given lead score model
+        '''
 
         modelName = modelName.replace(' ', '*')
 
@@ -532,6 +535,15 @@ class Eloqua(object):
 
     def GetSyncRejectedRecords(self, syncObject={}, syncURI='', maxRecords=1000):
 
+        '''
+            Returns set of (at most) first 1000 records rejected from import
+
+            Arguments:
+            * syncObject -- JSON object returned from CreateSync; optional if syncURI is provided
+            * syncURI -- URI of pre-existing sync; optional if syncObject is provided
+            * maxRecords -- maximum number of records to query; capped at 1000; use 1 to just get # of rejects
+        '''
+
         if ('uri' not in syncObject):
             if (len(syncURI)==0):
                 raise Exception("Must include a valid syncObject or syncURI")
@@ -784,9 +796,27 @@ class Eloqua(object):
         ###################################################
     '''
 
-    def DeleteContact(self, contactId):
+    def DeleteRecord(self, entity, id, cdoID=0):
 
-        uri = self.restBase + '/data/contact/' + str(contactId)
+        '''
+            Deletes a given record. Cannot be undone.
+
+            Arguments:
+            * entity -- one of: contact, customObject, account
+            * id -- ID of record to be deleted. It will be gone forever.
+            * cdoID -- identifier of specific CDO; required if entity = 'customObject'; use method GetCdoId to retrieve
+        '''
+
+        if entity not in ['contact', 'customObject', 'account']:
+            raise ValueError("Please choose a valid 'entity' value: 'contact', 'account', 'customObject'")
+
+        if entity=='customObject' and cdoID==0:
+            raise ValueError("Please input a valid cdoID")
+
+        if entity in ['contact', 'account']:
+            uri = self.restBase + '/data/' + entity + '/' + str(id)
+        else:
+            uri = self.restBase + '/data/customObject/' + str(cdoID) + '/instance/' + str(id)
 
         req = requests.delete(uri, auth=self.auth)
 
