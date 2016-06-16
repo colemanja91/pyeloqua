@@ -665,7 +665,8 @@ class Eloqua(object):
                     syncStatus = self.CheckSyncStatus(syncObject=importSync)
                     syncInfo = {"uri": importSync['uri']}
                     syncInfo['count'] = len(sendSet)
-                    syncInfo['rejectCount'] = self.GetSyncRejectedRecords(syncObject=importSync, maxRecords=1)['totalRecords']
+                    syncInfo['rejectCount'] = self.GetSyncRejectedRecords(syncObject=importSync, maxRecords=1)['totalResults']
+                    syncSet.append(syncInfo)
 
                 if offset+maxPost>=dataLen:
                     hasMore = False
