@@ -610,7 +610,7 @@ class Eloqua(object):
 
         return results
 
-    def PostSyncData(self, data, defObject={}, defURI='', maxPost=20000, syncCount=80000):
+    def PostSyncData(self, data, defObject={}, defURI='', maxPost=20000, syncCount=80000, timeout=1000, interval = 60):
 
         """
             Post data to an import definition and sync at regular intervals
@@ -662,7 +662,7 @@ class Eloqua(object):
                 if (syncOffset >= syncCount or offset+maxPost>=dataLen):
                     syncOffset = 0
                     importSync = self.CreateSync(defObject=defObject, defURI=defURI)
-                    syncStatus = self.CheckSyncStatus(syncObject=importSync)
+                    syncStatus = self.CheckSyncStatus(syncObject=importSync, timeout=timeout, interval=interval)
                     syncInfo = {"uri": importSync['uri']}
                     syncInfo['count'] = len(sendSet)
                     syncInfo['rejectCount'] = self.GetSyncRejectedRecords(syncObject=importSync, maxRecords=1)['totalResults']
