@@ -531,7 +531,46 @@ class Eloqua(object):
 
         return totalResults
 
-    def GetSyncRejectCount(self, syncObject={}, syncURI=''):
+    def GetSyncRejectedRecords(self, syncObject={}, syncURI='', maxRecords=1000):
+
+        if ('uri' not in syncObject):
+            if (len(syncURI)==0):
+                raise Exception("Must include a valid syncObject or syncURI")
+            else:
+                uri = syncURI
+        else:
+            uri = syncObject['uri']
+
+        if (maxRecords>100):
+            raise ValueError("maxRecords must be <= 1000")
+
+        url = self.bulkBase + uri + '/rejects?limit=' + str(maxRecords)
+
+        req = requests.get(url, auth=self.auth)
+
+        rejects = req.json()
+
+        if (rejects['totalResults']>0):
+
+            messages = []
+
+            for row in rejects['items']:
+
+                messages.append(row['message'])
+
+            messageSummary = {}
+
+            for row in messages:
+                if row in messageSummary.keys():
+                    messageSummary[row] = messageSummary[row] += 1
+                else:
+                    messageSummary[row] = 1
+
+            rejects['messages'] = messageSummary
+
+        return rejects
+
+    def GetSyncedRejectCount(self, syncObject={}, syncURI=''):
 
         if ('uri' not in syncObject):
             if (len(syncURI)==0):
