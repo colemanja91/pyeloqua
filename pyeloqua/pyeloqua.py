@@ -562,7 +562,7 @@ class Eloqua(object):
 
             for row in messages:
                 if row in messageSummary.keys():
-                    messageSummary[row] = messageSummary[row] += 1
+                    messageSummary[row] += 1
                 else:
                     messageSummary[row] = 1
 
