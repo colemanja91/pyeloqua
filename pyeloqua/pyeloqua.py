@@ -493,10 +493,8 @@ class Eloqua(object):
             if req.status_code != 200: ### TODO: Fix this error handling
                 warnings.warn(req.json())
             status = req.json()['status']
-            if (status == 'success'):
-                return 'success'
-            elif (status in ['warning', 'error']):
-                raise Exception("Sync finished with status 'warning' or 'error': " + uri)
+            if (status in ['success', 'warning', 'error'):
+                return status    
             elif (waitTime<timeout):
                 waitTime += 10
                 time.sleep(10)
