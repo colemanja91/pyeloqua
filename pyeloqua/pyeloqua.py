@@ -777,3 +777,17 @@ class Eloqua(object):
                 failCount += 1
 
         return {'success': successCount, 'failure': failCount}
+
+    '''
+        ###################################################
+        REST Functions
+        ###################################################
+    '''
+
+    def DeleteContact(self, contactId):
+
+        uri = self.restBase + '/data/contact/' + str(contactId)
+
+        req = requests.delete(uri, auth=self.auth)
+
+        return req.status_code
