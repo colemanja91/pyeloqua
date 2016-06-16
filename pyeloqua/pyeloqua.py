@@ -494,7 +494,7 @@ class Eloqua(object):
             if req.status_code != 200: ### TODO: Fix this error handling
                 warnings.warn(req.json())
             status = req.json()['status']
-            if (status in ['success', 'warning', 'error'):
+            if (status in ['success', 'warning', 'error']):
                 return status
             elif (waitTime<timeout):
                 waitTime += interval
