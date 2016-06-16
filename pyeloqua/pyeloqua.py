@@ -206,6 +206,9 @@ class Eloqua(object):
             raise Exception("No matching CDOs found")
 
     def getLeadScoreModelId(self, modelName):
+        '''
+            Returns model ID for a given lead score model
+        '''
 
         modelName = modelName.replace(' ', '*')
 
@@ -464,7 +467,7 @@ class Eloqua(object):
 
             raise Exception("Could not create sync: " + uri)
 
-    def CheckSyncStatus(self, syncObject={}, syncURI='', timeout=500):
+    def CheckSyncStatus(self, syncObject={}, syncURI='', timeout=500, interval=10):
 
         """
             Get the current status of an existing sync
@@ -474,6 +477,7 @@ class Eloqua(object):
             * syncObject -- JSON object returned from CreateSync; optional if syncURI is provided
             * syncURI -- URI of pre-existing sync; optional if syncObject is provided
             * timeout -- seconds to check sync
+            * interval -- wait time between checking status
 
         """
         if ('uri' not in syncObject):
@@ -493,13 +497,11 @@ class Eloqua(object):
             if req.status_code != 200: ### TODO: Fix this error handling
                 warnings.warn(req.json())
             status = req.json()['status']
-            if (status == 'success'):
-                return 'success'
-            elif (status in ['warning', 'error']):
-                raise Exception("Sync finished with status 'warning' or 'error': " + uri)
+            if (status in ['success', 'warning', 'error']):
+                return status
             elif (waitTime<timeout):
-                waitTime += 10
-                time.sleep(10)
+                waitTime += interval
+                time.sleep(interval)
             else:
                 raise Exception("Export not finished syncing after " + str(waitTime) + " seconds: " + uri)
 
@@ -527,9 +529,57 @@ class Eloqua(object):
 
         req = requests.get(url, auth=self.auth)
 
-        x = req.json()['totalResults']
+        totalResults = req.json()['totalResults']
 
         return totalResults
+
+    def GetSyncRejectedRecords(self, syncObject={}, syncURI='', maxRecords=1000):
+
+        '''
+            Returns set of (at most) first 1000 records rejected from import
+
+            Arguments:
+            * syncObject -- JSON object returned from CreateSync; optional if syncURI is provided
+            * syncURI -- URI of pre-existing sync; optional if syncObject is provided
+            * maxRecords -- maximum number of records to query; capped at 1000; use 1 to just get # of rejects
+        '''
+
+        if ('uri' not in syncObject):
+            if (len(syncURI)==0):
+                raise Exception("Must include a valid syncObject or syncURI")
+            else:
+                uri = syncURI
+        else:
+            uri = syncObject['uri']
+
+        if (maxRecords>1000):
+            raise ValueError("maxRecords must be <= 1000")
+
+        url = self.bulkBase + uri + '/rejects?limit=' + str(maxRecords)
+
+        req = requests.get(url, auth=self.auth)
+
+        rejects = req.json()
+
+        if (rejects['totalResults']>0):
+
+            messages = []
+
+            for row in rejects['items']:
+
+                messages.append(row['message'])
+
+            messageSummary = {}
+
+            for row in messages:
+                if row in messageSummary.keys():
+                    messageSummary[row] += 1
+                else:
+                    messageSummary[row] = 1
+
+            rejects['messages'] = messageSummary
+
+        return rejects
 
     def GetSyncedData(self, defObject={}, defURI='', limit=50000, initOffset=0):
 
@@ -572,7 +622,7 @@ class Eloqua(object):
 
         return results
 
-    def PostSyncData(self, data, defObject={}, defURI='', maxPost=20000, syncCount=80000):
+    def PostSyncData(self, data, defObject={}, defURI='', maxPost=20000, syncCount=80000, timeout=1000, interval = 60):
 
         """
             Post data to an import definition and sync at regular intervals
@@ -609,6 +659,7 @@ class Eloqua(object):
         sendSet = []
         dataLen = len(data)
         url = self.bulkBase + uri + '/data'
+        syncSet = []
 
         while (hasMore):
             for x in range(offset, min(offset+maxPost, dataLen), 1):
@@ -623,11 +674,15 @@ class Eloqua(object):
                 if (syncOffset >= syncCount or offset+maxPost>=dataLen):
                     syncOffset = 0
                     importSync = self.CreateSync(defObject=defObject, defURI=defURI)
-                    syncStatus = self.CheckSyncStatus(syncObject=importSync)
+                    syncStatus = self.CheckSyncStatus(syncObject=importSync, timeout=timeout, interval=interval)
+                    syncInfo = {"uri": importSync['uri']}
+                    syncInfo['count'] = len(sendSet)
+                    syncInfo['rejectCount'] = self.GetSyncRejectedRecords(syncObject=importSync, maxRecords=1)['totalResults']
+                    syncSet.append(syncInfo)
 
                 if offset+maxPost>=dataLen:
                     hasMore = False
-                    return 'success'
+                    return syncSet
                 else:
                     offset += maxPost
                     sendSet = []
@@ -641,6 +696,15 @@ class Eloqua(object):
     '''
 
     def GetForm(self, formId=0, formHtmlName='', formName=''):
+
+        '''
+            Retreive Eloqua form metadata
+
+            Arguments:
+            * formId -- ID key of Eloqua form
+            * formHtmlName -- HTML name of Eloqua form
+            * formName -- Display name of Eloqua form
+        '''
 
         if (formId==0 and formHtmlName=='' and formName==''):
             raise ValueError("Value required for one of: formId, formHtmlName, formName")
@@ -665,6 +729,14 @@ class Eloqua(object):
 
     def ValidateFormFields(self, data, form):
 
+        '''
+            Given a single-record dictionary of data to submit, validate that all fields are present in the specified form
+
+            Arguments:
+            * data -- dictionary of data to post to an Eloqua form
+            * form -- Output from GetForm function
+        '''
+
         formFieldSet = form['elements']
         formFields = []
         formFieldsHtml = []
@@ -685,6 +757,16 @@ class Eloqua(object):
             return 1
 
     def PostToForm(self, data, formId=0, formHtmlName='', formName=''):
+
+        '''
+            Post a dictionary of data to an Eloqua form
+
+            Arguments:
+            * data -- dictionary of data to submit; can be either a dict (single record), or list of dict (multiple records). Keys must match HTML form names
+            * formId -- ID key of Eloqua form
+            * formHtmlName -- HTML name of Eloqua form
+            * formName -- Display name of Eloqua form
+        '''
 
         form = self.GetForm(formId=formId, formHtmlName=formHtmlName, formName=formName)
 
@@ -707,3 +789,35 @@ class Eloqua(object):
                 failCount += 1
 
         return {'success': successCount, 'failure': failCount}
+
+    '''
+        ###################################################
+        REST Functions
+        ###################################################
+    '''
+
+    def DeleteRecord(self, entity, id, cdoID=0):
+
+        '''
+            Deletes a given record. Cannot be undone.
+
+            Arguments:
+            * entity -- one of: contact, customObject, account
+            * id -- ID of record to be deleted. It will be gone forever.
+            * cdoID -- identifier of specific CDO; required if entity = 'customObject'; use method GetCdoId to retrieve
+        '''
+
+        if entity not in ['contact', 'customObject', 'account']:
+            raise ValueError("Please choose a valid 'entity' value: 'contact', 'account', 'customObject'")
+
+        if entity=='customObject' and cdoID==0:
+            raise ValueError("Please input a valid cdoID")
+
+        if entity in ['contact', 'account']:
+            uri = self.restBase + '/data/' + entity + '/' + str(id)
+        else:
+            uri = self.restBase + '/data/customObject/' + str(cdoID) + '/instance/' + str(id)
+
+        req = requests.delete(uri, auth=self.auth)
+
+        return req.status_code
