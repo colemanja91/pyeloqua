@@ -464,7 +464,7 @@ class Eloqua(object):
 
             raise Exception("Could not create sync: " + uri)
 
-    def CheckSyncStatus(self, syncObject={}, syncURI='', timeout=500):
+    def CheckSyncStatus(self, syncObject={}, syncURI='', timeout=500, interval=10):
 
         """
             Get the current status of an existing sync
@@ -474,6 +474,7 @@ class Eloqua(object):
             * syncObject -- JSON object returned from CreateSync; optional if syncURI is provided
             * syncURI -- URI of pre-existing sync; optional if syncObject is provided
             * timeout -- seconds to check sync
+            * interval -- wait time between checking status
 
         """
         if ('uri' not in syncObject):
@@ -494,10 +495,10 @@ class Eloqua(object):
                 warnings.warn(req.json())
             status = req.json()['status']
             if (status in ['success', 'warning', 'error'):
-                return status    
+                return status
             elif (waitTime<timeout):
-                waitTime += 10
-                time.sleep(10)
+                waitTime += interval
+                time.sleep(interval)
             else:
                 raise Exception("Export not finished syncing after " + str(waitTime) + " seconds: " + uri)
 
