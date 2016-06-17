@@ -675,7 +675,7 @@ class Eloqua(object):
                     syncOffset = 0
                     importSync = self.CreateSync(defObject=defObject, defURI=defURI)
                     syncStatus = self.CheckSyncStatus(syncObject=importSync, timeout=timeout, interval=interval)
-                    syncInfo = {"uri": importSync['uri']}
+                    syncInfo = {"uri": importSync['uri'], 'status': syncStatus}
                     syncInfo['count'] = len(sendSet)
                     syncInfo['rejectCount'] = self.GetSyncRejectedRecords(syncObject=importSync, maxRecords=1)['totalResults']
                     syncSet.append(syncInfo)

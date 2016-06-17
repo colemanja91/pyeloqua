@@ -1,3 +1,6 @@
+## 2016-06-17 v0.0.8
++Added sync status to PostSyncData output
+
 ## 2016-06-16 v0.0.7
 +Added deletion functionality for contact, account, and CDO records
 +Improved some inline documentation
