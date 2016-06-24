@@ -525,7 +525,7 @@ class Eloqua(object):
         else:
             uri = defObject['uri']
 
-        url = self.bulkBase + uri + '/data?limit=0&offset=0'
+        url = self.bulkBase + uri + '/data?limit=1&offset=0'
 
         req = requests.get(url, auth=self.auth)
 
