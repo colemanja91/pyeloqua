@@ -289,14 +289,16 @@ class Eloqua(object):
         except:
             raise ValueError("Invalid datetime format; use 'YYYY-MM-DD hh:mm:ss'")
 
-        if (entity!='activities'):
+        if (entity!='activities' or (entity in ['contacts', 'accounts'] and field in ['createdAt', 'updatedAt'])):
             fieldDef = self.GetFields(entity=entity, fields=[field], cdoID=cdoID)
 
             if (fieldDef[0]['dataType'] != 'date'):
                 raise Exception("Field '" + field + "' is not a date field")
             fieldStatement = fieldDef[0]['statement']
-        else:
+        elif (entity=='activities'):
             fieldStatement = system_fields.ACTIVITY_FIELDS['CommonFields']['ActivityDate']
+        else:
+            fieldStatement = system_fields.CONTACT_SYSTEM_FIELDS[field]
 
         statement = ''
 
