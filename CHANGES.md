@@ -1,3 +1,6 @@
+## 2016-06-27 v0.1.0
+- fixed FilterDateRange to allow for filtering on system fields createdAt, updatedAt, on contacts and accounts
+
 ## 2016-06-23 v0.0.9 hotfix
 - fixed GetSyncedRecordCount
 
