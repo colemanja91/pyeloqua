@@ -1,3 +1,8 @@
+## 2016-08-02 v0.2.0
+- Added export functionality for activities
+- Added ability to create field statements for CDO exports that include linked contact fields
+- Deprecated ```addSystemFields``` in ```CreateFieldStatement```; begin using ```addSystemContactFields``` instead
+
 ## 2016-06-27 v0.1.0
 - fixed FilterDateRange to allow for filtering on system fields createdAt, updatedAt, on contacts and accounts
 
