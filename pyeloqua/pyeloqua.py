@@ -114,7 +114,8 @@ class Eloqua(object):
             raise Exception("Failure getting fields: " + str(req.status_code))
 
     def CreateFieldStatement(self, entity, fields = '', cdoID = 0, useInternalName=True, addSystemFields=[],
-                             addActivityFields=[], activityType='', leadScoreModelId = 0):
+                             addActivityFields=[], activityType='', leadScoreModelId = 0, addSystemContactFields=[],
+                             addLinkedContactFields=[]):
 
         """
             Given a set of field names, create a "fields" statement for use in Bulk import/export definitions
@@ -125,15 +126,26 @@ class Eloqua(object):
             * fields -- list of specific fields to retrieve, either by 'Display Name' or 'Database Name'; optional
             * cdoID -- identifier of specific CDO; required if entity = 'customObjects'; use method GetCdoId to retrieve
             * useInternalName -- If True, import / export defined field names use 'Database Name'
-            * addSystemFields -- list of system fields to include in statement; see CONTACT_SYSTEM_FIELDS
+            * addSystemFields -- DEPRECATED: Use addSystemContactFields instead. List of system fields to include in statement; see CONTACT_SYSTEM_FIELDS
             * addActivityFields -- List of activity fields to include; required if entity = 'activities'; see ACTIVITY_FIELDS
             * activityType -- export type
             * leadScoreModelId -- add lead score model fields to contact export
+            * addSystemContactFields -- List of system fields to include in statement relative to [linked] contacts; see CONTACT_SYSTEM_FIELDS
+            * addLinkedContactFields -- List of fields to add in CDO record exports
 
         """
 
         if (entity in ['contacts', 'customObjects', 'accounts'] and fields == '' and len(addSystemFields)==0):
             raise Exception('Please specify one or more entity or system fields')
+
+        if (len(addSystemFields)>0):
+            warnings.warn("The addSystemFields parameter has been deprecated. Please use addSystemContactFields")
+            for field in addSystemFields:
+                if field not in addSystemContactFields:
+                    addSystemContactFields.append(field)
+
+        if (len(addLinkedContactFields)>0 and entity!='customObjects'):
+            raise Exception('Linked contact fields may only be included for CDO exports')
 
         fieldStatement = {}
 
@@ -161,7 +173,7 @@ class Eloqua(object):
             fieldSet = self.GetFields(entity = entity, fields = fields, cdoID = cdoID)
 
             if len(addSystemFields)>0:
-                for field in addSystemFields:
+                for field in addSystemContactFields:
                     if field in system_fields.CONTACT_SYSTEM_FIELDS:
                         fieldStatement[field] = system_fields.CONTACT_SYSTEM_FIELDS[field]
                     else:
@@ -175,6 +187,14 @@ class Eloqua(object):
                         fieldStatement[field['name']] = field['statement']
             else:
                 raise Exception("No fields found")
+
+        if len(addLinkedContactFields)>0:
+
+            linkedContactFields = self.CreateFieldStatement(entity='contacts', fields=addLinkedContactFields)
+
+            for field in linkedContactFields:
+                linkedContactFields[field] = linkedContactFields[field].replace('{{Contact.', '{{CustomObject[%s].Contact.') % cdoID
+                fieldStatement.update(linkedContactFields)
 
         return fieldStatement
 
