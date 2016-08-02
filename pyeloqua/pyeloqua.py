@@ -132,7 +132,7 @@ class Eloqua(object):
 
         """
 
-        if (fields == '' and len(addSystemFields)==0):
+        if (entity in ['contacts', 'customObjects', 'accounts'] and fields == '' and len(addSystemFields)==0):
             raise Exception('Please specify one or more entity or system fields')
 
         fieldStatement = {}
@@ -154,7 +154,7 @@ class Eloqua(object):
                         else:
                             raise ValueError("Activity field not recognized: " + field)
                 else:
-                    raise ValueError("Please specify activity fields")
+                    fieldStatement = system_fields.ACTIVITY_FIELDS[activityType]
             else:
                 raise ValueError("Invalid activity type: " + activityType)
         else:
@@ -259,7 +259,7 @@ class Eloqua(object):
         else:
             raise Exception("No matching " + existsType + " found")
 
-    def FilterDateRange(self, entity, field, start='', end='', cdoID=0):
+    def FilterDateRange(self, entity, field='', start='', end='', cdoID=0):
 
         '''
             Given an Eloqua date field, create a bounded or open date range filter
@@ -312,7 +312,7 @@ class Eloqua(object):
         return statement
 
 
-    def CreateDef(self, defType, entity, fields, cdoID=0, filters='', defName=str(datetime.now()), identifierFieldName='', isSyncTriggeredOnImport=False):
+    def CreateDef(self, defType, entity, fields, cdoID=0, filters='', activityType='', defName=str(datetime.now()), identifierFieldName='', isSyncTriggeredOnImport=False):
 
         """
             Create an import/export definition
@@ -320,7 +320,7 @@ class Eloqua(object):
             Arguments:
 
             * defType -- One of: 'imports', 'exports'
-            * entity --  one of: contacts, customObjects, or accounts
+            * entity --  one of: contacts, customObjects, activities, or accounts
             * fields -- A dictionary of fields to export; see CreateFieldStatement
             * filters -- A valid Bulk filter statement
             * defName -- Export definition name; defaults to current datetime
@@ -338,8 +338,8 @@ class Eloqua(object):
         if (defType == 'imports' and len(fields)>100):
             raise Exception("Eloqua Bulk API only supports imports of up to 100 fields")
 
-        if entity not in ['contacts', 'customObjects', 'accounts']:
-            raise Exception("Please choose a valid 'entity' value: 'contacts', 'accounts', 'customObjects'")
+        if entity not in ['contacts', 'customObjects', 'accounts', 'activities']:
+            raise Exception("Please choose a valid 'entity' value: 'contacts', 'accounts', 'customObjects', 'activities'")
 
         if entity == 'customObjects':
             if cdoID==0:
@@ -357,6 +357,18 @@ class Eloqua(object):
             if len(fields)>100:
                 raise Exception("Eloqua Bulk API can only export 100 account fields at a time")
             url = self.bulkBase + '/accounts/' + defType
+
+        if entity == 'activities':
+            if len(fields)>100:
+                raise Exception("Eloqua Bulk API can only export 100 activity fields at a time")
+            if activityType=='':
+                raise Exception("Please specify an activity type")
+            url = self.bulkBase + '/activities/' + defType
+
+            if filters=='':
+                filters = "'{{Activity.Type}}' = '" + activityType + "' "
+            else:
+                filters = "'{{Activity.Type}}' = '" + activityType + "' AND " + filters
 
         if (defType=='exports'):
 
