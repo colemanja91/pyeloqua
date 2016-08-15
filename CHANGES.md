@@ -1,3 +1,6 @@
+## 2016-08-15 v0.2.1
+- Fixed dependency requirement for requests
+
 ## 2016-08-02 v0.2.0
 - Added export functionality for activities
 - Added ability to create field statements for CDO exports that include linked contact fields
