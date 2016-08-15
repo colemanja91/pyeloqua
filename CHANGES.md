@@ -1,4 +1,4 @@
-## 2016-08-15 v0.2.1
+## 2016-08-15 v0.2.2
 - Fixed dependency requirement for requests
 
 ## 2016-08-02 v0.2.0
