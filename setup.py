@@ -18,7 +18,7 @@ setup(
     packages=['pyeloqua'],
     install_requires=[
         'requests'
-    ]
+    ],
     zip_safe=False,
     keywords = 'eloqua marketing automation api bulk'
 )
