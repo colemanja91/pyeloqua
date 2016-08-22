@@ -17,7 +17,7 @@ setup(
     license='MIT',
     packages=['pyeloqua'],
     install_requires=[
-        'requests'
+        'requests>=2.10.0'
     ],
     zip_safe=False,
     keywords = 'eloqua marketing automation api bulk'
