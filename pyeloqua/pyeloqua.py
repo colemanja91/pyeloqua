@@ -746,7 +746,7 @@ class Eloqua(object):
             raise ValueError("More than one form identifier entered")
 
         if (formId!=0):
-            url = self.restBase + '/assets/form/' + str(form.id) + '?depth=complete'
+            url = self.restBase + '/assets/form/' + str(formId) + '?depth=complete'
         else:
             url = self.restBase + '/assets/forms?depth=complete&search="' + formName + formHtmlName + '"'
 
