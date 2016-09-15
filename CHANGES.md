@@ -1,3 +1,6 @@
+## 2016-09-15 v0.2.4
+- Fixed some issues around code that got changed for form posts 
+
 ## 2016-08-15 v0.2.2
 - Fixed dependency requirement for requests
 
