@@ -754,9 +754,9 @@ class Eloqua(object):
 
         if (req.status_code==200):
             form = req.json()
-            if ('elements' in form.keys()):
-                formElem = form['elements']
-                form = formElem[0]
+            #if ('elements' in form.keys()):
+            #    formElem = form['elements']
+            #    form = formElem[0]
             return form
         else:
             raise Exception("Form not found: " + str(formId))
