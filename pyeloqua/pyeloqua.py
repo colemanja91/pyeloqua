@@ -746,7 +746,7 @@ class Eloqua(object):
             raise ValueError("More than one form identifier entered")
 
         if (formId!=0):
-            url = self.restBase + '/assets/form/' + str(form.id) + '?depth=complete'
+            url = self.restBase + '/assets/form/' + str(formId) + '?depth=complete'
         else:
             url = self.restBase + '/assets/forms?depth=complete&search="' + formName + formHtmlName + '"'
 
@@ -754,9 +754,9 @@ class Eloqua(object):
 
         if (req.status_code==200):
             form = req.json()
-            if ('elements' in form.keys()):
-                formElem = form['elements']
-                form = formElem[0]
+            #if ('elements' in form.keys()):
+            #    formElem = form['elements']
+            #    form = formElem[0]
             return form
         else:
             raise Exception("Form not found: " + str(formId))
