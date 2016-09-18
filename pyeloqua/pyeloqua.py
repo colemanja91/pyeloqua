@@ -615,7 +615,7 @@ class Eloqua(object):
 
         return rejects
 
-    def GetSyncedData(self, defObject={}, defURI='', limit=50000, initOffset=0):
+    def GetSyncedData(self, defObject={}, defURI='', limit=50000, initOffset=0, retrieveLimit=1000000):
 
         """
             Retrieve data from a synced export
@@ -624,9 +624,9 @@ class Eloqua(object):
 
             * defObject -- JSON object returned from CreateDef; optional if defURI is provided
             * defURI -- URI of pre-existing import/export definition; optional if defObject is provided
-            * limit -- max number of records to retrieve (Eloqua max = 50,000); optional
+            * limit -- max number of records to retrieve (Eloqua max = 50,000) in one REST call; optional; different from retrieveLimit in that it will still pull all records, just in smaller batches
             * initOffset -- Starting offset to retrieve from; optional
-
+            * retrieveLimit -- Max number of records to retrieve (total); optional
         """
         if ('uri' not in defObject):
             if (len(defURI)==0):
@@ -644,7 +644,9 @@ class Eloqua(object):
 
         hasMore = True
 
-        while (hasMore):
+        while hasMore and len(results)<retrieveLimit:
+            if (offset+limit)>retrieveLimit:
+                limit = retrieveLimit-offset
             urlWhile = url + 'offset=' + str(offset) + '&limit=' + str(limit)
             req = requests.get(urlWhile, auth=self.auth)
             if 'items' in req.json():
