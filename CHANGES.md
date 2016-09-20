@@ -1,3 +1,6 @@
+## 2016-09-20 v0.2.6
+- Fixed sync count that gets return in data post
+
 ## 2016-09-18 v0.2.5
 - Added functionality to export a max # of rows
 
