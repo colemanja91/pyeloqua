@@ -696,12 +696,15 @@ class Eloqua(object):
         dataLen = len(data)
         url = self.bulkBase + uri + '/data'
         syncSet = []
+        sendSetLen = 0
 
         while (hasMore):
             for x in range(offset, min(offset+maxPost, dataLen), 1):
                 sendSet.append(data[x])
 
             req = requests.post(url, data = json.dumps(sendSet), headers = POST_HEADERS, auth = self.auth)
+
+            sendSetLen += len(sendSet)
 
             if req.status_code == 204:
 
@@ -712,9 +715,10 @@ class Eloqua(object):
                     importSync = self.CreateSync(defObject=defObject, defURI=defURI)
                     syncStatus = self.CheckSyncStatus(syncObject=importSync, timeout=timeout, interval=interval)
                     syncInfo = {"uri": importSync['uri'], 'status': syncStatus}
-                    syncInfo['count'] = len(sendSet)
+                    syncInfo['count'] = sendSetLen
                     syncInfo['rejectCount'] = self.GetSyncRejectedRecords(syncObject=importSync, maxRecords=1)['totalResults']
                     syncSet.append(syncInfo)
+                    sendSetLen = 0
 
                 if offset+maxPost>=dataLen:
                     hasMore = False
