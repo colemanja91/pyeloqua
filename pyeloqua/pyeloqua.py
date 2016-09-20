@@ -718,12 +718,14 @@ class Eloqua(object):
 
                 if offset+maxPost>=dataLen:
                     hasMore = False
-                    return syncSet
+                    #return syncSet
                 else:
                     offset += maxPost
                     sendSet = []
             else:
                 raise Exception(req.json()['failures'][0]) #### TODO: Fix this error handling
+
+        return syncSet
 
     '''
         ###################################################
