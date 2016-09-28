@@ -1,3 +1,6 @@
+## 2016-09-28 v0.2.7
+- Added functionality for syncActions in import/export definitions
+
 ## 2016-09-20 v0.2.6
 - Fixed sync count that gets return in data post
 
