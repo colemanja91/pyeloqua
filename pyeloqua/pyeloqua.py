@@ -279,6 +279,55 @@ class Eloqua(object):
         else:
             raise Exception("No matching " + existsType + " found")
 
+    def CreateSyncAction(self, action, destination='', status='', listName='', listType=''):
+
+        '''
+            Create a sync action to include in an import/export definition
+
+            Arguments:
+
+            * action --
+            * destination --
+            * status --
+            * listName --
+            * listType --
+        '''
+
+        if action=='setStatus' and destination=='':
+            raise Exception("must specify a destination for setStatus")
+
+        if action in ['add', 'remove'] and destination=='' and listName=='':
+            raise Exception("for add and remove, must specify destination or listName")
+
+        if listName!='' and listType not in ['accounts', 'contacts']:
+            raise Exception("if specifying listName, must also specify listType (accounts or contacts)")
+
+        if listName!='' and listType!='' and destination=='':
+
+            name = listName.replace(' ', '*')
+
+            if listType=='accounts':
+                url = self.bulkBase + '/accounts/lists?q="name=' + name + '"'
+            elif listType=='contacts':
+                url = self.bulkBase + '/contacts/lists?q="name=' + name + '"'
+
+            req = requests.get(url, auth = self.auth)
+
+            if req.json()['totalResults']==1:
+                destination = req.json()['items'][0]['statement']
+            elif req.json()['totalResults']>1:
+                raise Exception("Multiple matching listName found")
+            else:
+                raise Exception("No matching listName found")
+
+        syncAction = {}
+        syncAction['action'] = action
+        syncAction['destination'] = destination
+        if action=='setStatus':
+            syncAction['status'] = status
+
+        return syncAction
+
     def FilterDateRange(self, entity, field='', start='', end='', cdoID=0):
 
         '''
@@ -332,7 +381,7 @@ class Eloqua(object):
         return statement
 
 
-    def CreateDef(self, defType, entity, fields, cdoID=0, filters='', activityType='', defName=str(datetime.now()), identifierFieldName='', isSyncTriggeredOnImport=False):
+    def CreateDef(self, defType, entity, fields, cdoID=0, filters='', activityType='', defName=str(datetime.now()), identifierFieldName='', isSyncTriggeredOnImport=False, syncActions=[]):
 
         """
             Create an import/export definition
@@ -346,6 +395,7 @@ class Eloqua(object):
             * defName -- Export definition name; defaults to current datetime
             * identifierFieldName -- unique identified field; required for imports
             * isSyncTriggeredOnImport -- If True, begin sync upon post of import data
+            * syncActions -- list of actions to take on contacts with sync import
 
         """
 
@@ -360,6 +410,15 @@ class Eloqua(object):
 
         if entity not in ['contacts', 'customObjects', 'accounts', 'activities']:
             raise Exception("Please choose a valid 'entity' value: 'contacts', 'accounts', 'customObjects', 'activities'")
+
+        if defType=='exports' and len(syncActions)>10:
+            raise Exception("may only specify up to 10 syncActions for an export")
+
+        if defType=='imports' and len(syncActions)>1:
+            raise Exception("may only specify 1 syncActions for an import")
+
+        if entity not in ['contacts', 'customObjects', 'accounts'] and len(syncActions)>0:
+            raise Exception("syncActions currently only supported in pyeloqua for contacts, customObjects, and accounts")
 
         if entity == 'customObjects':
             if cdoID==0:
@@ -394,15 +453,15 @@ class Eloqua(object):
 
             if (len(filters)>0):
 
-                data = {'name': defName, 'filter': filters, 'fields': fields}
+                data = {'name': defName, 'filter': filters, 'fields': fields, 'syncActions': syncActions}
 
             else:
 
-                data = {'name': defName, 'fields': fields}
+                data = {'name': defName, 'fields': fields, 'syncActions': syncActions}
 
         else:
 
-            data = {'name': defName, 'fields': fields, 'identifierFieldName': identifierFieldName, 'isSyncTriggeredOnImport': isSyncTriggeredOnImport}
+            data = {'name': defName, 'fields': fields, 'identifierFieldName': identifierFieldName, 'isSyncTriggeredOnImport': isSyncTriggeredOnImport, 'syncActions': syncActions}
 
         req = requests.post(url, data = json.dumps(data), headers = POST_HEADERS, auth = self.auth)
 
