@@ -1,3 +1,6 @@
+## 2016-10-06 v0.2.8
+- Added exception handling for PostSyncData status codes
+
 ## 2016-09-28 v0.2.7
 - Added functionality for syncActions in import/export definitions
 
