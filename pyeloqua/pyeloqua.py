@@ -786,7 +786,7 @@ class Eloqua(object):
                     offset += maxPost
                     sendSet = []
             else:
-                raise Exception(req.json()) #### TODO: Fix this error handling
+                raise Exception(req.status_code) #### TODO: Fix this error handling
 
         return syncSet
 
