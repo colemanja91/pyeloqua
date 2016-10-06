@@ -765,7 +765,7 @@ class Eloqua(object):
 
             sendSetLen += len(sendSet)
 
-            if req.status_code == 204:
+            if req.status_code in [204, 201]:
 
                 syncOffset += maxPost
 
@@ -785,6 +785,24 @@ class Eloqua(object):
                 else:
                     offset += maxPost
                     sendSet = []
+            elif req.status_code == 400:
+                raise Exception("400: Bad Request: ", req.json())
+            elif req.status_code == 401:
+                raise Exception("401: Unauthorized")
+            elif req.status_code == 403:
+                raise Exception("403: Forbidden")
+            elif req.status_code == 404:
+                raise Exception("404: Resource not found")
+            elif req.status_code == 409:
+                raise Exception("409: Conflict")
+            elif req.status_code == 410:
+                raise Exception("410: Resource no longer available")
+            elif req.status_code == 413:
+                raise Exception("413: Storage space exceeded")
+            elif req.status_code == 500:
+                raise Exception("500: Internal Eloqua server error")
+            elif req.status_code == 503:
+                raise Exception("503: Eloqua server timeout")
             else:
                 raise Exception(req.status_code) #### TODO: Fix this error handling
 
