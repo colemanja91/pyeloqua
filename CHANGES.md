@@ -1,3 +1,6 @@
+## 2016-10-07 v0.2.9
+- HOTFIX: Set "ensure_ascii" parameter of json.dumps = False; was causing problems with imports
+
 ## 2016-10-06 v0.2.8
 - Added exception handling for PostSyncData status codes
 

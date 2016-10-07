@@ -761,7 +761,7 @@ class Eloqua(object):
             for x in range(offset, min(offset+maxPost, dataLen), 1):
                 sendSet.append(data[x])
 
-            req = requests.post(url, data = json.dumps(sendSet), headers = POST_HEADERS, auth = self.auth)
+            req = requests.post(url, data = json.dumps(sendSet, ensure_ascii=False), headers = POST_HEADERS, auth = self.auth)
 
             sendSetLen += len(sendSet)
 
