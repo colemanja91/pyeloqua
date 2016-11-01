@@ -174,7 +174,11 @@ class Eloqua(object):
             else:
                 raise ValueError("Invalid activity type: " + activityType)
         else:
-            fieldSet = self.GetFields(entity = entity, fields = fields, cdoID = cdoID)
+
+            if type(fields).__name__=='list':
+                fieldSet = self.GetFields(entity = entity, fields = fields, cdoID = cdoID)
+            elif type(fields).__name__=='dict':
+                fieldSet = self.GetFields(entity = entity, fields = fields.values(), cdoID = cdoID)
 
             if len(addSystemFields)>0:
                 for field in addSystemContactFields:
@@ -184,11 +188,19 @@ class Eloqua(object):
                         raise ValueError("System field not recognized: " + field)
 
             if len(fieldSet)>0 or addAll:
-                for field in fieldSet:
-                    if useInternalName:
-                        fieldStatement[field['internalName']] = field['statement']
-                    else:
-                        fieldStatement[field['name']] = field['statement']
+                if type(fields).__name__=='list':
+                    for field in fieldSet:
+                        if useInternalName:
+                            fieldStatement[field['internalName']] = field['statement']
+                        else:
+                            fieldStatement[field['name']] = field['statement']
+                elif type(fields).__name__=='dict':
+                    for field in fields:
+                        for row in fieldSet:
+                            if fields[field]==row['internalName'] or fields[field]==row['name']:
+                                fieldStatement[field] = row['statement']
+                                break
+
             else:
                 raise Exception("No fields found")
 
