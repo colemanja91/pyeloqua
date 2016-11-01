@@ -115,7 +115,7 @@ class Eloqua(object):
 
     def CreateFieldStatement(self, entity, fields = '', cdoID = 0, useInternalName=True, addSystemFields=[],
                              addActivityFields=[], activityType='', leadScoreModelId = 0, addSystemContactFields=[],
-                             addLinkedContactFields=[]):
+                             addLinkedContactFields=[], addAll = False):
 
         """
             Given a set of field names, create a "fields" statement for use in Bulk import/export definitions
@@ -132,11 +132,11 @@ class Eloqua(object):
             * leadScoreModelId -- add lead score model fields to contact export
             * addSystemContactFields -- List of system fields to include in statement relative to [linked] contacts; see CONTACT_SYSTEM_FIELDS
             * addLinkedContactFields -- List of fields to add in CDO record exports
-
+            * addAll -- ALL OF THE THINGS!!!!
         """
 
-        if (entity in ['contacts', 'customObjects', 'accounts'] and fields == '' and len(addSystemContactFields)==0 and len(addLinkedContactFields)==0 and len(addSystemFields)==0):
-            raise Exception('Please specify one or more entity or system fields')
+        if (entity in ['contacts', 'customObjects', 'accounts'] and fields == '' and len(addSystemContactFields)==0 and len(addLinkedContactFields)==0 and len(addSystemFields)==0 and not addAll):
+            raise Exception('Please specify one or more entity or system fields, or specify \'addAll\'==True')
 
         if (len(addSystemFields)>0):
             warnings.warn("The addSystemFields parameter has been deprecated. Please use addSystemContactFields")
@@ -187,6 +187,10 @@ class Eloqua(object):
                         fieldStatement[field['name']] = field['statement']
             else:
                 raise Exception("No fields found")
+
+            if addAll:
+
+                fieldStatement = fieldSet
 
         if len(addLinkedContactFields)>0:
 
