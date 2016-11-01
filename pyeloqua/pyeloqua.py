@@ -148,6 +148,9 @@ class Eloqua(object):
         if (len(addLinkedContactFields)>0 and entity!='customObjects'):
             raise Exception('Linked contact fields may only be included for CDO exports')
 
+        if (len(addLinkedAccountFields)>0 and entity!='contacts'):
+            raise Exception('Linked account fields may only be included for contact exports')
+
         fieldStatement = {}
 
         if (entity=='contacts' and leadScoreModelId>0):

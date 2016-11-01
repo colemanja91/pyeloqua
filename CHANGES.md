@@ -1,6 +1,7 @@
 ## TBD v0.X.X
 - BUGFIX: now allows creation of field statements passing only `addSystemContactFields` or `addLinkedContactFields`
 - FEATURE: new parameter for `CreateFieldStatement`, `addAll` - adds all fields from entity to output field set (default=`False`)
+- FEATURE: new parameter for `CreateFieldStatement`, `addLinkedAccountFields` - adds specified account fields to export of contact data
 
 ## 2016-10-07 v0.2.91
 - HOTFIX: Set "ensure_ascii" parameter of json.dumps = False and encode = 'utf8'; was causing problems with imports
