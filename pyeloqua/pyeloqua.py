@@ -135,7 +135,7 @@ class Eloqua(object):
 
         """
 
-        if (entity in ['contacts', 'customObjects', 'accounts'] and fields == '' and len(addSystemFields)==0):
+        if (entity in ['contacts', 'customObjects', 'accounts'] and fields == '' and len(addSystemContactFields)==0 and len(addLinkedContactFields)==0 and len(addSystemFields)==0):
             raise Exception('Please specify one or more entity or system fields')
 
         if (len(addSystemFields)>0):
