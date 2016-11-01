@@ -180,7 +180,7 @@ class Eloqua(object):
                     else:
                         raise ValueError("System field not recognized: " + field)
 
-            if len(fieldSet)>0:
+            if len(fieldSet)>0 or addAll:
                 for field in fieldSet:
                     if useInternalName:
                         fieldStatement[field['internalName']] = field['statement']
@@ -188,10 +188,6 @@ class Eloqua(object):
                         fieldStatement[field['name']] = field['statement']
             else:
                 raise Exception("No fields found")
-
-            if addAll:
-
-                fieldStatement = fieldSet
 
         if len(addLinkedContactFields)>0:
 
