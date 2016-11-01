@@ -115,7 +115,7 @@ class Eloqua(object):
 
     def CreateFieldStatement(self, entity, fields = '', cdoID = 0, useInternalName=True, addSystemFields=[],
                              addActivityFields=[], activityType='', leadScoreModelId = 0, addSystemContactFields=[],
-                             addLinkedContactFields=[], addAll = False):
+                             addLinkedContactFields=[], addLinkedAccountFields=[], addAll = False):
 
         """
             Given a set of field names, create a "fields" statement for use in Bulk import/export definitions
@@ -132,10 +132,11 @@ class Eloqua(object):
             * leadScoreModelId -- add lead score model fields to contact export
             * addSystemContactFields -- List of system fields to include in statement relative to [linked] contacts; see CONTACT_SYSTEM_FIELDS
             * addLinkedContactFields -- List of fields to add in CDO record exports
+            * addLinkedAccountFields -- List of fields to add in Contact record exports
             * addAll -- ALL OF THE THINGS!!!!
         """
 
-        if (entity in ['contacts', 'customObjects', 'accounts'] and fields == '' and len(addSystemContactFields)==0 and len(addLinkedContactFields)==0 and len(addSystemFields)==0 and not addAll):
+        if (entity in ['contacts', 'customObjects', 'accounts'] and fields == '' and len(addSystemContactFields)==0 and len(addLinkedContactFields)==0 and len(addSystemFields)==0 and len(addLinkedAccountFields)==0 and not addAll):
             raise Exception('Please specify one or more entity or system fields, or specify \'addAll\'==True')
 
         if (len(addSystemFields)>0):
@@ -146,6 +147,9 @@ class Eloqua(object):
 
         if (len(addLinkedContactFields)>0 and entity!='customObjects'):
             raise Exception('Linked contact fields may only be included for CDO exports')
+
+        if (len(addLinkedAccountFields)>0 and entity!='contacts'):
+            raise Exception('Linked account fields may only be included for contact exports')
 
         fieldStatement = {}
 
@@ -179,7 +183,7 @@ class Eloqua(object):
                     else:
                         raise ValueError("System field not recognized: " + field)
 
-            if len(fieldSet)>0:
+            if len(fieldSet)>0 or addAll:
                 for field in fieldSet:
                     if useInternalName:
                         fieldStatement[field['internalName']] = field['statement']
@@ -188,10 +192,6 @@ class Eloqua(object):
             else:
                 raise Exception("No fields found")
 
-            if addAll:
-
-                fieldStatement = fieldSet
-
         if len(addLinkedContactFields)>0:
 
             linkedContactFields = self.CreateFieldStatement(entity='contacts', fields=addLinkedContactFields)
@@ -199,6 +199,14 @@ class Eloqua(object):
             for field in linkedContactFields:
                 linkedContactFields[field] = linkedContactFields[field].replace('{{Contact.', '{{CustomObject[%s].Contact.') % cdoID
                 fieldStatement.update(linkedContactFields)
+
+        if len(addLinkedAccountFields)>0:
+
+            linkedAccountFields = self.CreateFieldStatement(entity='accounts', fields=addLinkedAccountFields)
+
+            for field in linkedAccountFields:
+                linkedAccountFields[field] = linkedAccountFields[field].replace('{{Account.', '{{Contact.Account.')
+                fieldStatement.update(linkedAccountFields)
 
         return fieldStatement
 
