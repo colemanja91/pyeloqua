@@ -1,4 +1,4 @@
-## TBD v0.X.X
+## 2016-11-01 v0.3.0
 - BUGFIX: `CreateFieldStatement` now allows creation of field statements passing only `addSystemContactFields` or `addLinkedContactFields`
 - FEATURE: new parameter for `CreateFieldStatement`, `addAll` - adds all fields from entity to output field set (default=`False`)
 - FEATURE: new parameter for `CreateFieldStatement`, `addLinkedAccountFields` - adds specified account fields to export of contact data
