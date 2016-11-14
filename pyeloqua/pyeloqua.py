@@ -175,7 +175,7 @@ class Eloqua(object):
                 raise ValueError("Invalid activity type: " + activityType)
         else:
 
-            if type(fields).__name__=='list':
+            if type(fields).__name__ in ['list', 'str']:
                 fieldSet = self.GetFields(entity = entity, fields = fields, cdoID = cdoID)
             elif type(fields).__name__=='dict':
                 fieldSet = self.GetFields(entity = entity, fields = fields.values(), cdoID = cdoID)
