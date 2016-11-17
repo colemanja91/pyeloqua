@@ -188,7 +188,7 @@ class Eloqua(object):
                         raise ValueError("System field not recognized: " + field)
 
             if len(fieldSet)>0 or addAll:
-                if type(fields).__name__=='list':
+                if type(fields).__name__ in ['list', 'str']:
                     for field in fieldSet:
                         if useInternalName:
                             fieldStatement[field['internalName']] = field['statement']
@@ -200,6 +200,12 @@ class Eloqua(object):
                             if fields[field]==row['internalName'] or fields[field]==row['name']:
                                 fieldStatement[field] = row['statement']
                                 break
+                elif fields=='' and addAll:
+                    for field in fieldSet:
+                        if useInternalName:
+                            fieldStatement[field['internalName']] = field['statement']
+                        else:
+                            fieldStatement[field['name']] = field['statement']
 
             else:
                 raise Exception("No fields found")
