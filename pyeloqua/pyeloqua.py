@@ -188,7 +188,7 @@ class Eloqua(object):
                         raise ValueError("System field not recognized: " + field)
 
             if len(fieldSet)>0 or addAll:
-                if type(fields).__name__=='list':
+                if type(fields).__name__ in ['list', 'str']:
                     for field in fieldSet:
                         if useInternalName:
                             fieldStatement[field['internalName']] = field['statement']
@@ -200,6 +200,12 @@ class Eloqua(object):
                             if fields[field]==row['internalName'] or fields[field]==row['name']:
                                 fieldStatement[field] = row['statement']
                                 break
+                elif fields=='' and addAll:
+                    for field in fieldSet:
+                        if useInternalName:
+                            fieldStatement[field['internalName']] = field['statement']
+                        else:
+                            fieldStatement[field['name']] = field['statement']
 
             else:
                 raise Exception("No fields found")
@@ -964,3 +970,36 @@ class Eloqua(object):
         req = requests.delete(uri, auth=self.auth)
 
         return req.status_code
+
+    def GetAssetSize(self, assetType, name):
+        """
+            Returns the count of contacts in a given shared list
+
+            Arguments:
+            * assetType -- one of: sharedList
+            * name -- name of the asset
+        """
+
+        name1 = name.replace(' ', '*')
+
+        if assetType not in ['sharedList']:
+            raise ValueError("Please choose a valid 'assetType' value: 'sharedList'")
+
+        if assetType=='sharedList':
+            url = self.bulkBase + '/contacts/lists?q="name=' + name1 + '"'
+
+        req = requests.get(url, auth = self.auth)
+
+        if req.json()['totalResults']==1:
+            count = req.json()['items'][0]['count']
+        elif req.json()['totalResults']>1:
+            for item in req.json()['items']:
+                if item['name']==name:
+                    asset = item
+                    break
+
+            count = item['count']
+        else:
+            raise Exception("No matching " + assetType + " found")
+
+        return int(count)
