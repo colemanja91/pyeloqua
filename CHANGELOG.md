@@ -1,3 +1,6 @@
+## 2016-11-17 v0.3.2
+- BUGFIX: Now `CreateFieldStatement` works in many circumstances, passing a single field as string, a dict of fields, or a list of fields, or passing a blank value `''` and specifying `addAll=True`
+
 ## 2016-11-14 v0.3.1
 - BUGFIX: fixed `CreateFieldStatement`
 
