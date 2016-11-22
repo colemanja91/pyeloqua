@@ -50,3 +50,13 @@ def test_GetFields_GetContactFieldsByName(mock_get):
     mock_get.return_value.json.return_value = contactFieldsResponse
     x = elq.GetFields(entity='contacts', fields = ['Email Address', 'First Name', 'Last Name', 'Company'])
     assert_list_equal(x, contactFieldsResult)
+
+@patch('pyeloqua.pyeloqua.requests.get')
+def test_GetFields_GetContactFieldsByInternalName(mock_get):
+    mock_get.return_value = Mock(ok=True, status_code=200)
+    mock_get.return_value.json.return_value = elqLogin
+    elq = Eloqua(company = 'test', username = 'test', password = 'test')
+    mock_get.return_value = Mock(ok=True, status_code=200)
+    mock_get.return_value.json.return_value = contactFieldsResponse
+    x = elq.GetFields(entity='contacts', fields = ['C_EmailAddress', 'C_FirstName', 'C_LastName', 'C_Company'])
+    assert_list_equal(x, contactFieldsResult)
