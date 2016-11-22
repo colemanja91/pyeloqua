@@ -65,3 +65,10 @@ def test_EloquaInit_SetUserID(mock_get):
     mock_get.return_value.json.return_value = elqLogin
     elq = Eloqua(company = 'test', username = 'test', password = 'test')
     assert elq.userId == 111
+
+@patch('pyeloqua.pyeloqua.requests.get')
+def test_EloquaInit_SetUserDisplay(mock_get):
+    mock_get.return_value = Mock(ok=True, status_code=200)
+    mock_get.return_value.json.return_value = elqLogin
+    elq = Eloqua(company = 'test', username = 'test', password = 'test')
+    assert elq.userDisplay == 'testing mctestface'
