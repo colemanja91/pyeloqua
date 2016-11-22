@@ -93,3 +93,10 @@ def test_EloquaInit_SetRestBase(mock_get):
     mock_get.return_value.json.return_value = elqLogin
     elq = Eloqua(company = 'test', username = 'test', password = 'test')
     assert elq.restBase == 'https://secure.p01.eloqua.com/API/REST/2.0/'
+
+@patch('pyeloqua.pyeloqua.requests.get')
+def test_EloquaInit_SetBulkBase(mock_get):
+    mock_get.return_value = Mock(ok=True, status_code=200)
+    mock_get.return_value.json.return_value = elqLogin
+    elq = Eloqua(company = 'test', username = 'test', password = 'test')
+    assert elq.bulkBase == 'https://secure.p01.eloqua.com/API/Bulk/2.0/'
