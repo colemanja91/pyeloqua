@@ -79,3 +79,10 @@ def test_EloquaInit_SetURLBase(mock_get):
     mock_get.return_value.json.return_value = elqLogin
     elq = Eloqua(company = 'test', username = 'test', password = 'test')
     assert elq.urlBase == 'https://secure.p01.eloqua.com'
+
+@patch('pyeloqua.pyeloqua.requests.get')
+def test_EloquaInit_SetSiteID(mock_get):
+    mock_get.return_value = Mock(ok=True, status_code=200)
+    mock_get.return_value.json.return_value = elqLogin
+    elq = Eloqua(company = 'test', username = 'test', password = 'test')
+    assert elq.siteId == 1234
