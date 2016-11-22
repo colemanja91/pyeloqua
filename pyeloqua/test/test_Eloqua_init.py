@@ -3,6 +3,7 @@ from mock import patch, Mock
 
 import requests
 from pyeloqua import Eloqua
+from .test_successfulInit import elqLogin
 
 # Test basic functions around Eloqua class
 @raises(Exception)
@@ -28,4 +29,11 @@ def test_EloquaInit_NotAuthenticated(mock_get):
 @raises(Exception)
 def test_EloquaInit_UnknownAPIError(mock_get):
     mock_get.return_value = Mock(ok=True, status_code=500)
-    elq = Eloqua(company = 'test', username = 'test', password = 'badtest')
+    elq = Eloqua(company = 'test', username = 'test', password = 'test')
+
+@patch('pyeloqua.pyeloqua.requests.get')
+def test_EloquaInit_SetUsername(mock_get):
+    mock_get.return_value = Mock(ok=True, status_code=200)
+    mock_get.return_value.json.return_value = elqLogin
+    elq = Eloqua(company = 'test', username = 'test', password = 'test')
+    assert elq.username == 'test'
