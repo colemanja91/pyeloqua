@@ -22,4 +22,4 @@ def test_EloquaInit_MissingPassword():
 def test_EloquaInit_NotAuthenticated(mock_get):
     mock_get.return_value = Mock(ok=True, status_code=200)
     mock_get.return_value.json.return_value = "Not authenticated."
-    elq = Eloqua(company = 'test', username = 'test', password = 'test')
+    elq = Eloqua(company = 'test', username = 'test', password = 'badtest')
