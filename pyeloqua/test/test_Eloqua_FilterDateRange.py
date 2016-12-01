@@ -4,7 +4,7 @@ from mock import patch, Mock
 import requests
 from pyeloqua import Eloqua
 from .test_successfulInit import elqLogin
-from .test_Eloqua_FilterExists_response import filterResultOne, filterResultNone, filterResultMany
+from .test_Eloqua_FilterDateRange_response import dateType, notDateType
 
 @patch('pyeloqua.pyeloqua.requests.get')
 @raises(Exception)
@@ -85,3 +85,23 @@ def test_FilterDateRange_ContactsUpdatedAt(mock_get):
     elq = Eloqua(company = 'test', username = 'test', password = 'test')
     x = elq.FilterDateRange(entity='contacts', field='updatedAt', start='2016-10-10 01:00:00', end='2016-10-11 01:00:00')
     assert x==" '{{Contact.UpdatedAt}}' >= '2016-10-10 01:00:00'  AND  '{{Contact.UpdatedAt}}' <= '2016-10-11 01:00:00' "
+
+@patch('pyeloqua.pyeloqua.requests.get')
+def test_FilterDateRange_ContactsDateType(mock_get):
+    mock_get.return_value = Mock(ok=True, status_code=200)
+    mock_get.return_value.json.return_value = elqLogin
+    elq = Eloqua(company = 'test', username = 'test', password = 'test')
+    mock_get.return_value = Mock(ok=True, status_code=200)
+    mock_get.return_value.json.return_value = dateType
+    x = elq.FilterDateRange(entity='contacts', field='Date Type', start='2016-10-10 01:00:00', end='2016-10-11 01:00:00')
+    assert x==" '{{Contact.Field(C_Date_Type)}}' >= '2016-10-10 01:00:00'  AND  '{{Contact.Field(C_Date_Type)}}' <= '2016-10-11 01:00:00' "
+
+@patch('pyeloqua.pyeloqua.requests.get')
+@raises(Exception)
+def test_FilterDateRange_ContactsNotDateType(mock_get):
+    mock_get.return_value = Mock(ok=True, status_code=200)
+    mock_get.return_value.json.return_value = elqLogin
+    elq = Eloqua(company = 'test', username = 'test', password = 'test')
+    mock_get.return_value = Mock(ok=True, status_code=200)
+    mock_get.return_value.json.return_value = notDateType
+    x = elq.FilterDateRange(entity='contacts', field='Email Address', start='2016-10-10 01:00:00', end='2016-10-11 01:00:00')
