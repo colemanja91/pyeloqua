@@ -382,11 +382,16 @@ class Eloqua(object):
         if (entity == 'activities'):
             field = 'ActivityDate'
 
-        try:
-            test1 = datetime.strptime(start, '%Y-%m-%d %H:%M:%S')
-            test2 = datetime.strptime(end, '%Y-%m-%d %H:%M:%S')
-        except:
-            raise ValueError("Invalid datetime format; use 'YYYY-MM-DD hh:mm:ss'")
+        if start!='':
+            try:
+                test1 = datetime.strptime(start, '%Y-%m-%d %H:%M:%S')
+            except:
+                raise ValueError("Invalid datetime format for 'start'; use 'YYYY-MM-DD hh:mm:ss'")
+        if end!='':
+            try:
+                test2 = datetime.strptime(end, '%Y-%m-%d %H:%M:%S')
+            except:
+                raise ValueError("Invalid datetime format for 'end'; use 'YYYY-MM-DD hh:mm:ss'")
 
         if (entity!='activities' and field not in ['createdAt', 'updatedAt']):
             fieldDef = self.GetFields(entity=entity, fields=[field], cdoID=cdoID)
