@@ -388,7 +388,7 @@ class Eloqua(object):
         except:
             raise ValueError("Invalid datetime format; use 'YYYY-MM-DD hh:mm:ss'")
 
-        if (entity!='activities' or (entity in ['contacts', 'accounts'] and field in ['createdAt', 'updatedAt'])):
+        if (entity!='activities' or (entity in ['contacts', 'accounts'] and field not in ['createdAt', 'updatedAt'])):
             fieldDef = self.GetFields(entity=entity, fields=[field], cdoID=cdoID)
 
             if (fieldDef[0]['dataType'] != 'date'):
