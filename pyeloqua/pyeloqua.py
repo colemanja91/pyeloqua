@@ -384,7 +384,7 @@ class Eloqua(object):
 
         try:
             test1 = datetime.strptime(start, '%Y-%m-%d %H:%M:%S')
-            test2 = datetime.strptime(start, '%Y-%m-%d %H:%M:%S')
+            test2 = datetime.strptime(end, '%Y-%m-%d %H:%M:%S')
         except:
             raise ValueError("Invalid datetime format; use 'YYYY-MM-DD hh:mm:ss'")
 
