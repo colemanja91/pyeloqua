@@ -63,6 +63,15 @@ def test_CreateDef_ImportsTooManySyncAction(mock_get):
     elq = Eloqua(company = 'test', username = 'test', password = 'test')
     x = elq.CreateDef(defType='imports', entity='contacts', fields={'test': 'test'}, syncActions=range(2))
 
+@patch('pyeloqua.pyeloqua.requests.get')
+@raises(Exception)
+def test_CreateDef_CdoTooManyFields(mock_get):
+    fields = dict((i, i) for i in range(101))
+    mock_get.return_value = Mock(ok=True, status_code=200)
+    mock_get.return_value.json.return_value = elqLogin
+    elq = Eloqua(company = 'test', username = 'test', password = 'test')
+    x = elq.CreateDef(defType='imports', entity='customObjects', fields=fields, cdoID=1)
+
 # @patch('pyeloqua.pyeloqua.requests.get')
 # def test_GetCdoId_OneMatchFound(mock_get):
 #     mock_get.return_value = Mock(ok=True, status_code=200)
