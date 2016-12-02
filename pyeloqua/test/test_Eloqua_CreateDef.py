@@ -70,7 +70,35 @@ def test_CreateDef_CdoTooManyFields(mock_get):
     mock_get.return_value = Mock(ok=True, status_code=200)
     mock_get.return_value.json.return_value = elqLogin
     elq = Eloqua(company = 'test', username = 'test', password = 'test')
-    x = elq.CreateDef(defType='imports', entity='customObjects', fields=fields, cdoID=1)
+    x = elq.CreateDef(defType='exports', entity='customObjects', fields=fields, cdoID=1)
+
+@patch('pyeloqua.pyeloqua.requests.get')
+@raises(Exception)
+def test_CreateDef_ContactsTooManyFields(mock_get):
+    fields = dict((i, i) for i in range(251))
+    mock_get.return_value = Mock(ok=True, status_code=200)
+    mock_get.return_value.json.return_value = elqLogin
+    elq = Eloqua(company = 'test', username = 'test', password = 'test')
+    x = elq.CreateDef(defType='exports', entity='contacts', fields=fields)
+
+@patch('pyeloqua.pyeloqua.requests.get')
+@raises(Exception)
+def test_CreateDef_AccountsTooManyFields(mock_get):
+    fields = dict((i, i) for i in range(101))
+    mock_get.return_value = Mock(ok=True, status_code=200)
+    mock_get.return_value.json.return_value = elqLogin
+    elq = Eloqua(company = 'test', username = 'test', password = 'test')
+    x = elq.CreateDef(defType='exports', entity='accounts', fields=fields)
+
+@patch('pyeloqua.pyeloqua.requests.get')
+@raises(Exception)
+def test_CreateDef_ActivitiesMissingType(mock_get):
+    mock_get.return_value = Mock(ok=True, status_code=200)
+    mock_get.return_value.json.return_value = elqLogin
+    elq = Eloqua(company = 'test', username = 'test', password = 'test')
+    x = elq.CreateDef(defType='exports', entity='activities', fields={'test': 'test'})
+
+
 
 # @patch('pyeloqua.pyeloqua.requests.get')
 # def test_GetCdoId_OneMatchFound(mock_get):
