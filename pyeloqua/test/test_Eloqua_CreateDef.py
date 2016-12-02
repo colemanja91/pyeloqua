@@ -14,6 +14,55 @@ def test_CreateDef_BadDefType(mock_get):
     elq = Eloqua(company = 'test', username = 'test', password = 'test')
     x = elq.CreateDef(defType='bad', entity='contacts', fields={'test': 'test'})
 
+@patch('pyeloqua.pyeloqua.requests.get')
+@raises(Exception)
+def test_CreateDef_NoFields(mock_get):
+    mock_get.return_value = Mock(ok=True, status_code=200)
+    mock_get.return_value.json.return_value = elqLogin
+    elq = Eloqua(company = 'test', username = 'test', password = 'test')
+    x = elq.CreateDef(defType='exports', entity='contacts', fields={})
+
+@patch('pyeloqua.pyeloqua.requests.get')
+@raises(Exception)
+def test_CreateDef_ImportsTooManyFields(mock_get):
+    fields = dict((i, i) for i in range(101))
+    mock_get.return_value = Mock(ok=True, status_code=200)
+    mock_get.return_value.json.return_value = elqLogin
+    elq = Eloqua(company = 'test', username = 'test', password = 'test')
+    x = elq.CreateDef(defType='imports', entity='contacts', fields=fields)
+
+@patch('pyeloqua.pyeloqua.requests.get')
+@raises(Exception)
+def test_CreateDef_BadEntity(mock_get):
+    mock_get.return_value = Mock(ok=True, status_code=200)
+    mock_get.return_value.json.return_value = elqLogin
+    elq = Eloqua(company = 'test', username = 'test', password = 'test')
+    x = elq.CreateDef(defType='exports', entity='bad', fields={'test': 'test'})
+
+@patch('pyeloqua.pyeloqua.requests.get')
+@raises(Exception)
+def test_CreateDef_BadActivitySyncAction(mock_get):
+    mock_get.return_value = Mock(ok=True, status_code=200)
+    mock_get.return_value.json.return_value = elqLogin
+    elq = Eloqua(company = 'test', username = 'test', password = 'test')
+    x = elq.CreateDef(defType='exports', entity='activities', fields={'test': 'test'}, syncActions=range(11))
+
+@patch('pyeloqua.pyeloqua.requests.get')
+@raises(Exception)
+def test_CreateDef_ExportsTooManySyncAction(mock_get):
+    mock_get.return_value = Mock(ok=True, status_code=200)
+    mock_get.return_value.json.return_value = elqLogin
+    elq = Eloqua(company = 'test', username = 'test', password = 'test')
+    x = elq.CreateDef(defType='exports', entity='contacts', fields={'test': 'test'}, syncActions=range(11))
+
+@patch('pyeloqua.pyeloqua.requests.get')
+@raises(Exception)
+def test_CreateDef_ImportsTooManySyncAction(mock_get):
+    mock_get.return_value = Mock(ok=True, status_code=200)
+    mock_get.return_value.json.return_value = elqLogin
+    elq = Eloqua(company = 'test', username = 'test', password = 'test')
+    x = elq.CreateDef(defType='imports', entity='contacts', fields={'test': 'test'}, syncActions=range(2))
+
 # @patch('pyeloqua.pyeloqua.requests.get')
 # def test_GetCdoId_OneMatchFound(mock_get):
 #     mock_get.return_value = Mock(ok=True, status_code=200)
