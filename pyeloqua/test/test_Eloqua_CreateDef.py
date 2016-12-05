@@ -4,7 +4,7 @@ from mock import patch, Mock
 import requests
 from pyeloqua import Eloqua
 from .test_successfulInit import elqLogin
-from .test_Eloqua_GetCdoId_response import cdoResultOne, cdoResultNone, cdoResultMany
+from .test_Eloqua_CreateDef_response import export_activity
 
 @patch('pyeloqua.pyeloqua.requests.get')
 @raises(Exception)
@@ -99,13 +99,28 @@ def test_CreateDef_ActivitiesMissingType(mock_get):
     x = elq.CreateDef(defType='exports', entity='activities', fields={'test': 'test'})
 
 @patch('pyeloqua.pyeloqua.requests.get')
-def test_CreateDef_Export_Activities(mock_get):
+@patch('pyeloqua.pyeloqua.requests.post')
+def test_CreateDef_Export_Activities(mock_post, mock_get):
+    fields = {"ActivityId":"{{Activity.Id}}"}
     mock_get.return_value = Mock(ok=True, status_code=200)
     mock_get.return_value.json.return_value = elqLogin
     elq = Eloqua(company = 'test', username = 'test', password = 'test')
-    x = elq.CreateDef(defType='exports', entity='activities', activityType='EmailSend', fields={'test': 'test'})
+    mock_post.return_value = Mock(ok=True, status_code=201)
+    mock_post.return_value.json.return_value = export_activity
+    x = elq.CreateDef(defType='exports', entity='activities', activityType='EmailSend', fields=fields)
+    assert x['id']=="/activities/exports/1234"
 
-
+@patch('pyeloqua.pyeloqua.requests.get')
+@patch('pyeloqua.pyeloqua.requests.post')
+def test_CreateDef_Export_Contacts(mock_post, mock_get):
+    fields = {"ActivityId":"{{Activity.Id}}"}
+    mock_get.return_value = Mock(ok=True, status_code=200)
+    mock_get.return_value.json.return_value = elqLogin
+    elq = Eloqua(company = 'test', username = 'test', password = 'test')
+    mock_post.return_value = Mock(ok=True, status_code=201)
+    mock_post.return_value.json.return_value = export_activity
+    x = elq.CreateDef(defType='exports', entity='contacts', fields=fields)
+    assert x['id']=="/activities/exports/1234"
 
 # @patch('pyeloqua.pyeloqua.requests.get')
 # def test_GetCdoId_OneMatchFound(mock_get):
