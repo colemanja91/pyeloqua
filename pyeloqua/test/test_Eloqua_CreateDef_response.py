@@ -90,3 +90,19 @@ import_customobjects = {
     "updatedBy":"Test.User",
     "updatedAt":"2015-01-01T11:09:00.0000004Z"
 }
+
+
+bad_import = {
+  "failures": [
+    {
+      "field": "BadField",
+      "stackTrace": [
+        {
+          "field": "fields"
+        }
+      ],
+      "value": "{{Contact.Field(C_BadField)}}",
+      "constraint": "Must be a reference to an existing object."
+    }
+  ]
+}

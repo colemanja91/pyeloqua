@@ -4,7 +4,7 @@ from mock import patch, Mock
 import requests
 from pyeloqua import Eloqua
 from .test_successfulInit import elqLogin
-from .test_Eloqua_CreateDef_response import export_activity, export_contacts, export_accounts, export_customobjects, import_contacts, import_accounts, import_customobjects
+from .test_Eloqua_CreateDef_response import export_activity, export_contacts, export_accounts, export_customobjects, import_contacts, import_accounts, import_customobjects, bad_import
 
 @patch('pyeloqua.pyeloqua.requests.get')
 @raises(Exception)
@@ -221,6 +221,17 @@ def test_CreateDef_Import_CustomObjects(mock_post, mock_get):
     x = elq.CreateDef(defType='imports', entity='customObjects', cdoID=1, defName='test', fields=fields)
     assert x['uri']=="/customObjects/1/imports/1234"
 
+@patch('pyeloqua.pyeloqua.requests.get')
+@patch('pyeloqua.pyeloqua.requests.post')
+@raises(Exception)
+def test_CreateDef_Invalid(mock_post, mock_get):
+    fields = {"BadField": "{{Contact.Field(C_BadField)}}"}
+    mock_get.return_value = Mock(ok=True, status_code=200)
+    mock_get.return_value.json.return_value = elqLogin
+    elq = Eloqua(company = 'test', username = 'test', password = 'test')
+    mock_post.return_value = Mock(ok=True, status_code=400)
+    mock_post.return_value.json.return_value = bad_import
+    x = elq.CreateDef(defType='imports', entity='contacts', defName='test', fields=fields)
 
 # @patch('pyeloqua.pyeloqua.requests.get')
 # def test_GetCdoId_OneMatchFound(mock_get):
