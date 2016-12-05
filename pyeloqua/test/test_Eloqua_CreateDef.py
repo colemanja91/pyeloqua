@@ -98,6 +98,13 @@ def test_CreateDef_ActivitiesMissingType(mock_get):
     elq = Eloqua(company = 'test', username = 'test', password = 'test')
     x = elq.CreateDef(defType='exports', entity='activities', fields={'test': 'test'})
 
+@patch('pyeloqua.pyeloqua.requests.get')
+def test_CreateDef_Export_Activities(mock_get):
+    mock_get.return_value = Mock(ok=True, status_code=200)
+    mock_get.return_value.json.return_value = elqLogin
+    elq = Eloqua(company = 'test', username = 'test', password = 'test')
+    x = elq.CreateDef(defType='exports', entity='activities', activityType='EmailSend', fields={'test': 'test'})
+
 
 
 # @patch('pyeloqua.pyeloqua.requests.get')
