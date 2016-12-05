@@ -4,7 +4,7 @@ from mock import patch, Mock
 import requests
 from pyeloqua import Eloqua
 from .test_successfulInit import elqLogin
-from .test_Eloqua_CreateDef_response import export_activity
+from .test_Eloqua_CreateDef_response import export_activity, export_contacts
 
 @patch('pyeloqua.pyeloqua.requests.get')
 @raises(Exception)
@@ -108,7 +108,7 @@ def test_CreateDef_Export_Activities(mock_post, mock_get):
     mock_post.return_value = Mock(ok=True, status_code=201)
     mock_post.return_value.json.return_value = export_activity
     x = elq.CreateDef(defType='exports', entity='activities', activityType='EmailSend', fields=fields)
-    assert x['id']=="/activities/exports/1234"
+    assert x['uri']=="/activities/exports/1234"
 
 @patch('pyeloqua.pyeloqua.requests.get')
 @patch('pyeloqua.pyeloqua.requests.post')
@@ -118,9 +118,9 @@ def test_CreateDef_Export_Contacts(mock_post, mock_get):
     mock_get.return_value.json.return_value = elqLogin
     elq = Eloqua(company = 'test', username = 'test', password = 'test')
     mock_post.return_value = Mock(ok=True, status_code=201)
-    mock_post.return_value.json.return_value = export_activity
+    mock_post.return_value.json.return_value = export_contacts
     x = elq.CreateDef(defType='exports', entity='contacts', fields=fields)
-    assert x['id']=="/activities/exports/1234"
+    assert x['uri']=="/contacts/exports/1234"
 
 # @patch('pyeloqua.pyeloqua.requests.get')
 # def test_GetCdoId_OneMatchFound(mock_get):
