@@ -113,7 +113,7 @@ def test_CreateDef_Export_Activities(mock_post, mock_get):
 @patch('pyeloqua.pyeloqua.requests.get')
 @patch('pyeloqua.pyeloqua.requests.post')
 def test_CreateDef_Export_Contacts(mock_post, mock_get):
-    fields = {"ActivityId":"{{Activity.Id}}"}
+    fields = {"EmailAddress": "{{Contact.Field(C_EmailAddress)}}"}
     mock_get.return_value = Mock(ok=True, status_code=200)
     mock_get.return_value.json.return_value = elqLogin
     elq = Eloqua(company = 'test', username = 'test', password = 'test')
@@ -125,7 +125,7 @@ def test_CreateDef_Export_Contacts(mock_post, mock_get):
 @patch('pyeloqua.pyeloqua.requests.get')
 @patch('pyeloqua.pyeloqua.requests.post')
 def test_CreateDef_Export_Accounts(mock_post, mock_get):
-    fields = {"ActivityId":"{{Activity.Id}}"}
+    fields = {"AccountName":"{{Account.Field(M_CompanyName)}}"}
     mock_get.return_value = Mock(ok=True, status_code=200)
     mock_get.return_value.json.return_value = elqLogin
     elq = Eloqua(company = 'test', username = 'test', password = 'test')
@@ -136,14 +136,53 @@ def test_CreateDef_Export_Accounts(mock_post, mock_get):
 
 @patch('pyeloqua.pyeloqua.requests.get')
 @patch('pyeloqua.pyeloqua.requests.post')
-def test_CreateDef_Export_CustomObjests(mock_post, mock_get):
-    fields = {"ActivityId":"{{Activity.Id}}"}
+def test_CreateDef_Export_CustomObjects(mock_post, mock_get):
+    fields = {"ID":"{{CustomObject[1].ExternalId}}"}
     mock_get.return_value = Mock(ok=True, status_code=200)
     mock_get.return_value.json.return_value = elqLogin
     elq = Eloqua(company = 'test', username = 'test', password = 'test')
     mock_post.return_value = Mock(ok=True, status_code=201)
     mock_post.return_value.json.return_value = export_customobjects
     x = elq.CreateDef(defType='exports', entity='customObjects', cdoID=1, defName='test', fields=fields)
+    assert x['uri']=="/customObjects/1/exports/1234"
+
+@patch('pyeloqua.pyeloqua.requests.get')
+@patch('pyeloqua.pyeloqua.requests.post')
+def test_CreateDef_Export_Filter_Contacts(mock_post, mock_get):
+    fields = {"EmailAddress": "{{Contact.Field(C_EmailAddress)}}"}
+    filters = " '{{Contact.Field(C_EmailAddress)}}' = 'test@test.com' "
+    mock_get.return_value = Mock(ok=True, status_code=200)
+    mock_get.return_value.json.return_value = elqLogin
+    elq = Eloqua(company = 'test', username = 'test', password = 'test')
+    mock_post.return_value = Mock(ok=True, status_code=201)
+    mock_post.return_value.json.return_value = export_contacts
+    x = elq.CreateDef(defType='exports', entity='contacts', defName='test', fields=fields, filters=filters)
+    assert x['uri']=="/contacts/exports/1234"
+
+@patch('pyeloqua.pyeloqua.requests.get')
+@patch('pyeloqua.pyeloqua.requests.post')
+def test_CreateDef_Export_Filter_Accounts(mock_post, mock_get):
+    fields = {"AccountName":"{{Account.Field(M_CompanyName)}}"}
+    filters = " '{{Account.Field(M_CompanyName)}}' = 'Test company' "
+    mock_get.return_value = Mock(ok=True, status_code=200)
+    mock_get.return_value.json.return_value = elqLogin
+    elq = Eloqua(company = 'test', username = 'test', password = 'test')
+    mock_post.return_value = Mock(ok=True, status_code=201)
+    mock_post.return_value.json.return_value = export_accounts
+    x = elq.CreateDef(defType='exports', entity='accounts', defName='test', fields=fields, filters=filters)
+    assert x['uri']=="/accounts/exports/1234"
+
+@patch('pyeloqua.pyeloqua.requests.get')
+@patch('pyeloqua.pyeloqua.requests.post')
+def test_CreateDef_Export_Filter_CustomObjects(mock_post, mock_get):
+    fields = {"ID":"{{CustomObject[1].ExternalId}}"}
+    filters = " '{{CustomObject[1].ExternalId}}' = '1234' "
+    mock_get.return_value = Mock(ok=True, status_code=200)
+    mock_get.return_value.json.return_value = elqLogin
+    elq = Eloqua(company = 'test', username = 'test', password = 'test')
+    mock_post.return_value = Mock(ok=True, status_code=201)
+    mock_post.return_value.json.return_value = export_customobjects
+    x = elq.CreateDef(defType='exports', entity='customObjects', cdoID=1, defName='test', fields=fields, filters=filters)
     assert x['uri']=="/customObjects/1/exports/1234"
 
 # @patch('pyeloqua.pyeloqua.requests.get')
