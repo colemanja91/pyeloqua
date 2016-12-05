@@ -24,3 +24,16 @@ export_contacts = {
     "updatedBy":"Test.User",
     "updatedAt":"2015-01-01T11:09:00.0000004Z"
 }
+
+export_accounts = {
+    "name":"test",
+    "fields":{
+        "AccountName":"{{Account.Field(M_CompanyName)}}"
+    },
+    "dataRetentionDuration":"P7D",
+    "uri":"/accounts/exports/1234",
+    "createdBy":"Test.User",
+    "createdAt":"2015-01-01T11:09:00.0000004Z",
+    "updatedBy":"Test.User",
+    "updatedAt":"2015-01-01T11:09:00.0000004Z"
+}
