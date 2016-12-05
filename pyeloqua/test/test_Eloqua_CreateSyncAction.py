@@ -5,7 +5,7 @@ import requests
 from pyeloqua import Eloqua
 from .test_successfulInit import elqLogin
 from .test_Eloqua_FilterExists_response import filterResultMany, filterResultNone, filterResultOne
-from .test_Eloqua_CreateSyncAction_response import contact_addList, contact_removeList, account_addList, account_removeList, AccountListResultOne
+from .test_Eloqua_CreateSyncAction_response import contact_addList, contact_removeList, account_addList, account_removeList, AccountListResultOne, dest_setStatus
 
 @patch('pyeloqua.pyeloqua.requests.get')
 @raises(Exception)
@@ -90,3 +90,11 @@ def test_CreateSyncAction_Remove_Accounts_ListOne(mock_get):
     mock_get.return_value.json.return_value = AccountListResultOne
     x = elq.CreateSyncAction(action='remove', listName='test', listType='accounts')
     assert x==account_removeList
+
+@patch('pyeloqua.pyeloqua.requests.get')
+def test_CreateSyncAction_SetStatus(mock_get):
+    mock_get.return_value = Mock(ok=True, status_code=200)
+    mock_get.return_value.json.return_value = elqLogin
+    elq = Eloqua(company = 'test', username = 'test', password = 'test')
+    x = elq.CreateSyncAction(action='setStatus', destination="{{DecisionInstance(abcdefghijklmnopqrstuvwxyz).Execution[12345]}}", status="no")
+    assert x==dest_setStatus

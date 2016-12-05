@@ -37,3 +37,9 @@ AccountListResultOne = {
   "count": 1,
   "hasMore": False
 }
+
+dest_setStatus = {
+    "action": "setStatus",
+    "status": "no",
+    "destination": "{{DecisionInstance(abcdefghijklmnopqrstuvwxyz).Execution[12345]}}"
+}
