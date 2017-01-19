@@ -1008,3 +1008,13 @@ class Eloqua(object):
             raise Exception("No matching " + assetType + " found")
 
         return int(count)
+
+    def GetAsset(self, assetType, assetId):
+        """
+            Returns dict of asset info if found; None if not found
+
+            Arguments:
+            :param string assetType: list, filter, or segment
+        """
+
+        pass
