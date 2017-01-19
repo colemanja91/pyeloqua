@@ -1008,3 +1008,23 @@ class Eloqua(object):
             raise Exception("No matching " + assetType + " found")
 
         return int(count)
+
+    def GetAsset(self, assetType, assetId):
+        """
+            Returns dict of asset info if found; None if not found
+
+            Arguments:
+            :param string assetType: list, filter, or segment
+        """
+
+        if assetType not in ['list', 'filter', 'segment']:
+            raise ValueError("Please choose a valid assetType: list, filter, segment")
+
+        url = self.restBase + '/assets/contact/' + assetType +'/' + str(assetId)
+
+        req = requests.get(url, auth = self.auth)
+
+        if req.status_code==200:
+            return req.json()
+        else:
+            return None
