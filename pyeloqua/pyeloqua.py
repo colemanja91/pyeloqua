@@ -1017,4 +1017,14 @@ class Eloqua(object):
             :param string assetType: list, filter, or segment
         """
 
-        pass
+        if assetType not in ['list', 'filter', 'segment']:
+            raise ValueError("Please choose a valid assetType: list, filter, segment")
+
+        url = self.restBase + '/assets/contact/' + assetType +'/' + str(assetId)
+
+        req = requests.get(url, auth = self.auth)
+
+        if req.status_code==200:
+            return req.json()
+        else:
+            return None
