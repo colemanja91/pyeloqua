@@ -18,7 +18,7 @@ class Eloqua(object):
     """
 
     def __init__(self, username=None, password=None, company=None, bulk_api_version = API_VERSION,
-                 rest_api_version = API_VERSION):
+                 rest_api_version = API_VERSION, test=False):
 
         """
         Create an Eloqua session given the following arguments:
@@ -30,34 +30,50 @@ class Eloqua(object):
         * company -- Company/Instance name for above user
         * bulk_api_version -- Version of Eloqua Bulk API to use; defaults to 2.0
         * rest_api_version -- Version of Eloqua REST API to use; defaults to 2.0
+        * test -- if True, sets up dummy Eloqua instance; helpful for testing
         """
 
-        if all(arg is not None for arg in (username, password, company)):
+        if not test:
 
-            url = 'https://login.eloqua.com/id'
-            req = requests.get(url, auth=(company + '\\' + username, password))
-            if req.status_code==200:
-                if req.json()=='Not authenticated.':
-                    raise ValueError('Invalid login credentials')
+            if all(arg is not None for arg in (username, password, company)):
+
+                url = 'https://login.eloqua.com/id'
+                req = requests.get(url, auth=(company + '\\' + username, password))
+                if req.status_code==200:
+                    if req.json()=='Not authenticated.':
+                        raise ValueError('Invalid login credentials')
+                    else:
+                        self.username = username
+                        self.password = password
+                        self.company = company
+                        self.auth = (company + '\\' + username, password)
+                        self.userId = req.json()['user']['id']
+                        self.userDisplay = req.json()['user']['displayName']
+                        self.urlBase = req.json()['urls']['base']
+                        self.siteId = req.json()['site']['id']
+
+                        restBase = req.json()['urls']['apis']['rest']['standard']
+                        self.restBase = restBase.format(version=rest_api_version)
+
+                        bulkBase = req.json()['urls']['apis']['rest']['bulk']
+                        self.bulkBase = bulkBase.format(version=bulk_api_version)
                 else:
-                    self.username = username
-                    self.password = password
-                    self.company = company
-                    self.auth = (company + '\\' + username, password)
-                    self.userId = req.json()['user']['id']
-                    self.userDisplay = req.json()['user']['displayName']
-                    self.urlBase = req.json()['urls']['base']
-                    self.siteId = req.json()['site']['id']
-
-                    restBase = req.json()['urls']['apis']['rest']['standard']
-                    self.restBase = restBase.replace('{version}', rest_api_version)
-
-                    bulkBase = req.json()['urls']['apis']['rest']['bulk']
-                    self.bulkBase = bulkBase.replace('{version}', bulk_api_version)
+                    raise Exception('Unknown authentication error')
             else:
-                raise Exception('Unknown authentication error')
+                raise ValueError('Please enter all required login details: company, username, password')
+
         else:
-            raise ValueError('Please enter all required login details: company, username, password')
+
+            self.username = 'test'
+            self.password = 'test'
+            self.company = 'test'
+            self.auth = (self.company + '\\' + self.username, self.password)
+            self.userId = 0
+            self.userDisplay = 'Testing McTestFace'
+            self.urlBase = "https://secure.p01.eloqua.com"
+            self.siteId = 1
+            self.restBase = "https://secure.p01.eloqua.com/API/REST/2.0/"
+            self.bulkBase = "https://secure.p01.eloqua.com/API/BULK/2.0/"
 
     '''
         ###################################################
