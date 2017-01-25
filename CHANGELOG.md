@@ -1,3 +1,6 @@
+## 2017-01-25 v0.3.4
+- FEATURE: add parameter to `Eloqua` class; adding `test=True` creates a dummy instance which can be used in context of other unit testing
+
 ## 2017-01-19 v0.3.3
 - FEATURE: add method `GetAsset`, which returns dict of asset info (list, filter, and segment)
 
