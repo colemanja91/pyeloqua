@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 import pyeloqua
 
@@ -15,7 +15,7 @@ setup(
     author='Jeremiah Coleman',
     author_email='colemanja91@gmail.com',
     license='MIT',
-    packages=['pyeloqua'],
+    packages=find_packages(),
     install_requires=[
         'requests',
         'pbr',
