@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-import pyeloqua
+#import pyeloqua
 
 def readme():
     with open('README.md') as f:
