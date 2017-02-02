@@ -1,6 +1,6 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
-import pyeloqua
+__version__ = '0.3.5'
 
 def readme():
     with open('README.md') as f:
@@ -8,16 +8,18 @@ def readme():
 
 setup(
     name='pyeloqua',
-    version=pyeloqua.__version__,
+    version=__version__,
     description='Python wrapper functions for Eloqua APIs',
     long_description=readme(),
     url='https://github.com/colemanja91/pyeloqua',
     author='Jeremiah Coleman',
     author_email='colemanja91@gmail.com',
     license='MIT',
-    packages=['pyeloqua'],
+    packages=find_packages(),
     install_requires=[
-        'requests>=2.10.0'
+        'requests',
+        'pbr',
+        'six'
     ],
     zip_safe=False,
     keywords = 'eloqua marketing automation api bulk'
