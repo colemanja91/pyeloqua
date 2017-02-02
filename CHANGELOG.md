@@ -1,3 +1,6 @@
+## 2017-02-02 v0.3.5
+- BUGFIX: fix dependency install by switching around where `__version__` was stored (now in setup.py)
+
 ## 2017-01-25 v0.3.4
 - FEATURE: add parameter to `Eloqua` class; adding `test=True` creates a dummy instance which can be used in context of other unit testing
 
