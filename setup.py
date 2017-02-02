@@ -1,6 +1,7 @@
 from setuptools import setup, find_packages
 
 #import pyeloqua
+__version__ = '0.3.4'
 
 def readme():
     with open('README.md') as f:
@@ -8,7 +9,7 @@ def readme():
 
 setup(
     name='pyeloqua',
-    version=pyeloqua.__version__,
+    version=__version__,
     description='Python wrapper functions for Eloqua APIs',
     long_description=readme(),
     url='https://github.com/colemanja91/pyeloqua',
