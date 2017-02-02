@@ -1,6 +1,5 @@
 from setuptools import setup, find_packages
 
-#import pyeloqua
 __version__ = '0.3.4'
 
 def readme():
