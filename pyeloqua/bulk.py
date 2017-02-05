@@ -28,3 +28,4 @@ class Bulk(Eloqua):
         :param bool test: Sets up test instance; does not connect to Eloqua
         """
         Eloqua.__init__(self, username, password, company, test)
+        self.bulk_base = 'https://secure.p01.eloqua.com/API/Bulk/2.0/'

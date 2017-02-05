@@ -183,3 +183,13 @@ def test_elq_test():
     """ test mode for authentication """
     elq = Eloqua(test=True)
     assert elq.auth == ('test\\test', 'test')
+
+###############################################################################
+# config options
+###############################################################################
+
+def test_elq_set_bulk_version():
+    """ Change Bulk API version """
+    elq = Eloqua(test=True)
+    elq.set_bulk_version('1.2')
+    assert elq.bulkBase == 'https://secure.p01.eloqua.com/API/BULK/1.2/'

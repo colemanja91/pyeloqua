@@ -13,3 +13,7 @@ def test_bulk_elqinit():
     """ Is an Eloqua instance """
     bulk = Bulk(test=True)
     assert isinstance(bulk, Eloqua)
+
+###############################################################################
+# config options
+###############################################################################

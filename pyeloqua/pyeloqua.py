@@ -57,13 +57,13 @@ class Eloqua(object):
                     self.urlBase = req.json()['urls']['base']
                     self.siteId = req.json()['site']['id']
 
-                    restBase = req.json()['urls']['apis'][
+                    self.rest_bs_un = req.json()['urls']['apis'][
                         'rest']['standard']
-                    self.restBase = restBase.format(
+                    self.restBase = self.rest_bs_un.format(
                         version=API_VERSION)
 
-                    bulkBase = req.json()['urls']['apis']['rest']['bulk']
-                    self.bulkBase = bulkBase.format(
+                    self.bulk_bs_un = req.json()['urls']['apis']['rest']['bulk']
+                    self.bulkBase = self.bulk_bs_un.format(
                         version=API_VERSION)
             else:
                 raise Exception(
@@ -81,6 +81,14 @@ class Eloqua(object):
             self.siteId = 1
             self.restBase = "https://secure.p01.eloqua.com/API/REST/2.0/"
             self.bulkBase = "https://secure.p01.eloqua.com/API/BULK/2.0/"
+            self.rest_bs_un = "https://secure.p01.eloqua.com/API/REST/{version}/"
+            self.bulk_bs_un = "https://secure.p01.eloqua.com/API/BULK/{version}/"
+
+    def set_bulk_version(self, version):
+        """ update bulk version """
+
+        self.bulkBase = self.bulk_bs_un.format(version=version)
+
 
     '''
         ###################################################
