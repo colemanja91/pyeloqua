@@ -43,31 +43,32 @@ class Eloqua(object):
                 url = 'https://login.eloqua.com/id'
                 req = requests.get(url, auth=(company + '\\' + username,
                                               password))
-                if req.status_code == 200:
-                    if req.json() == 'Not authenticated.':
-                        raise ValueError('Invalid login credentials')
-                    else:
-                        self.username = username
-                        self.password = password
-                        self.company = company
-                        self.auth = (company + '\\' + username, password)
-                        self.userId = req.json()['user']['id']
-                        self.userDisplay = req.json()['user']['displayName']
-                        self.urlBase = req.json()['urls']['base']
-                        self.siteId = req.json()['site']['id']
 
-                        restBase = req.json()['urls']['apis'][
-                            'rest']['standard']
-                        self.restBase = restBase.format(
-                            version=rest_api_version)
+                # check if any error codes
+                req.raise_for_status()
 
-                        bulkBase = req.json()['urls']['apis']['rest']['bulk']
-                        self.bulkBase = bulkBase.format(
-                            version=bulk_api_version)
+                if req.json() == 'Not authenticated.':
+                    raise ValueError('Invalid login credentials')
                 else:
-                    raise Exception('Unknown authentication error')
+                    self.username = username
+                    self.password = password
+                    self.company = company
+                    self.auth = (company + '\\' + username, password)
+                    self.userId = req.json()['user']['id']
+                    self.userDisplay = req.json()['user']['displayName']
+                    self.urlBase = req.json()['urls']['base']
+                    self.siteId = req.json()['site']['id']
+
+                    restBase = req.json()['urls']['apis'][
+                        'rest']['standard']
+                    self.restBase = restBase.format(
+                        version=rest_api_version)
+
+                    bulkBase = req.json()['urls']['apis']['rest']['bulk']
+                    self.bulkBase = bulkBase.format(
+                        version=bulk_api_version)
             else:
-                raise ValueError(
+                raise Exception(
                     'Please enter all required login details: company, username, password')
 
         else:
