@@ -28,12 +28,12 @@ class Eloqua(object):
 
         Arguments:
 
-        * username -- Eloqua username to authenticate against
-        * password -- Password associated with above user
-        * company -- Company/Instance name for above user
-        * bulk_api_version -- Version of Eloqua Bulk API to use; defaults to 2.0
-        * rest_api_version -- Version of Eloqua REST API to use; defaults to 2.0
-        * test -- if True, sets up dummy Eloqua instance; helpful for testing
+        :param string username: Eloqua username
+        :param string password: Eloqua password
+        :param string company: Eloqua company instance
+        :param string bulk_api_version: Eloqua Bulk API version; defaults to 2.0
+        :param string rest_api_version: Eloqua REST API version; defaults to 2.0
+        :param bool test: Sets up test instance; does not connect to Eloqua
         """
 
         if not test:
