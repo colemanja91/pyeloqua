@@ -167,7 +167,7 @@ def test_elq_set_rest_base(mock_get):
     mock_get.return_value = Mock(ok=True, status_code=200)
     mock_get.return_value.json.return_value = ELQ_LOGIN
     elq = Eloqua(company='test', username='test', password='test')
-    assert elq.restBase == 'https://secure.p01.eloqua.com/API/REST/2.0/'
+    assert elq.rest_base == 'https://secure.p01.eloqua.com/API/REST/2.0/'
 
 
 @patch('pyeloqua.pyeloqua.requests.get')
@@ -176,7 +176,7 @@ def test_elq_set_bulk_base(mock_get):
     mock_get.return_value = Mock(ok=True, status_code=200)
     mock_get.return_value.json.return_value = ELQ_LOGIN
     elq = Eloqua(company='test', username='test', password='test')
-    assert elq.bulkBase == 'https://secure.p01.eloqua.com/API/Bulk/2.0/'
+    assert elq.bulk_base == 'https://secure.p01.eloqua.com/API/Bulk/2.0/'
 
 
 def test_elq_test():
@@ -192,4 +192,4 @@ def test_elq_set_bulk_version():
     """ Change Bulk API version """
     elq = Eloqua(test=True)
     elq.set_bulk_version('1.2')
-    assert elq.bulkBase == 'https://secure.p01.eloqua.com/API/BULK/1.2/'
+    assert elq.bulk_base == 'https://secure.p01.eloqua.com/API/BULK/1.2/'
