@@ -178,8 +178,6 @@ def test_elq_set_bulk_base(mock_get):
     elq = Eloqua(company='test', username='test', password='test')
     assert elq.bulkBase == 'https://secure.p01.eloqua.com/API/Bulk/2.0/'
 
-# make sure test mode for authentication works (useful for other unit tests)
-
 
 def test_elq_test():
     """ test mode for authentication """

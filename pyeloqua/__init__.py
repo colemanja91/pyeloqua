@@ -2,3 +2,4 @@
     Right now, they cover Contacts, Accounts, and Custom Data Objects."""
 
 from .pyeloqua import Eloqua
+from .bulk import Bulk

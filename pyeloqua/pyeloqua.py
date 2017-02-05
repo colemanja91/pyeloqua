@@ -1,8 +1,9 @@
 from datetime import datetime
-import requests
 import json
 import time
 import warnings
+import requests
+
 from . import system_fields
 
 API_VERSION = '2.0'
@@ -21,8 +22,7 @@ class Eloqua(object):
     """
 
     def __init__(self, username=None, password=None, company=None,
-                 bulk_api_version=API_VERSION,
-                 rest_api_version=API_VERSION, test=False):
+                 test=False):
         """
         Create an Eloqua session given the following arguments:
 
@@ -31,8 +31,6 @@ class Eloqua(object):
         :param string username: Eloqua username
         :param string password: Eloqua password
         :param string company: Eloqua company instance
-        :param string bulk_api_version: Eloqua Bulk API version; defaults to 2.0
-        :param string rest_api_version: Eloqua REST API version; defaults to 2.0
         :param bool test: Sets up test instance; does not connect to Eloqua
         """
 
@@ -62,11 +60,11 @@ class Eloqua(object):
                     restBase = req.json()['urls']['apis'][
                         'rest']['standard']
                     self.restBase = restBase.format(
-                        version=rest_api_version)
+                        version=API_VERSION)
 
                     bulkBase = req.json()['urls']['apis']['rest']['bulk']
                     self.bulkBase = bulkBase.format(
-                        version=bulk_api_version)
+                        version=API_VERSION)
             else:
                 raise Exception(
                     'Please enter all required login details: company, username, password')
