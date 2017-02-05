@@ -27,4 +27,4 @@ class Bulk(Eloqua):
         :param string company: Eloqua company instance
         :param bool test: Sets up test instance; does not connect to Eloqua
         """
-        Eloqua.__init__(username, password, company, test)
+        Eloqua.__init__(self, username, password, company, test)
