@@ -48,9 +48,17 @@ class Bulk(Eloqua):
         self.job = deepcopy(BLANK_JOB)
 
     def _setup_(self, job_type, elq_object, obj_id=None):
-        """ set job_type to imports """
+        """ setup a job """
         if elq_object in OBJECT_REQ_ID and obj_id is None:
             raise Exception('cdo_id required for customobjects')
         self.job['job_type'] = job_type
         self.job['elq_object'] = elq_object
         self.job['obj_id'] = obj_id
+
+    def imports(self, elq_object, obj_id=None):
+        """ setup a job with job_type == 'imports' """
+        self._setup_(job_type='imports', elq_object=elq_object, obj_id=obj_id)
+
+    def exports(self, elq_object, obj_id=None):
+        """ setup a job with job_type == 'exports' """
+        self._setup_(job_type='exports', elq_object=elq_object, obj_id=obj_id)
