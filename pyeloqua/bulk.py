@@ -1,6 +1,7 @@
 """ Bulk API class """
 from __future__ import print_function
 from copy import deepcopy
+import requests
 
 from .pyeloqua import Eloqua
 
@@ -91,3 +92,39 @@ class Bulk(Eloqua):
         :param int obj_id: parent ID for events or customobjects
         """
         self._setup_(job_type='exports', elq_object=elq_object, obj_id=obj_id)
+
+    ###########################################################################
+    # Helper methods
+    ###########################################################################
+
+    def get_fields(self):
+        """
+        retrieve all fields for specified Eloqua object in job setup;
+        useful if unsure what fields are available
+
+        Arguments:
+
+        :param string elq_object: target Eloqua object
+        :param int obj_id: parent ID for events or customobjects
+        """
+
+        if self.job['elq_object'] in OBJECT_REQ_ID:
+            url_base = self.bulk_base + '/{obj}/{id}/fields?limit=1000'.format(
+                obj=self.job['elq_object'],
+                id=self.job['obj_id']
+            )
+            url_base += '&offset={offset}'
+        else:
+            url_base = self.bulk_base + '/{obj}/fields?limit=1000'.format(
+                obj=self.job['elq_object']
+            )
+
+        fields = []
+
+        has_more = True
+
+        offset = 0
+
+        while has_more:
+            url = url_base.format(offset=offset)
+            req = requests.get(url=url, auth=self.auth)

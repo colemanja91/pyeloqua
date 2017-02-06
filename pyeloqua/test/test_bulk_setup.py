@@ -1,4 +1,4 @@
-""" Eloqua.Bulk class initialization """
+""" Eloqua.Bulk job setup methods (imports/exports) """
 from nose.tools import raises
 from pyeloqua import Bulk
 
