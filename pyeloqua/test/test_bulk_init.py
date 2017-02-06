@@ -14,36 +14,40 @@ def test_bulk_iselq():
     bulk = Bulk(test=True)
     assert isinstance(bulk, Eloqua)
 
+def test_bulk_hasjob():
+    """ Has job which is instance of BulkDef """
+    bulk = Bulk(test=True)
+    assert isinstance(bulk.job, dict)
+
 ###############################################################################
 # BulkDef
 ###############################################################################
 
-def test_bulkdef_init():
-    """ BulkDef class initializes """
-    bulk = Bulk(test=True)
-    assert bulk.BulkDef() is not None
-
 def test_bulkdef_filter():
     """ BulkDef sets up 'filters' """
-    bulkdef = Bulk(test=True).BulkDef()
-    assert isinstance(bulkdef.filters, list)
+    bulk = Bulk(test=True)
+    assert isinstance(bulk.job['filters'], list)
 
 def test_bulkdef_fields():
     """ BulkDef sets up 'fields' """
-    bulkdef = Bulk(test=True).BulkDef()
-    assert isinstance(bulkdef.fields, list)
+    bulk = Bulk(test=True)
+    assert isinstance(bulk.job['fields'], list)
 
 def test_bulkdef_type():
     """ BulkDef sets up 'type' """
-    bulkdef = Bulk(test=True).BulkDef()
-    assert bulkdef.type is None
+    bulk = Bulk(test=True)
+    assert bulk.job['job_type'] is None
 
 def test_bulkdef_object():
     """ BulkDef sets up 'object' """
-    bulkdef = Bulk(test=True).BulkDef()
-    assert bulkdef.elq_object is None
+    bulk = Bulk(test=True)
+    assert bulk.job['elq_object'] is None
 
 def test_bulkdef_options():
     """ BulkDef sets up 'options' """
-    bulkdef = Bulk(test=True).BulkDef()
-    assert isinstance(bulkdef.options, dict)
+    bulk = Bulk(test=True)
+    assert isinstance(bulk.job['options'], dict)
+
+###############################################################################
+# Methods to set up job
+###############################################################################

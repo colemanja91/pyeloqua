@@ -28,14 +28,9 @@ class Bulk(Eloqua):
         :param bool test: Sets up test instance; does not connect to Eloqua
         """
         Eloqua.__init__(self, username, password, company, test)
-
-    class BulkDef(object):
-        """ Extension to deal with Bulk Imports """
-
-        def __init__(self):
-            """ spin up a blank object """
-            self.filters = []
-            self.fields = []
-            self.type = None
-            self.elq_object = None
-            self.options = {}
+        self.job = {}
+        self.job['filters'] = []
+        self.job['fields'] = []
+        self.job['job_type'] = None
+        self.job['elq_object'] = None
+        self.job['options'] = {}
