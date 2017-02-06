@@ -56,7 +56,7 @@ class Bulk(Eloqua):
             raise Exception('invalid elq_object \'$s\'' % elq_object)
         # check if requires obj_id
         if elq_object in OBJECT_REQ_ID and obj_id is None:
-            raise Exception('cdo_id required for customobjects')
+            raise Exception('obj_id required for \'%s\'' % elq_object)
 
         self.job['job_type'] = job_type
         self.job['elq_object'] = elq_object
