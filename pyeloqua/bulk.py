@@ -15,9 +15,11 @@ BLANK_JOB = {
     'fields': [],
     'job_type': None,
     'elq_object': None,
-    'cdo_id': None,
+    'obj_id': None,
     'options': {}
 }
+
+OBJECT_REQ_ID = ['customobjects', 'events']
 
 ############################################################################
 # Bulk class
@@ -45,6 +47,10 @@ class Bulk(Eloqua):
         """ reset job """
         self.job = deepcopy(BLANK_JOB)
 
-    def imports(self):
+    def _setup_(self, job_type, elq_object, obj_id=None):
         """ set job_type to imports """
-        self.job['job_type'] = 'imports'
+        if elq_object in OBJECT_REQ_ID and obj_id is None:
+            raise Exception('cdo_id required for customobjects')
+        self.job['job_type'] = job_type
+        self.job['elq_object'] = elq_object
+        self.job['obj_id'] = obj_id
