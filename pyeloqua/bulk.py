@@ -22,7 +22,7 @@ BLANK_JOB = {
 OBJECT_REQ_ID = ['customobjects', 'events']
 
 ELQ_OBJECTS = ['accounts', 'activities', 'contacts', 'customobjects',
-               'emailaddresses', 'emailgroups', 'events']
+               'emailaddresses', 'events']
 
 ############################################################################
 # Bulk class
