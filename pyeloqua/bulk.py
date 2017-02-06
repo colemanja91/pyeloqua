@@ -29,7 +29,13 @@ class Bulk(Eloqua):
         """
         Eloqua.__init__(self, username, password, company, test)
 
-    class Import(object):
+    class BulkDef(object):
         """ Extension to deal with Bulk Imports """
 
-        def __init__(self, )
+        def __init__(self):
+            """ spin up a blank object """
+            self.filters = []
+            self.fields = []
+            self.type = None
+            self.elq_object = None
+            self.options = {}
