@@ -21,6 +21,9 @@ BLANK_JOB = {
 
 OBJECT_REQ_ID = ['customobjects', 'events']
 
+ELQ_OBJECTS = ['accounts', 'activities', 'contacts', 'customobjects',
+               'emailaddresses', 'emailgroups', 'events']
+
 ############################################################################
 # Bulk class
 ############################################################################
@@ -49,8 +52,12 @@ class Bulk(Eloqua):
 
     def _setup_(self, job_type, elq_object, obj_id=None):
         """ setup a job """
+        if elq_object not in ELQ_OBJECTS:
+            raise Exception('invalid elq_object \'$s\'' % elq_object)
+        # check if requires obj_id
         if elq_object in OBJECT_REQ_ID and obj_id is None:
             raise Exception('cdo_id required for customobjects')
+
         self.job['job_type'] = job_type
         self.job['elq_object'] = elq_object
         self.job['obj_id'] = obj_id

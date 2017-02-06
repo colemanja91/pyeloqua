@@ -91,6 +91,12 @@ def test_setup_event():
     bulk._setup_('imports', 'events', 1) # pylint: disable=W0212
     assert bulk.job['obj_id'] == 1
 
+@raises(Exception)
+def test_setup_bad_obj():
+    """ setup obj_id required for events """
+    bulk = Bulk(test=True)
+    bulk._setup_('imports', 'bad') # pylint: disable=W0212
+
 def test_imports_job_type():
     """ imports() sets job_type """
     bulk = Bulk(test=True)
