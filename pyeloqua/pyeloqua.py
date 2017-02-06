@@ -74,7 +74,6 @@ class Eloqua(object):
                     'Please enter all required login details: company, username, password')
 
         else:
-
             self.username = 'test'
             self.password = 'test'
             self.company = 'test'
