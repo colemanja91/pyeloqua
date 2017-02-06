@@ -51,7 +51,15 @@ class Bulk(Eloqua):
         self.job = deepcopy(BLANK_JOB)
 
     def _setup_(self, job_type, elq_object, obj_id=None):
-        """ setup a job """
+        """
+        setup a job
+
+        Arguments:
+
+        :param string job_type: 'imports' or 'exports'
+        :param string elq_object: target Eloqua object
+        :param int obj_id: parent ID for events or customobjects
+        """
         if elq_object not in ELQ_OBJECTS:
             raise Exception('invalid elq_object \'$s\'' % elq_object)
         # check if requires obj_id
@@ -63,9 +71,23 @@ class Bulk(Eloqua):
         self.job['obj_id'] = obj_id
 
     def imports(self, elq_object, obj_id=None):
-        """ setup a job with job_type == 'imports' """
+        """
+        setup a job with job_type == 'imports'
+
+        Arguments:
+
+        :param string elq_object: target Eloqua object
+        :param int obj_id: parent ID for events or customobjects
+        """
         self._setup_(job_type='imports', elq_object=elq_object, obj_id=obj_id)
 
     def exports(self, elq_object, obj_id=None):
-        """ setup a job with job_type == 'exports' """
+        """
+        setup a job with job_type == 'exports'
+
+        Arguments:
+
+        :param string elq_object: target Eloqua object
+        :param int obj_id: parent ID for events or customobjects
+        """
         self._setup_(job_type='exports', elq_object=elq_object, obj_id=obj_id)
