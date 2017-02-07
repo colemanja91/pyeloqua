@@ -118,6 +118,7 @@ class Bulk(Eloqua):
             url_base = self.bulk_base + '/{obj}/fields?limit=1000'.format(
                 obj=self.job['elq_object']
             )
+            url_base += '&offset={offset}'
 
         fields = []
 
@@ -127,4 +128,9 @@ class Bulk(Eloqua):
 
         while has_more:
             url = url_base.format(offset=offset)
+            print(url)
             req = requests.get(url=url, auth=self.auth)
+            fields.extend(req.json()['items'])
+            has_more = req.json()['hasMore']
+
+        return fields
