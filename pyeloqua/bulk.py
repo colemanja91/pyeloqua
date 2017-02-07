@@ -128,9 +128,9 @@ class Bulk(Eloqua):
 
         while has_more:
             url = url_base.format(offset=offset)
-            print(url)
             req = requests.get(url=url, auth=self.auth)
             fields.extend(req.json()['items'])
+            offset += 1
             has_more = req.json()['hasMore']
 
         return fields
