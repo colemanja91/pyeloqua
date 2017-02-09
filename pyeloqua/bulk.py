@@ -107,6 +107,7 @@ class Bulk(Eloqua):
 
         :param string elq_object: target Eloqua object
         :param int obj_id: parent ID for events or customobjects
+        :return list: field definitions
         """
 
         if self.job['elq_object'] in OBJECT_REQ_ID:
@@ -135,3 +136,23 @@ class Bulk(Eloqua):
             has_more = req.json()['hasMore']
 
         return fields
+
+    def add_fields(self, field_input):
+        """
+        retrieve all specified fields and add to job setup
+
+        Arguments:
+
+        :param list field_input: fields to add by DB name or Display Name
+        """
+
+        fields = self.get_fields()
+
+        fields_output = []
+
+        for field_name in field_input:
+            for field in fields:
+                if field_name == field['internalName']:
+                    fields_output.append(field)
+
+        self.job['fields'].extend(fields_output)
