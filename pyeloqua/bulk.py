@@ -43,6 +43,7 @@ class Bulk(Eloqua):
         :param string password: Eloqua password
         :param string company: Eloqua company instance
         :param bool test: Sets up test instance; does not connect to Eloqua
+        :return: Bulk object
         """
         Eloqua.__init__(self, username, password, company, test)
         self.job = deepcopy(BLANK_JOB)

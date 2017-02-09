@@ -29,7 +29,7 @@ GOOD_FIELDS = {
 }
 
 ###############################################################################
-# Methods to add fields to a job
+# Methods to get all fields
 ###############################################################################
 
 
@@ -42,6 +42,17 @@ def test_get_fields_cntcts_call(mock_get):
     mock_get.return_value.json.return_value = GOOD_FIELDS
     bulk.get_fields()
     url = bulk.bulk_base + '/contacts/fields?limit=1000&offset=0'
+    mock_get.assert_any_call(url=url, auth=bulk.auth)
+
+@patch('pyeloqua.bulk.requests.get')
+def test_get_fields_events_call(mock_get):
+    """ find all event fields """
+    bulk = Bulk(test=True)
+    bulk.exports('events', 1)
+    mock_get.return_value = Mock(ok=True, status_code=200)
+    mock_get.return_value.json.return_value = GOOD_FIELDS
+    bulk.get_fields()
+    url = bulk.bulk_base + '/events/1/fields?limit=1000&offset=0'
     mock_get.assert_any_call(url=url, auth=bulk.auth)
 
 @patch('pyeloqua.bulk.requests.get')
