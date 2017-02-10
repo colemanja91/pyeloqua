@@ -124,6 +124,14 @@ def test_add_fields_notfound(mock_get):
     fields = ['C_EmailAddress', 'C_FirstName', 'C_LastName']
     bulk.add_fields(fields)
 
+
+def test_add_fields_actvty_all():
+    """ add all activity fields """
+    bulk = Bulk(test=True)
+    bulk.exports('activities', act_type='EmailOpen')
+    bulk.add_fields()
+    assert bulk.job['fields'] == ACTIVITY_FIELDS['EmailOpen']
+
 ###############################################################################
 # Add system fields
 ###############################################################################

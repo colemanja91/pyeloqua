@@ -152,7 +152,7 @@ class Bulk(Eloqua):
 
         return fields
 
-    def add_fields(self, field_input):
+    def add_fields(self, field_input=None):
         """
         retrieve all specified fields and add to job setup
 
@@ -162,6 +162,10 @@ class Bulk(Eloqua):
         """
 
         fields = self.get_fields()
+
+        if field_input is None:
+            self.job['fields'].extend(fields)
+            return True
 
         fields_output = []
 
