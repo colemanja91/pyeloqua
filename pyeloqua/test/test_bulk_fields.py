@@ -114,6 +114,16 @@ def test_add_fields_display(mock_get):
 
 
 @patch('pyeloqua.bulk.requests.get')
+def test_add_fields_all(mock_get):
+    """ add contact fields to object by Display Name """
+    bulk = Bulk(test=True)
+    bulk.exports('contacts')
+    mock_get.return_value = Mock(ok=True, status_code=200)
+    mock_get.return_value.json.return_value = GOOD_FIELDS
+    bulk.add_fields()
+    assert bulk.job['fields'] == GOOD_FIELDS['items']
+
+@patch('pyeloqua.bulk.requests.get')
 @raises(Exception)
 def test_add_fields_notfound(mock_get):
     """ raise exception when field not found """
@@ -131,6 +141,15 @@ def test_add_fields_actvty_all():
     bulk.exports('activities', act_type='EmailOpen')
     bulk.add_fields()
     assert bulk.job['fields'] == ACTIVITY_FIELDS['EmailOpen']
+
+
+def test_add_fields_actvty():
+    """ add some activity fields """
+    bulk = Bulk(test=True)
+    bulk.exports('activities', act_type='EmailOpen')
+    fields = ['ActivityId', 'AssetId']
+    bulk.add_fields(fields)
+    assert len(bulk.job['fields']) == 2
 
 ###############################################################################
 # Add system fields
