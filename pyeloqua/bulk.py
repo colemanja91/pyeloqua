@@ -110,7 +110,7 @@ class Bulk(Eloqua):
     # Helper methods
     ###########################################################################
 
-    def get_fields(self):
+    def get_fields(self, elq_object=None, obj_id=None, act_type=None):
         """
         retrieve all fields for specified Eloqua object in job setup;
         useful if unsure what fields are available
@@ -119,21 +119,27 @@ class Bulk(Eloqua):
 
         :param string elq_object: target Eloqua object
         :param int obj_id: parent ID for events or customobjects
+        :param string act_type: Activity type
         :return list: field definitions
         """
+        # handle inputs vs Bulk.job
+        if elq_object is None:
+            elq_object = self.job['elq_object']
+            obj_id = self.job['obj_id']
+            act_type = self.job['act_type']
         # handle activity fields
-        if self.job['elq_object'] == 'activities':
-            return ACTIVITY_FIELDS[self.job['act_type']]
+        if elq_object == 'activities':
+            return ACTIVITY_FIELDS[act_type]
 
-        if self.job['elq_object'] in OBJECT_REQ_ID:
+        if elq_object in OBJECT_REQ_ID:
             url_base = self.bulk_base + '/{obj}/{id}/fields?limit=1000'.format(
-                obj=self.job['elq_object'],
-                id=self.job['obj_id']
+                obj=elq_object,
+                id=obj_id
             )
             url_base += '&offset={offset}'
         else:
             url_base = self.bulk_base + '/{obj}/fields?limit=1000'.format(
-                obj=self.job['elq_object']
+                obj=elq_object
             )
             url_base += '&offset={offset}'
 

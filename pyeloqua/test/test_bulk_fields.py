@@ -39,6 +39,41 @@ GOOD_FIELDS = {
     "hasMore": False
 }
 
+GOOD_FIELDS_ACCOUNT = {
+    "items": [
+        {
+            "name": "Company Name",
+            "internalName": "M_CompanyName",
+            "dataType": "string",
+            "hasReadOnlyConstraint": False,
+            "hasNotNullConstraint": True,
+            "hasUniquenessConstraint": False,
+            "statement": "{{Account.Field(M_CompanyName)}}",
+            "uri": "/accounts/fields/100085",
+            "createdAt": "1900-01-01T05:00:00.0000000Z",
+            "updatedBy": "Greg.Manetti",
+            "updatedAt": "2012-10-30T17:59:21.7000000Z"
+        },
+        {
+            "name": "Country",
+            "internalName": "M_Country",
+            "dataType": "string",
+            "hasReadOnlyConstraint": False,
+            "hasNotNullConstraint": False,
+            "hasUniquenessConstraint": False,
+            "statement": "{{Account.Field(M_Country)}}",
+            "uri": "/accounts/fields/100088",
+            "createdAt": "1900-01-01T05:00:00.0000000Z",
+            "updatedAt": "1900-01-01T05:00:00.0000000Z"
+        }
+    ],
+    "totalResults": 2,
+    "limit": 1000,
+    "offset": 0,
+    "count": 2,
+    "hasMore": False
+}
+
 
 ###############################################################################
 # Method to get all fields
@@ -86,6 +121,17 @@ def test_get_fields_actvty_return():
     bulk.exports('activities', act_type='EmailOpen')
     fields = bulk.get_fields()
     assert fields == ACTIVITY_FIELDS['EmailOpen']
+
+
+@patch('pyeloqua.bulk.requests.get')
+def test_get_fields_specify(mock_get):
+    """ specify elq_object to return fields for """
+    bulk = Bulk(test=True)
+    bulk.exports('accounts')
+    mock_get.return_value = Mock(ok=True, status_code=200)
+    mock_get.return_value.json.return_value = GOOD_FIELDS
+    fields = bulk.get_fields(elq_object='contacts')
+    assert fields == GOOD_FIELDS['items']
 
 ###############################################################################
 # Method to get specified object fields
@@ -183,6 +229,7 @@ def test_cntct_system_fields_set():
     bulk.add_system_fields(['contactID', 'createdAt'])
     assert len(bulk.job['fields']) == 2
 
+
 def test_accnt_system_fields_set():
     """ add some account system fields """
     bulk = Bulk(test=True)
@@ -191,12 +238,15 @@ def test_accnt_system_fields_set():
     assert len(bulk.job['fields']) == 2
 
 ###############################################################################
-# Add linked contact fields
+# Add linked record fields
+# CDO -> Contact
+# CDO -> Account
+# Contact -> Account
 ###############################################################################
 
-
-
-
-###############################################################################
-# Add linked account fields
-###############################################################################
+# def test_cntct_lnk_acct_fields():
+#     """ add some linked account fields """
+#     bulk = Bulk(test=True)
+#     bulk.exports('contacts')
+#     bulk.add_linked_fields('accounts', )
+#     assert bulk.job['fields'] == CONTACT_SYSTEM_FIELDS
