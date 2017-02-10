@@ -65,6 +65,7 @@ class Bulk(Eloqua):
         :param string job_type: 'imports' or 'exports'
         :param string elq_object: target Eloqua object
         :param int obj_id: parent ID for events or customobjects
+        :param string act_type: Activity type
         """
         if elq_object not in ELQ_OBJECTS:
             raise Exception('invalid elq_object \'$s\'' % elq_object)
@@ -87,6 +88,7 @@ class Bulk(Eloqua):
 
         :param string elq_object: target Eloqua object
         :param int obj_id: parent ID for events or customobjects
+        :param string act_type: Activity type
         """
         self._setup_(job_type='imports', elq_object=elq_object, obj_id=obj_id,
                      act_type=act_type)
@@ -99,6 +101,7 @@ class Bulk(Eloqua):
 
         :param string elq_object: target Eloqua object
         :param int obj_id: parent ID for events or customobjects
+        :param string act_type: Activity type
         """
         self._setup_(job_type='exports', elq_object=elq_object, obj_id=obj_id,
                      act_type=act_type)

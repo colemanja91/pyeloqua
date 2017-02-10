@@ -1,3 +1,5 @@
+""" system field definitions (cannot be dynamically pulled but are available) """
+
 CONTACT_SYSTEM_FIELDS = {
     "contactID": "{{Contact.Id}}",
     "createdAt": "{{Contact.CreatedAt}}",
