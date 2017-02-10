@@ -4,6 +4,7 @@ from copy import deepcopy
 import requests
 
 from .pyeloqua import Eloqua
+from .system_fields import ACTIVITY_FIELDS
 
 ############################################################################
 # Constant definitions
@@ -17,10 +18,13 @@ BLANK_JOB = {
     'job_type': None,
     'elq_object': None,
     'obj_id': None,
+    'act_type': None,
     'options': {}
 }
 
 OBJECT_REQ_ID = ['customobjects', 'events']
+
+OBJECT_REQ_TYPE = ['activities']
 
 ELQ_OBJECTS = ['accounts', 'activities', 'contacts', 'customobjects',
                'emailaddresses', 'events']
@@ -52,7 +56,7 @@ class Bulk(Eloqua):
         """ reset job """
         self.job = deepcopy(BLANK_JOB)
 
-    def _setup_(self, job_type, elq_object, obj_id=None):
+    def _setup_(self, job_type, elq_object, obj_id=None, act_type=None):
         """
         setup a job
 
@@ -67,12 +71,15 @@ class Bulk(Eloqua):
         # check if requires obj_id
         if elq_object in OBJECT_REQ_ID and obj_id is None:
             raise Exception('obj_id required for \'%s\'' % elq_object)
+        if elq_object in OBJECT_REQ_TYPE and act_type is None:
+            raise Exception('act_type required for \'%s\'' % elq_object)
 
         self.job['job_type'] = job_type
         self.job['elq_object'] = elq_object
         self.job['obj_id'] = obj_id
+        self.job['act_type'] = act_type
 
-    def imports(self, elq_object, obj_id=None):
+    def imports(self, elq_object, obj_id=None, act_type=None):
         """
         setup a job with job_type == 'imports'
 
@@ -81,9 +88,10 @@ class Bulk(Eloqua):
         :param string elq_object: target Eloqua object
         :param int obj_id: parent ID for events or customobjects
         """
-        self._setup_(job_type='imports', elq_object=elq_object, obj_id=obj_id)
+        self._setup_(job_type='imports', elq_object=elq_object, obj_id=obj_id,
+                     act_type=act_type)
 
-    def exports(self, elq_object, obj_id=None):
+    def exports(self, elq_object, obj_id=None, act_type=None):
         """
         setup a job with job_type == 'exports'
 
@@ -92,7 +100,8 @@ class Bulk(Eloqua):
         :param string elq_object: target Eloqua object
         :param int obj_id: parent ID for events or customobjects
         """
-        self._setup_(job_type='exports', elq_object=elq_object, obj_id=obj_id)
+        self._setup_(job_type='exports', elq_object=elq_object, obj_id=obj_id,
+                     act_type=act_type)
 
     ###########################################################################
     # Helper methods
@@ -109,6 +118,9 @@ class Bulk(Eloqua):
         :param int obj_id: parent ID for events or customobjects
         :return list: field definitions
         """
+        # handle activity fields
+        if self.job['elq_object'] == 'activities':
+            return ACTIVITY_FIELDS[self.job['act_type']]
 
         if self.job['elq_object'] in OBJECT_REQ_ID:
             url_base = self.bulk_base + '/{obj}/{id}/fields?limit=1000'.format(

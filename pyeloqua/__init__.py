@@ -3,3 +3,4 @@
 
 from .pyeloqua import Eloqua
 from .bulk import Bulk
+from .system_fields import ACTIVITY_FIELDS, CONTACT_SYSTEM_FIELDS

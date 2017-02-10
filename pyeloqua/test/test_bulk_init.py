@@ -11,6 +11,7 @@ BLANK_JOB = {
     'job_type': None,
     'elq_object': None,
     'obj_id': None,
+    'act_type': None,
     'options': {}
 }
 

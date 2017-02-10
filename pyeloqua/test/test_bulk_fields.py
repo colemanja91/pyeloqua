@@ -3,7 +3,7 @@
 from nose.tools import raises
 from mock import patch, Mock
 
-from pyeloqua import Bulk
+from pyeloqua import Bulk, ACTIVITY_FIELDS
 
 ###############################################################################
 # Constants
@@ -77,6 +77,14 @@ def test_get_fields_cntcts_return(mock_get):
     fields = bulk.get_fields()
     assert fields == GOOD_FIELDS['items']
 
+
+def test_get_fields_actvty_return():
+    """ find all contact fields - return correct items """
+    bulk = Bulk(test=True)
+    bulk.exports('activities', act_type='EmailOpen')
+    fields = bulk.get_fields()
+    assert fields == ACTIVITY_FIELDS['EmailOpen']
+
 ###############################################################################
 # Method to get specified object fields
 ###############################################################################
@@ -115,3 +123,17 @@ def test_add_fields_notfound(mock_get):
     mock_get.return_value.json.return_value = GOOD_FIELDS
     fields = ['C_EmailAddress', 'C_FirstName', 'C_LastName']
     bulk.add_fields(fields)
+
+###############################################################################
+# Add system fields
+###############################################################################
+
+
+###############################################################################
+# Add linked contact fields
+###############################################################################
+
+
+###############################################################################
+# Add linked account fields
+###############################################################################

@@ -49,6 +49,18 @@ def test_setup_event():
 
 
 @raises(Exception)
+def test_setup_actvty_type_req():
+    """ setup act_type required for activities """
+    bulk = Bulk(test=True)
+    bulk._setup_('imports', 'activities')  # pylint: disable=W0212
+
+def test_setup_actvty():
+    """ setup sets obj_id """
+    bulk = Bulk(test=True)
+    bulk._setup_('imports', 'activities', act_type='EmailOpen')  # pylint: disable=W0212
+    assert bulk.job['act_type'] == 'EmailOpen'    
+
+@raises(Exception)
 def test_setup_bad_obj():
     """ setup obj_id required for events """
     bulk = Bulk(test=True)
