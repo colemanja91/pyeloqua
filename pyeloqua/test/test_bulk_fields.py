@@ -56,6 +56,7 @@ def test_get_fields_cntcts_call(mock_get):
     url = bulk.bulk_base + '/contacts/fields?limit=1000&offset=0'
     mock_get.assert_any_call(url=url, auth=bulk.auth)
 
+
 @patch('pyeloqua.bulk.requests.get')
 def test_get_fields_events_call(mock_get):
     """ find all event fields """
@@ -66,6 +67,7 @@ def test_get_fields_events_call(mock_get):
     bulk.get_fields()
     url = bulk.bulk_base + '/events/1/fields?limit=1000&offset=0'
     mock_get.assert_any_call(url=url, auth=bulk.auth)
+
 
 @patch('pyeloqua.bulk.requests.get')
 def test_get_fields_cntcts_return(mock_get):
@@ -88,6 +90,7 @@ def test_get_fields_actvty_return():
 ###############################################################################
 # Method to get specified object fields
 ###############################################################################
+
 
 @patch('pyeloqua.bulk.requests.get')
 def test_add_fields_db(mock_get):
@@ -123,6 +126,7 @@ def test_add_fields_all(mock_get):
     bulk.add_fields()
     assert bulk.job['fields'] == GOOD_FIELDS['items']
 
+
 @patch('pyeloqua.bulk.requests.get')
 @raises(Exception)
 def test_add_fields_notfound(mock_get):
@@ -155,6 +159,7 @@ def test_add_fields_actvty():
 # Add system fields
 ###############################################################################
 
+
 def test_cntct_system_fields_all():
     """ add all contact system fields """
     bulk = Bulk(test=True)
@@ -170,9 +175,26 @@ def test_accnt_system_fields_all():
     bulk.add_system_fields()
     assert bulk.job['fields'] == ACCOUNT_SYSTEM_FIELDS
 
+
+def test_cntct_system_fields_set():
+    """ add some contact system fields """
+    bulk = Bulk(test=True)
+    bulk.exports('contacts')
+    bulk.add_system_fields(['contactID', 'createdAt'])
+    assert len(bulk.job['fields']) == 2
+
+def test_accnt_system_fields_set():
+    """ add some account system fields """
+    bulk = Bulk(test=True)
+    bulk.exports('accounts')
+    bulk.add_system_fields(['accountID', 'createdAt'])
+    assert len(bulk.job['fields']) == 2
+
 ###############################################################################
 # Add linked contact fields
 ###############################################################################
+
+
 
 
 ###############################################################################

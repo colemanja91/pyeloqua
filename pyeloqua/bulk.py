@@ -185,7 +185,7 @@ class Bulk(Eloqua):
 
         self.job['fields'].extend(fields_output)
 
-    def add_system_fields(self):
+    def add_system_fields(self, field_input=None):
         """
         add object-level system fields to job setup
 
@@ -193,6 +193,25 @@ class Bulk(Eloqua):
         """
 
         if self.job['elq_object'] == 'contacts':
-            self.job['fields'].extend(CONTACT_SYSTEM_FIELDS)
+            fieldset = CONTACT_SYSTEM_FIELDS
         elif self.job['elq_object'] == 'accounts':
-            self.job['fields'].extend(ACCOUNT_SYSTEM_FIELDS)
+            fieldset = ACCOUNT_SYSTEM_FIELDS
+
+        if field_input is None:
+            self.job['fields'].extend(fieldset)
+
+            return True
+
+        fields_output = []
+
+        for field_name in field_input:
+            match = False
+            for field in fieldset:
+                if field_name == field['name']:
+                    fields_output.append(field)
+                    match = True
+
+            if not match:
+                raise Exception('field not found: %s' % field_name)
+
+        self.job['fields'].extend(fields_output)
