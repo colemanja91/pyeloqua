@@ -3,7 +3,7 @@
 from nose.tools import raises
 from mock import patch, Mock
 
-from pyeloqua import Bulk, ACTIVITY_FIELDS
+from pyeloqua import Bulk, ACTIVITY_FIELDS, CONTACT_SYSTEM_FIELDS, ACCOUNT_SYSTEM_FIELDS
 
 ###############################################################################
 # Constants
@@ -155,6 +155,20 @@ def test_add_fields_actvty():
 # Add system fields
 ###############################################################################
 
+def test_cntct_system_fields_all():
+    """ add all contact system fields """
+    bulk = Bulk(test=True)
+    bulk.exports('contacts')
+    bulk.add_system_fields()
+    assert bulk.job['fields'] == CONTACT_SYSTEM_FIELDS
+
+
+def test_accnt_system_fields_all():
+    """ add all account system fields """
+    bulk = Bulk(test=True)
+    bulk.exports('accounts')
+    bulk.add_system_fields()
+    assert bulk.job['fields'] == ACCOUNT_SYSTEM_FIELDS
 
 ###############################################################################
 # Add linked contact fields

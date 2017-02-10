@@ -4,7 +4,7 @@ from copy import deepcopy
 import requests
 
 from .pyeloqua import Eloqua
-from .system_fields import ACTIVITY_FIELDS
+from .system_fields import ACTIVITY_FIELDS, CONTACT_SYSTEM_FIELDS, ACCOUNT_SYSTEM_FIELDS
 
 ############################################################################
 # Constant definitions
@@ -184,3 +184,15 @@ class Bulk(Eloqua):
                 raise Exception('field not found: %s' % field_name)
 
         self.job['fields'].extend(fields_output)
+
+    def add_system_fields(self):
+        """
+        add object-level system fields to job setup
+
+        :param list field_input: fields to add by name
+        """
+
+        if self.job['elq_object'] == 'contacts':
+            self.job['fields'].extend(CONTACT_SYSTEM_FIELDS)
+        elif self.job['elq_object'] == 'accounts':
+            self.job['fields'].extend(ACCOUNT_SYSTEM_FIELDS)

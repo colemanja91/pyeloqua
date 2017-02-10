@@ -8,6 +8,12 @@ CONTACT_SYSTEM_FIELDS = [
     {"name": "isBounced", "statement": "{{Contact.Email.IsBounced}}"}
 ]
 
+ACCOUNT_SYSTEM_FIELDS = [
+    {"name": "accountID", "statement": "{{Account.Id}}"},
+    {"name": "createdAt", "statement": "{{Account.CreatedAt}}"},
+    {"name": "updatedAt", "statement": "{{Account.UpdatedAt}}"}
+]
+
 ACTIVITY_FIELDS = {
     "EmailOpen": [
         {"name": "ActivityId", "statement": "{{Activity.Id}}"},
