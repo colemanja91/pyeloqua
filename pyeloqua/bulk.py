@@ -151,8 +151,12 @@ class Bulk(Eloqua):
         fields_output = []
 
         for field_name in field_input:
+            match = False
             for field in fields:
-                if field_name == field['internalName']:
+                if field_name == field['internalName'] or field_name == field['name']:
                     fields_output.append(field)
+                    match = True
+            if not match:
+                raise Exception('field not found: %s' % field_name)
 
         self.job['fields'].extend(fields_output)

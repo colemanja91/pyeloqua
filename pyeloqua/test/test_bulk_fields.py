@@ -1,4 +1,5 @@
 """ Eloqua.Bulk job setup methods (fields) """
+
 from nose.tools import raises
 from mock import patch, Mock
 
@@ -81,7 +82,7 @@ def test_get_fields_cntcts_return(mock_get):
 ###############################################################################
 
 @patch('pyeloqua.bulk.requests.get')
-def test_add_fields_cntcts_db(mock_get):
+def test_add_fields_db(mock_get):
     """ add contact fields to object by DB/API Name """
     bulk = Bulk(test=True)
     bulk.exports('contacts')
@@ -90,3 +91,27 @@ def test_add_fields_cntcts_db(mock_get):
     fields = ['C_EmailAddress', 'C_FirstName']
     bulk.add_fields(fields)
     assert bulk.job['fields'] == GOOD_FIELDS['items']
+
+
+@patch('pyeloqua.bulk.requests.get')
+def test_add_fields_display(mock_get):
+    """ add contact fields to object by Display Name """
+    bulk = Bulk(test=True)
+    bulk.exports('contacts')
+    mock_get.return_value = Mock(ok=True, status_code=200)
+    mock_get.return_value.json.return_value = GOOD_FIELDS
+    fields = ['Email Address', 'First Name']
+    bulk.add_fields(fields)
+    assert bulk.job['fields'] == GOOD_FIELDS['items']
+
+
+@patch('pyeloqua.bulk.requests.get')
+@raises(Exception)
+def test_add_fields_notfound(mock_get):
+    """ raise exception when field not found """
+    bulk = Bulk(test=True)
+    bulk.exports('contacts')
+    mock_get.return_value = Mock(ok=True, status_code=200)
+    mock_get.return_value.json.return_value = GOOD_FIELDS
+    fields = ['C_EmailAddress', 'C_FirstName', 'C_LastName']
+    bulk.add_fields(fields)
