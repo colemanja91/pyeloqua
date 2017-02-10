@@ -74,6 +74,34 @@ GOOD_FIELDS_ACCOUNT = {
     "hasMore": False
 }
 
+LINKED_ACCOUNT_FIELDS = [
+    {
+        "name": "Company Name",
+        "internalName": "M_CompanyName",
+        "dataType": "string",
+        "hasReadOnlyConstraint": False,
+        "hasNotNullConstraint": True,
+        "hasUniquenessConstraint": False,
+        "statement": "{{Contact.Account.Field(M_CompanyName)}}",
+        "uri": "/accounts/fields/100085",
+        "createdAt": "1900-01-01T05:00:00.0000000Z",
+        "updatedBy": "Greg.Manetti",
+        "updatedAt": "2012-10-30T17:59:21.7000000Z"
+    },
+    {
+        "name": "Country",
+        "internalName": "M_Country",
+        "dataType": "string",
+        "hasReadOnlyConstraint": False,
+        "hasNotNullConstraint": False,
+        "hasUniquenessConstraint": False,
+        "statement": "{{Contact.Account.Field(M_Country)}}",
+        "uri": "/accounts/fields/100088",
+        "createdAt": "1900-01-01T05:00:00.0000000Z",
+        "updatedAt": "1900-01-01T05:00:00.0000000Z"
+    }
+]
+
 
 ###############################################################################
 # Method to get all fields
@@ -244,9 +272,12 @@ def test_accnt_system_fields_set():
 # Contact -> Account
 ###############################################################################
 
-# def test_cntct_lnk_acct_fields():
-#     """ add some linked account fields """
-#     bulk = Bulk(test=True)
-#     bulk.exports('contacts')
-#     bulk.add_linked_fields('accounts', )
-#     assert bulk.job['fields'] == CONTACT_SYSTEM_FIELDS
+@patch('pyeloqua.bulk.requests.get')
+def test_cntct_lnk_acct_fields(mock_get):
+    """ add some linked account fields """
+    bulk = Bulk(test=True)
+    bulk.exports('contacts')
+    mock_get.return_value = Mock(ok=True, status_code=200)
+    mock_get.return_value.json.return_value = GOOD_FIELDS_ACCOUNT
+    bulk.add_linked_fields('accounts', ['M_CompanyName', 'M_Country'])
+    assert bulk.job['fields'] == LINKED_ACCOUNT_FIELDS

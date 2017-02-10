@@ -221,3 +221,34 @@ class Bulk(Eloqua):
                 raise Exception('field not found: %s' % field_name)
 
         self.job['fields'].extend(fields_output)
+
+    def add_linked_fields(self, lnk_obj, field_input):
+        """
+        add fields from linked objects
+
+        :param string lnk_obj: linked object
+        :param list field_input: fields to add by name
+        """
+
+        fields = self.get_fields(elq_object=lnk_obj)
+
+        fields_output = []
+
+        for field_name in field_input:
+            match = False
+            for field in fields:
+                if field_name == field['internalName'] or field_name == field['name']:
+                    fields_output.append(field)
+                    match = True
+            if not match:
+                raise Exception('field not found: %s' % field_name)
+
+        for field in fields_output:
+            if lnk_obj == 'contacts':
+                field['statement'] = field['statement'].replace(
+                    'Contact.', 'Contact.CustomObject.')
+            elif lnk_obj == 'accounts':
+                field['statement'] = field['statement'].replace(
+                    'Account.', 'Contact.Account.')
+
+        self.job['fields'].extend(fields_output)
