@@ -5,6 +5,7 @@ import requests
 
 from .pyeloqua import Eloqua
 from .system_fields import ACTIVITY_FIELDS, CONTACT_SYSTEM_FIELDS, ACCOUNT_SYSTEM_FIELDS
+from .error_handling import _elq_error_
 
 ############################################################################
 # Constant definitions
@@ -152,6 +153,7 @@ class Bulk(Eloqua):
         while has_more:
             url = url_base.format(offset=offset)
             req = requests.get(url=url, auth=self.auth)
+            _elq_error_(req)
             fields.extend(req.json()['items'])
             offset += 1
             has_more = req.json()['hasMore']
@@ -257,7 +259,7 @@ class Bulk(Eloqua):
 
         self.job['fields'].extend(fields_output)
 
-    def add_leadscore_fields(self, model_id=None):
+    def add_leadscore_fields(self, model_id=None, name=None):
         """
         add fields from a lead score model
 
@@ -266,6 +268,17 @@ class Bulk(Eloqua):
         """
 
         if model_id is not None:
-            url = self.bulk_base + '/contacts/scoring/models/{0}'.format(model_id)
+            url = self.bulk_base + \
+                '/contacts/scoring/models/{0}'.format(model_id)
             req = requests.get(url=url, auth=self.auth)
-            req.raise_for_status()
+            _elq_error_(req)
+
+            self.job['fields'].extend(req.json()['fields'])
+        elif name is not None:
+            url = self.bulk_base + \
+                '/contacts/scoring/models?q="name={name}"'.format(
+                    name=name.replace(' ', '*'))
+            req = requests.get(url=url, auth=self.auth)
+            _elq_error_(req)
+
+            self.job['fields'].extend(req.json()['items'][0]['fields'])
