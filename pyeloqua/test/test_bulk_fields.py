@@ -467,7 +467,7 @@ def test_leadscore_fields_id_call(mock_get):
     mock_get.return_value = Mock(ok=True, status_code=200)
     mock_get.return_value.json.return_value = deepcopy(LEADSCORE_MODEL_ID)
     bulk.add_leadscore_fields(model_id=1)
-    assert mock_get.called_with(url=bulk.bulk_base + '/contacts/scoring/models/1',
+    mock_get.assert_called_with(url=bulk.bulk_base + '/contacts/scoring/models/1',
                                 auth=bulk.auth)
 
 @patch('pyeloqua.bulk.requests.get')
@@ -477,8 +477,19 @@ def test_leadscore_fields_name(mock_get):
     bulk.exports('contacts')
     mock_get.return_value = Mock(ok=True, status_code=200)
     mock_get.return_value.json.return_value = deepcopy(LEADSCORE_MODEL_NAME)
-    bulk.add_leadscore_fields(name='Model1')
+    bulk.add_leadscore_fields(name='Model 1')
     assert bulk.job['fields'] == LEADSCORE_MODEL_FIELDS
+
+@patch('pyeloqua.bulk.requests.get')
+def test_leadscore_fields_name_call(mock_get):
+    """ lead score model by model name api call """
+    bulk = Bulk(test=True)
+    bulk.exports('contacts')
+    mock_get.return_value = Mock(ok=True, status_code=200)
+    mock_get.return_value.json.return_value = deepcopy(LEADSCORE_MODEL_NAME)
+    bulk.add_leadscore_fields(name='Model 1')
+    mock_get.assert_called_with(url=bulk.bulk_base + '/contacts/scoring/models?q="name=Model*1"',
+                                auth=bulk.auth)
 
 @patch('pyeloqua.bulk.requests.get')
 @raises(Exception)
