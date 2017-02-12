@@ -460,6 +460,17 @@ def test_leadscore_fields_id(mock_get):
     assert bulk.job['fields'] == LEADSCORE_MODEL_FIELDS
 
 @patch('pyeloqua.bulk.requests.get')
+def test_leadscore_fields_id_call(mock_get):
+    """ lead score model by model id api call """
+    bulk = Bulk(test=True)
+    bulk.exports('contacts')
+    mock_get.return_value = Mock(ok=True, status_code=200)
+    mock_get.return_value.json.return_value = deepcopy(LEADSCORE_MODEL_ID)
+    bulk.add_leadscore_fields(model_id=1)
+    assert mock_get.called_with(url=bulk.bulk_base + '/contacts/scoring/models/1',
+                                auth=bulk.auth)
+
+@patch('pyeloqua.bulk.requests.get')
 def test_leadscore_fields_name(mock_get):
     """ add fields from a lead score model by model name """
     bulk = Bulk(test=True)
