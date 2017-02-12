@@ -170,7 +170,7 @@ class Bulk(Eloqua):
         fields = self.get_fields()
 
         if field_input is None:
-            self.job['fields'].extend(deepcopy(fields))
+            self.job['fields'].extend(fields)
             return True
 
         fields_output = []
@@ -180,16 +180,16 @@ class Bulk(Eloqua):
             for field in fields:
                 if self.job['elq_object'] != 'activities':
                     if field_name == field['internalName'] or field_name == field['name']:
-                        fields_output.append(deepcopy(field))
+                        fields_output.append(field)
                         match = True
                 else:
                     if field_name == field['name']:
-                        fields_output.append(deepcopy(field))
+                        fields_output.append(field)
                         match = True
             if not match:
                 raise Exception('field not found: %s' % field_name)
 
-        self.job['fields'].extend(deepcopy(fields_output))
+        self.job['fields'].extend(fields_output)
 
     def add_system_fields(self, field_input=None):
         """
@@ -204,7 +204,7 @@ class Bulk(Eloqua):
             fieldset = ACCOUNT_SYSTEM_FIELDS
 
         if field_input is None:
-            self.job['fields'].extend(deepcopy(fieldset))
+            self.job['fields'].extend(fieldset)
 
             return True
 
@@ -214,13 +214,13 @@ class Bulk(Eloqua):
             match = False
             for field in fieldset:
                 if field_name == field['name']:
-                    fields_output.append(deepcopy(field))
+                    fields_output.append(field)
                     match = True
 
             if not match:
                 raise Exception('field not found: %s' % field_name)
 
-        self.job['fields'].extend(deepcopy(fields_output))
+        self.job['fields'].extend(fields_output)
 
     def add_linked_fields(self, lnk_obj, field_input):
         """
@@ -238,7 +238,7 @@ class Bulk(Eloqua):
             match = False
             for field in fields:
                 if field_name == field['internalName'] or field_name == field['name']:
-                    fields_output.append(deepcopy(field))
+                    fields_output.append(field)
                     match = True
             if not match:
                 raise Exception('field not found: %s' % field_name)
@@ -255,4 +255,17 @@ class Bulk(Eloqua):
                 field['statement'] = field['statement'].replace(
                     'Account.', 'Contact.Account.')
 
-        self.job['fields'].extend(deepcopy(fields_output))
+        self.job['fields'].extend(fields_output)
+
+    def add_leadscore_fields(self, model_id=None):
+        """
+        add fields from a lead score model
+
+        :param string name: name of lead score model
+        :param int id: id of lead score model
+        """
+
+        if model_id is not None:
+            url = self.bulk_base + '/contacts/scoring/models/{0}'.format(model_id)
+            req = requests.get(url=url, auth=self.auth)
+            req.raise_for_status()

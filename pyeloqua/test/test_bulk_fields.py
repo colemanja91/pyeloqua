@@ -1,5 +1,6 @@
 """ Eloqua.Bulk job setup methods (fields) """
 
+from copy import deepcopy
 from nose.tools import raises
 from mock import patch, Mock
 
@@ -148,6 +149,89 @@ LINKED_EVENT_CONTACT_FIELDS = [
     }
 ]
 
+LEADSCORE_MODEL_NAME = {
+    "items": [
+        {
+            "name": "Model1",
+            "status": "Active",
+            "id": 1,
+            "fields": [
+                {
+                    "name": "Rating",
+                    "statement": "{{Contact.LeadScore.Model[1].Rating}}",
+                    "dataType": "string"
+                },
+                {
+                    "name": "ProfileScore",
+                    "statement": "{{Contact.LeadScore.Model[1].ProfileScore}}",
+                    "dataType": "number"
+                },
+                {
+                    "name": "EngagementScore",
+                    "statement": "{{Contact.LeadScore.Model[1].EngagementScore}}",
+                    "dataType": "number"
+                }
+            ],
+            "uri": "/contacts/scoring/models/1",
+            "createdBy": "testuser",
+            "updatedBy": "testuser",
+            "createdAt": "2015-07-15T20:04:45.1600000Z",
+            "updatedAt": "2015-09-16T05:09:09.3570000Z"
+        }
+    ],
+    "totalResults": 1,
+    "limit": 1000,
+    "offset": 0,
+    "count": 1,
+    "hasMore": False
+}
+
+LEADSCORE_MODEL_ID = {
+    "name": "Model1",
+    "status": "Active",
+    "id": 1,
+    "fields": [
+        {
+            "name": "Rating",
+            "statement": "{{Contact.LeadScore.Model[1].Rating}}",
+            "dataType": "string"
+        },
+        {
+            "name": "ProfileScore",
+            "statement": "{{Contact.LeadScore.Model[1].ProfileScore}}",
+            "dataType": "number"
+        },
+        {
+            "name": "EngagementScore",
+            "statement": "{{Contact.LeadScore.Model[1].EngagementScore}}",
+            "dataType": "number"
+        }
+    ],
+    "uri": "/contacts/scoring/models/1",
+    "createdBy": "testuser",
+    "updatedBy": "testuser",
+    "createdAt": "2015-07-15T20:04:45.1600000Z",
+    "updatedAt": "2015-09-16T05:09:09.3570000Z"
+}
+
+LEADSCORE_MODEL_FIELDS = [
+    {
+        "name": "Rating",
+        "statement": "{{Contact.LeadScore.Model[1].Rating}}",
+        "dataType": "string"
+    },
+    {
+        "name": "ProfileScore",
+        "statement": "{{Contact.LeadScore.Model[1].ProfileScore}}",
+        "dataType": "number"
+    },
+    {
+        "name": "EngagementScore",
+        "statement": "{{Contact.LeadScore.Model[1].EngagementScore}}",
+        "dataType": "number"
+    }
+]
+
 ###############################################################################
 # Method to get all fields
 ###############################################################################
@@ -159,7 +243,7 @@ def test_get_fields_cntcts_call(mock_get):
     bulk = Bulk(test=True)
     bulk.exports('contacts')
     mock_get.return_value = Mock(ok=True, status_code=200)
-    mock_get.return_value.json.return_value = GOOD_FIELDS
+    mock_get.return_value.json.return_value = deepcopy(GOOD_FIELDS)
     bulk.get_fields()
     url = bulk.bulk_base + '/contacts/fields?limit=1000&offset=0'
     mock_get.assert_any_call(url=url, auth=bulk.auth)
@@ -171,7 +255,7 @@ def test_get_fields_events_call(mock_get):
     bulk = Bulk(test=True)
     bulk.exports('events', 1)
     mock_get.return_value = Mock(ok=True, status_code=200)
-    mock_get.return_value.json.return_value = GOOD_FIELDS
+    mock_get.return_value.json.return_value = deepcopy(GOOD_FIELDS)
     bulk.get_fields()
     url = bulk.bulk_base + '/events/1/fields?limit=1000&offset=0'
     mock_get.assert_any_call(url=url, auth=bulk.auth)
@@ -183,7 +267,7 @@ def test_get_fields_cntcts_return(mock_get):
     bulk = Bulk(test=True)
     bulk.exports('contacts')
     mock_get.return_value = Mock(ok=True, status_code=200)
-    mock_get.return_value.json.return_value = GOOD_FIELDS
+    mock_get.return_value.json.return_value = deepcopy(GOOD_FIELDS)
     fields = bulk.get_fields()
     assert fields == GOOD_FIELDS['items']
 
@@ -202,7 +286,7 @@ def test_get_fields_specify(mock_get):
     bulk = Bulk(test=True)
     bulk.exports('accounts')
     mock_get.return_value = Mock(ok=True, status_code=200)
-    mock_get.return_value.json.return_value = GOOD_FIELDS
+    mock_get.return_value.json.return_value = deepcopy(GOOD_FIELDS)
     fields = bulk.get_fields(elq_object='contacts')
     assert fields == GOOD_FIELDS['items']
 
@@ -217,7 +301,7 @@ def test_add_fields_db(mock_get):
     bulk = Bulk(test=True)
     bulk.exports('contacts')
     mock_get.return_value = Mock(ok=True, status_code=200)
-    mock_get.return_value.json.return_value = GOOD_FIELDS
+    mock_get.return_value.json.return_value = deepcopy(GOOD_FIELDS)
     fields = ['C_EmailAddress', 'C_FirstName']
     bulk.add_fields(fields)
     assert bulk.job['fields'] == GOOD_FIELDS['items']
@@ -229,7 +313,7 @@ def test_add_fields_display(mock_get):
     bulk = Bulk(test=True)
     bulk.exports('contacts')
     mock_get.return_value = Mock(ok=True, status_code=200)
-    mock_get.return_value.json.return_value = GOOD_FIELDS
+    mock_get.return_value.json.return_value = deepcopy(GOOD_FIELDS)
     fields = ['Email Address', 'First Name']
     bulk.add_fields(fields)
     assert bulk.job['fields'] == GOOD_FIELDS['items']
@@ -241,7 +325,7 @@ def test_add_fields_all(mock_get):
     bulk = Bulk(test=True)
     bulk.exports('contacts')
     mock_get.return_value = Mock(ok=True, status_code=200)
-    mock_get.return_value.json.return_value = GOOD_FIELDS
+    mock_get.return_value.json.return_value = deepcopy(GOOD_FIELDS)
     bulk.add_fields()
     assert bulk.job['fields'] == GOOD_FIELDS['items']
 
@@ -253,7 +337,7 @@ def test_add_fields_notfound(mock_get):
     bulk = Bulk(test=True)
     bulk.exports('contacts')
     mock_get.return_value = Mock(ok=True, status_code=200)
-    mock_get.return_value.json.return_value = GOOD_FIELDS
+    mock_get.return_value.json.return_value = deepcopy(GOOD_FIELDS)
     fields = ['C_EmailAddress', 'C_FirstName', 'C_LastName']
     bulk.add_fields(fields)
 
@@ -316,15 +400,17 @@ def test_accnt_system_fields_set():
 # Contact -> Account
 ###############################################################################
 
+
 @patch('pyeloqua.bulk.requests.get')
 def test_cntct_lnk_acct_fields(mock_get):
     """ add some linked account fields """
     bulk = Bulk(test=True)
     bulk.exports('contacts')
     mock_get.return_value = Mock(ok=True, status_code=200)
-    mock_get.return_value.json.return_value = GOOD_FIELDS_ACCOUNT
+    mock_get.return_value.json.return_value = deepcopy(GOOD_FIELDS_ACCOUNT)
     bulk.add_linked_fields('accounts', ['M_CompanyName', 'M_Country'])
     assert bulk.job['fields'] == LINKED_ACCOUNT_FIELDS
+
 
 @patch('pyeloqua.bulk.requests.get')
 def test_cdo_lnk_cntct_fields(mock_get):
@@ -332,9 +418,10 @@ def test_cdo_lnk_cntct_fields(mock_get):
     bulk = Bulk(test=True)
     bulk.exports('customobjects', 1)
     mock_get.return_value = Mock(ok=True, status_code=200)
-    mock_get.return_value.json.return_value = GOOD_FIELDS
+    mock_get.return_value.json.return_value = deepcopy(GOOD_FIELDS)
     bulk.add_linked_fields('contacts', ['C_EmailAddress', 'C_FirstName'])
     assert bulk.job['fields'] == LINKED_CDO_CONTACT_FIELDS
+
 
 @patch('pyeloqua.bulk.requests.get')
 def test_event_lnk_cntct_fields(mock_get):
@@ -342,7 +429,21 @@ def test_event_lnk_cntct_fields(mock_get):
     bulk = Bulk(test=True)
     bulk.exports('events', 1)
     mock_get.return_value = Mock(ok=True, status_code=200)
-    mock_get.return_value.json.return_value = GOOD_FIELDS
+    mock_get.return_value.json.return_value = deepcopy(GOOD_FIELDS)
     bulk.add_linked_fields('contacts', ['C_EmailAddress', 'C_FirstName'])
-    print(bulk.job['fields'])
     assert bulk.job['fields'] == LINKED_EVENT_CONTACT_FIELDS
+
+###############################################################################
+# Lead Score Model fields
+###############################################################################
+
+
+@patch('pyeloqua.bulk.requests.get')
+def test_leadscore_fields_id(mock_get):
+    """ add fields from a lead score model by model id """
+    bulk = Bulk(test=True)
+    bulk.exports('contacts')
+    mock_get.return_value = Mock(ok=True, status_code=200)
+    mock_get.return_value.json.return_value = deepcopy(LEADSCORE_MODEL_ID)
+    bulk.add_leadscore_fields(model_id=1)
+    assert bulk.job['fields'] == LEADSCORE_MODEL_FIELDS
