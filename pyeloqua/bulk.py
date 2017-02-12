@@ -282,3 +282,5 @@ class Bulk(Eloqua):
             _elq_error_(req)
 
             self.job['fields'].extend(req.json()['items'][0]['fields'])
+        else:
+            raise Exception('model_id or name required')
