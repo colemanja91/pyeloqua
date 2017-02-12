@@ -102,6 +102,51 @@ LINKED_ACCOUNT_FIELDS = [
     }
 ]
 
+LINKED_CDO_CONTACT_FIELDS = [
+    {
+        "name": "Email Address",
+        "internalName": "C_EmailAddress",
+        "dataType": "emailAddress",
+        "hasReadOnlyConstraint": False,
+        "hasNotNullConstraint": False,
+        "hasUniquenessConstraint": False,
+        "statement": "{{CustomObject[1].Contact.Field(C_EmailAddress)}}",
+        "uri": "/contacts/fields/1"
+    },
+    {
+        "name": "First Name",
+        "internalName": "C_FirstName",
+        "dataType": "text",
+        "hasReadOnlyConstraint": False,
+        "hasNotNullConstraint": False,
+        "hasUniquenessConstraint": False,
+        "statement": "{{CustomObject[1].Contact.Field(C_FirstName)}}",
+        "uri": "/contacts/fields/2"
+    }
+]
+
+LINKED_EVENT_CONTACT_FIELDS = [
+    {
+        "name": "Email Address",
+        "internalName": "C_EmailAddress",
+        "dataType": "emailAddress",
+        "hasReadOnlyConstraint": False,
+        "hasNotNullConstraint": False,
+        "hasUniquenessConstraint": False,
+        "statement": "{{Event[1].Contact.Field(C_EmailAddress)}}",
+        "uri": "/contacts/fields/1"
+    },
+    {
+        "name": "First Name",
+        "internalName": "C_FirstName",
+        "dataType": "text",
+        "hasReadOnlyConstraint": False,
+        "hasNotNullConstraint": False,
+        "hasUniquenessConstraint": False,
+        "statement": "{{Event[1].Contact.Field(C_FirstName)}}",
+        "uri": "/contacts/fields/2"
+    }
+]
 
 ###############################################################################
 # Method to get all fields
@@ -268,7 +313,6 @@ def test_accnt_system_fields_set():
 ###############################################################################
 # Add linked record fields
 # CDO -> Contact
-# CDO -> Account
 # Contact -> Account
 ###############################################################################
 
@@ -281,3 +325,24 @@ def test_cntct_lnk_acct_fields(mock_get):
     mock_get.return_value.json.return_value = GOOD_FIELDS_ACCOUNT
     bulk.add_linked_fields('accounts', ['M_CompanyName', 'M_Country'])
     assert bulk.job['fields'] == LINKED_ACCOUNT_FIELDS
+
+@patch('pyeloqua.bulk.requests.get')
+def test_cdo_lnk_cntct_fields(mock_get):
+    """ add some linked contact fields to cdo """
+    bulk = Bulk(test=True)
+    bulk.exports('customobjects', 1)
+    mock_get.return_value = Mock(ok=True, status_code=200)
+    mock_get.return_value.json.return_value = GOOD_FIELDS
+    bulk.add_linked_fields('contacts', ['C_EmailAddress', 'C_FirstName'])
+    assert bulk.job['fields'] == LINKED_CDO_CONTACT_FIELDS
+
+@patch('pyeloqua.bulk.requests.get')
+def test_event_lnk_cntct_fields(mock_get):
+    """ add some linked contact fields to event """
+    bulk = Bulk(test=True)
+    bulk.exports('events', 1)
+    mock_get.return_value = Mock(ok=True, status_code=200)
+    mock_get.return_value.json.return_value = GOOD_FIELDS
+    bulk.add_linked_fields('contacts', ['C_EmailAddress', 'C_FirstName'])
+    print(bulk.job['fields'])
+    assert bulk.job['fields'] == LINKED_EVENT_CONTACT_FIELDS

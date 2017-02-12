@@ -170,7 +170,7 @@ class Bulk(Eloqua):
         fields = self.get_fields()
 
         if field_input is None:
-            self.job['fields'].extend(fields)
+            self.job['fields'].extend(deepcopy(fields))
             return True
 
         fields_output = []
@@ -180,16 +180,16 @@ class Bulk(Eloqua):
             for field in fields:
                 if self.job['elq_object'] != 'activities':
                     if field_name == field['internalName'] or field_name == field['name']:
-                        fields_output.append(field)
+                        fields_output.append(deepcopy(field))
                         match = True
                 else:
                     if field_name == field['name']:
-                        fields_output.append(field)
+                        fields_output.append(deepcopy(field))
                         match = True
             if not match:
                 raise Exception('field not found: %s' % field_name)
 
-        self.job['fields'].extend(fields_output)
+        self.job['fields'].extend(deepcopy(fields_output))
 
     def add_system_fields(self, field_input=None):
         """
@@ -204,7 +204,7 @@ class Bulk(Eloqua):
             fieldset = ACCOUNT_SYSTEM_FIELDS
 
         if field_input is None:
-            self.job['fields'].extend(fieldset)
+            self.job['fields'].extend(deepcopy(fieldset))
 
             return True
 
@@ -214,13 +214,13 @@ class Bulk(Eloqua):
             match = False
             for field in fieldset:
                 if field_name == field['name']:
-                    fields_output.append(field)
+                    fields_output.append(deepcopy(field))
                     match = True
 
             if not match:
                 raise Exception('field not found: %s' % field_name)
 
-        self.job['fields'].extend(fields_output)
+        self.job['fields'].extend(deepcopy(fields_output))
 
     def add_linked_fields(self, lnk_obj, field_input):
         """
@@ -238,17 +238,21 @@ class Bulk(Eloqua):
             match = False
             for field in fields:
                 if field_name == field['internalName'] or field_name == field['name']:
-                    fields_output.append(field)
+                    fields_output.append(deepcopy(field))
                     match = True
             if not match:
                 raise Exception('field not found: %s' % field_name)
 
         for field in fields_output:
             if lnk_obj == 'contacts':
-                field['statement'] = field['statement'].replace(
-                    'Contact.', 'Contact.CustomObject.')
+                if self.job['elq_object'] == 'customobjects':
+                    field['statement'] = field['statement'].replace(
+                        'Contact.', 'CustomObject[%s].Contact.' % self.job['obj_id'])
+                elif self.job['elq_object'] == 'events':
+                    field['statement'] = field['statement'].replace(
+                        'Contact.', 'Event[%s].Contact.' % self.job['obj_id'])
             elif lnk_obj == 'accounts':
                 field['statement'] = field['statement'].replace(
                     'Account.', 'Contact.Account.')
 
-        self.job['fields'].extend(fields_output)
+        self.job['fields'].extend(deepcopy(fields_output))
