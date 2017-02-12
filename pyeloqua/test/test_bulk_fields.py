@@ -186,6 +186,17 @@ LEADSCORE_MODEL_NAME = {
     "hasMore": False
 }
 
+LEADSCORE_MODEL_NAME_NONE = {
+    "items": [
+        {}
+    ],
+    "totalResults": 0,
+    "limit": 1000,
+    "offset": 0,
+    "count": 0,
+    "hasMore": False
+}
+
 LEADSCORE_MODEL_ID = {
     "name": "Model1",
     "status": "Active",
@@ -457,6 +468,16 @@ def test_leadscore_fields_name(mock_get):
     mock_get.return_value.json.return_value = deepcopy(LEADSCORE_MODEL_NAME)
     bulk.add_leadscore_fields(name='Model1')
     assert bulk.job['fields'] == LEADSCORE_MODEL_FIELDS
+
+@patch('pyeloqua.bulk.requests.get')
+@raises(Exception)
+def test_leadscore_fields_name_none(mock_get):
+    """ add fields from a lead score model by model name """
+    bulk = Bulk(test=True)
+    bulk.exports('contacts')
+    mock_get.return_value = Mock(ok=True, status_code=200)
+    mock_get.return_value.json.return_value = deepcopy(LEADSCORE_MODEL_NAME_NONE)
+    bulk.add_leadscore_fields(name='Model1')
 
 @patch('pyeloqua.bulk.requests.get')
 @raises(Exception)
