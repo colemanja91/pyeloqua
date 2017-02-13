@@ -319,3 +319,5 @@ class Bulk(Eloqua):
 
             self.job['filters'].append(exists_temp.format(
                 statement=req.json()['items'][0]['statement']))
+        else:
+            raise Exception('list_id or name required')

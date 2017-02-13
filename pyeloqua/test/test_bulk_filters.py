@@ -90,3 +90,13 @@ def test_filter_exists_list_nm_call(mock_get):
     bulk.filter_exists_list(name='Test List 1')
     mock_get.assert_called_with(url=bulk.bulk_base + '/contacts/lists?q="name=Test*List*1"',
                                 auth=bulk.auth)
+
+@patch('pyeloqua.bulk.requests.get')
+@raises(Exception)
+def test_filter_exists_list_none(mock_get):
+    """ add exists filter - exception on no params """
+    bulk = Bulk(test=True)
+    bulk.exports('contacts')
+    mock_get.return_value = Mock(ok=True, status_code=200)
+    mock_get.return_value.json.return_value = deepcopy(GOOD_LIST_NAME)
+    bulk.filter_exists_list()
