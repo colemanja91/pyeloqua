@@ -353,7 +353,7 @@ class Bulk(Eloqua):
         for opt in kwargs.keys():
             self.job['options'][opt] = kwargs[opt]
 
-    def add_syncaction(self, action, destination, status=None):
+    def add_syncaction(self, action, destination=None, status=None):
         """
         add sync actions
         No client-side validation
@@ -375,6 +375,30 @@ class Bulk(Eloqua):
             self.job['options']['syncActions'] = []
 
         self.job['options']['syncActions'].append(sync_action)
+
+    def add_syncaction_list(self, action, list_id=None, list_name=None):
+        """
+        add sync action based on shared list ID/Name
+
+        :param int list_id: shared list ID
+        :param str list_name: shared list name
+        """
+
+        if list_id is not None:
+            destination = '{{ContactList[%s]}}' % list_id
+        elif list_name is not None:
+            url = self.bulk_base + '/{obj}/lists?q="name={list_name}"'.format(
+                obj=self.job['elq_object'],
+                list_name=list_name.replace(' ', '*')
+            )
+
+            req = requests.get(url=url, auth=self.auth)
+
+            _elq_error_(req)
+
+            destination = req.json()['items'][0]['statement']
+
+        self.add_syncaction(action=action, destination=destination)
 
     def create_def(self, name):
         """
