@@ -156,3 +156,14 @@ def test_check_sync_call(mock_get):
     bulk.check_sync()
     mock_get.assert_called_with(url=bulk.bulk_base + '/syncs/1',
                                 auth=bulk.auth)
+
+@patch('pyeloqua.bulk.requests.get')
+def test_check_sync_update(mock_get):
+    """ check on status of 'active' sync """
+    bulk = Bulk(test=True)
+    bulk.exports('contacts')
+    bulk.job_sync = SYNC_RESPONSE
+    mock_get.return_value = Mock(ok=True, status_code=200)
+    mock_get.return_value.json.return_value = SYNC_RESPONSE_ACTIVE
+    bulk.check_sync()
+    assert bulk.job_sync == SYNC_RESPONSE_ACTIVE

@@ -472,6 +472,8 @@ class Bulk(Eloqua):
 
         _elq_error_(req)
 
+        self.job_sync = req.json()
+
 
 ###############################################################################
 # Helper functions
