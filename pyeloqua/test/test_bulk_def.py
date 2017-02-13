@@ -1,5 +1,6 @@
 """ Eloqua.Bulk job setup methods (create definition) """
 
+from collections import OrderedDict
 from copy import deepcopy
 from json import dumps
 from nose.tools import raises
