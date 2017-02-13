@@ -375,9 +375,15 @@ class Bulk(Eloqua):
             else:
                 req_data['fields'][field['name']] = field['statement']
 
+        if len(self.job['options']) > 0:
+            for option in self.job['options'].keys():
+                req_data[option] = self.job['options'][option]
+
         req = requests.post(url=url, auth=self.auth, data=dumps(req_data))
 
         _elq_error_(req)
+
+        self.job_def = req.json()
 
 
 ###############################################################################
