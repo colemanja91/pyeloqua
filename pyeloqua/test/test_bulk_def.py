@@ -35,8 +35,31 @@ DATA_EXPORTS_CONTACTS = {
     }
 }
 
+JOB_IMPORTS_CONTACTS = {
+    'filters': [],
+    'fields': CONTACT_SYSTEM_FIELDS,
+    'job_type': 'imports',
+    'elq_object': 'contacts',
+    'obj_id': None,
+    'act_type': None,
+    'options': {}
+}
+
+DATA_IMPORTS_CONTACTS = {
+    'name': 'test name',
+    'fields': {
+        "contactID": "{{Contact.Id}}",
+        "createdAt": "{{Contact.CreatedAt}}",
+        "updatedAt": "{{Contact.UpdatedAt}}",
+        "isSubscribed": "{{Contact.Email.IsSubscribed}}",
+        "isBounced": "{{Contact.Email.IsBounced}}",
+        "emailFormat": "{{Contact.Email.Format}}"
+    }
+}
 
 EXPORT_JOB_RESPONSE = {}
+
+IMPORT_JOB_RESPONSE = {}
 
 ###############################################################################
 # Create export definition
@@ -53,3 +76,16 @@ def test_create_exports_call(mock_post):
     url = bulk.bulk_base + '/contacts/exports'
     mock_post.assert_called_with(url=url, auth=bulk.auth,
                                  data=dumps(DATA_EXPORTS_CONTACTS))
+
+
+@patch('pyeloqua.bulk.requests.post')
+def test_create_imports_call(mock_post):
+    """ api call for create import """
+    bulk = Bulk(test=True)
+    bulk.job = JOB_IMPORTS_CONTACTS
+    mock_post.return_value = Mock(ok=True, status_code=200)
+    mock_post.return_value.json.return_value = deepcopy(IMPORT_JOB_RESPONSE)
+    bulk.create_def('test name')
+    url = bulk.bulk_base + '/contacts/imports'
+    mock_post.assert_called_with(url=url, auth=bulk.auth,
+                                 data=dumps(DATA_IMPORTS_CONTACTS))

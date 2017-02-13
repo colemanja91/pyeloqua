@@ -363,9 +363,11 @@ class Bulk(Eloqua):
 
         req_data = {
             'name': name,
-            'fields': {},
-            'filters': 'AND'.join(self.job['filters'])
+            'fields': {}
         }
+
+        if len(self.job['filters']) > 0:
+            req_data['filters'] = 'AND'.join(self.job['filters'])
 
         for field in self.job['fields']:
             if 'internalName' in field.keys():
