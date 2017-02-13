@@ -443,6 +443,17 @@ class Bulk(Eloqua):
 
         self.job_def = req.json()
 
+    def start_sync(self):
+        """
+        begin running a sync
+        """
+
+        req = requests.post(url=self.bulk_base + '/syncs',
+                            auth=self.auth,
+                            data=dumps({
+                                'syncedInstanceUri': self.job_def['uri']
+                            }))
+
 
 ###############################################################################
 # Helper functions
