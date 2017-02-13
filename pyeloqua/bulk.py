@@ -2,6 +2,7 @@
 from __future__ import print_function
 from datetime import datetime
 from copy import deepcopy
+from json import dumps
 import requests
 
 from .pyeloqua import Eloqua
@@ -341,10 +342,40 @@ class Bulk(Eloqua):
 
         self.job['filters'].append(filter_str)
 
-    def create_def(self):
+    def create_def(self, name):
         """
         create an import definition based on current object attributes
+
+        :param str name: name of import/export definition
         """
+
+        if self.job['elq_object'] in OBJECT_REQ_ID:
+            url = self.bulk_base + '/{obj}/{id}/{job_type}'.format(
+                obj=self.job['elq_object'],
+                id=self.job['obj_id'],
+                job_type=self.job['job_type']
+            )
+        else:
+            url = self.bulk_base + '/{obj}/{job_type}'.format(
+                obj=self.job['elq_object'],
+                job_type=self.job['job_type']
+            )
+
+        req_data = {
+            'name': name,
+            'fields': {},
+            'filters': 'AND'.join(self.job['filters'])
+        }
+
+        for field in self.job['fields']:
+            if 'internalName' in field.keys():
+                req_data['fields'][field['internalName']] = field['statement']
+            else:
+                req_data['fields'][field['name']] = field['statement']
+
+        req = requests.post(url=url, auth=self.auth, data=dumps(req_data))
+
+        _elq_error_(req)
 
 
 ###############################################################################
