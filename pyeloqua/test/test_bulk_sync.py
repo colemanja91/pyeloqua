@@ -223,8 +223,8 @@ def test_check_sync_error(mock_get):
 
 @patch('pyeloqua.bulk.requests.post')
 @patch('pyeloqua.bulk.requests.get')
-def test_run_sync(mock_get, mock_post):
-    """ fcn to run a sync end-to-end until finished """
+def test_run_sync_success(mock_get, mock_post):
+    """ fcn to run a sync end-to-end until finished - success """
     bulk = Bulk(test=True)
     bulk.exports('contacts')
     bulk.job_def = EXPORT_JOB_DEF
@@ -234,3 +234,33 @@ def test_run_sync(mock_get, mock_post):
     mock_get.return_value.json.return_value = SYNC_RESPONSE_SUCCESS
     status = bulk.sync()
     assert status == 'success'
+
+
+@patch('pyeloqua.bulk.requests.post')
+@patch('pyeloqua.bulk.requests.get')
+def test_run_sync_warning(mock_get, mock_post):
+    """ fcn to run a sync end-to-end until finished - warning """
+    bulk = Bulk(test=True)
+    bulk.exports('contacts')
+    bulk.job_def = EXPORT_JOB_DEF
+    mock_post.return_value = Mock(ok=True, status_code=200)
+    mock_post.return_value.json.return_value = deepcopy(SYNC_RESPONSE)
+    mock_get.return_value = Mock(ok=True, status_code=200)
+    mock_get.return_value.json.return_value = SYNC_RESPONSE_WARNING
+    status = bulk.sync()
+    assert status == 'warning'
+
+
+@patch('pyeloqua.bulk.requests.post')
+@patch('pyeloqua.bulk.requests.get')
+def test_run_sync_error(mock_get, mock_post):
+    """ fcn to run a sync end-to-end until finished - error """
+    bulk = Bulk(test=True)
+    bulk.exports('contacts')
+    bulk.job_def = EXPORT_JOB_DEF
+    mock_post.return_value = Mock(ok=True, status_code=200)
+    mock_post.return_value.json.return_value = deepcopy(SYNC_RESPONSE)
+    mock_get.return_value = Mock(ok=True, status_code=200)
+    mock_get.return_value.json.return_value = SYNC_RESPONSE_ERROR
+    status = bulk.sync()
+    assert status == 'error'
