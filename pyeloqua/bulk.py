@@ -474,6 +474,9 @@ class Bulk(Eloqua):
 
         self.job_sync = req.json()
 
+        if self.job_sync['status'] in ['pending', 'active']:
+            return False
+
 
 ###############################################################################
 # Helper functions

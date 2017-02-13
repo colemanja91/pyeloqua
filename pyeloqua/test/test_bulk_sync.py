@@ -147,7 +147,7 @@ def test_start_sync_export_nodef(mock_post):
 
 @patch('pyeloqua.bulk.requests.get')
 def test_check_sync_call(mock_get):
-    """ check on status of 'active' sync """
+    """ check on status of 'active' sync - api call """
     bulk = Bulk(test=True)
     bulk.exports('contacts')
     bulk.job_sync = SYNC_RESPONSE
@@ -159,7 +159,7 @@ def test_check_sync_call(mock_get):
 
 @patch('pyeloqua.bulk.requests.get')
 def test_check_sync_update(mock_get):
-    """ check on status of 'active' sync """
+    """ check on status of 'active' sync - update job_sync """
     bulk = Bulk(test=True)
     bulk.exports('contacts')
     bulk.job_sync = SYNC_RESPONSE
@@ -167,3 +167,15 @@ def test_check_sync_update(mock_get):
     mock_get.return_value.json.return_value = SYNC_RESPONSE_ACTIVE
     bulk.check_sync()
     assert bulk.job_sync == SYNC_RESPONSE_ACTIVE
+
+
+@patch('pyeloqua.bulk.requests.get')
+def test_check_sync_notfinished(mock_get):
+    """ check on status of 'active' sync - return False """
+    bulk = Bulk(test=True)
+    bulk.exports('contacts')
+    bulk.job_sync = SYNC_RESPONSE
+    mock_get.return_value = Mock(ok=True, status_code=200)
+    mock_get.return_value.json.return_value = SYNC_RESPONSE_ACTIVE
+    status = bulk.check_sync()
+    assert status is False
