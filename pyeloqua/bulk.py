@@ -296,7 +296,7 @@ class Bulk(Eloqua):
         exists_temp = " EXISTS('{statement}') "
 
         url = self.bulk_base + '/{obj}/lists/{list_id}'.format(
-            obj=self.job['obj_id'],
+            obj=self.job['elq_object'],
             list_id=list_id
         )
 
