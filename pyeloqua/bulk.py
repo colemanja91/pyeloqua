@@ -322,6 +322,23 @@ class Bulk(Eloqua):
 
         self.job['filters'].append(filter_str)
 
+    def filter_equal(self, field, value):
+        """
+        add filter statement for field equals value
+
+        :param string field: Field name on which to filter
+        :param string value: Field value
+        """
+
+        field_stmt = fields_intersect(self.get_fields(), [field])[0]['statement']
+
+        filter_str = " '{statement}' = '{value}' ".format(
+            statement=field_stmt,
+            value=value
+        )
+
+        self.job['filters'].append(filter_str)
+
 
 ###############################################################################
 # Return field set given input set of names and input set of fields

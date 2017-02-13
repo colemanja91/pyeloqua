@@ -216,3 +216,18 @@ def test_filter_datetime_end(mock_get):
     dtime = datetime.strptime('2017-01-01 00:00:00', '%Y-%m-%d %H:%M:%S')
     bulk.filter_date(field='createdAt', end=dtime)
     assert bulk.job['filters'][0] == " '{{Contact.CreatedAt}}' <= '2017-01-01 00:00:00' "
+
+###############################################################################
+# Filter field equal to value
+###############################################################################
+
+
+@patch('pyeloqua.bulk.requests.get')
+def test_filter_value_equal(mock_get):
+    """ add field filter by value equal """
+    bulk = Bulk(test=True)
+    bulk.exports('contacts')
+    mock_get.return_value = Mock(ok=True, status_code=200)
+    mock_get.return_value.json.return_value = deepcopy(GOOD_CONTACT_FIELDS)
+    bulk.filter_equal(field='contactID', value='12345')
+    assert bulk.job['filters'][0] == " '{{Contact.Id}}' = '12345' "

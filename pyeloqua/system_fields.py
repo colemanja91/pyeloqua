@@ -5,7 +5,8 @@ CONTACT_SYSTEM_FIELDS = [
     {"name": "createdAt", "statement": "{{Contact.CreatedAt}}"},
     {"name": "updatedAt", "statement": "{{Contact.UpdatedAt}}"},
     {"name": "isSubscribed", "statement": "{{Contact.Email.IsSubscribed}}"},
-    {"name": "isBounced", "statement": "{{Contact.Email.IsBounced}}"}
+    {"name": "isBounced", "statement": "{{Contact.Email.IsBounced}}"},
+    {"name": "emailFormat", "statement": "{{Contact.Email.Format}}"}
 ]
 
 ACCOUNT_SYSTEM_FIELDS = [
