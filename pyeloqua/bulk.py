@@ -293,10 +293,13 @@ class Bulk(Eloqua):
 
         if start is not None:
 
-            try:
-                datetime.strptime(start, '%Y-%m-%d %H:%M:%S')
-            except ValueError:
-                raise Exception('invalid start value')
+            if isinstance(start, str):
+                try:
+                    datetime.strptime(start, '%Y-%m-%d %H:%M:%S')
+                except ValueError:
+                    raise Exception('invalid start value')
+            elif isinstance(start, datetime):
+                start = start.strftime('%Y-%m-%d %H:%M:%S')
 
             filter_str = " '{statement}' >= '{start}' ".format(
                 statement=field_stmt,
@@ -304,10 +307,13 @@ class Bulk(Eloqua):
             )
         elif end is not None:
 
-            try:
-                datetime.strptime(end, '%Y-%m-%d %H:%M:%S')
-            except ValueError:
-                raise Exception('invalid end value')
+            if isinstance(end, str):
+                try:
+                    datetime.strptime(end, '%Y-%m-%d %H:%M:%S')
+                except ValueError:
+                    raise Exception('invalid end value')
+            elif isinstance(end, datetime):
+                end = end.strftime('%Y-%m-%d %H:%M:%S')
 
             filter_str = " '{statement}' <= '{end}' ".format(
                 statement=field_stmt,

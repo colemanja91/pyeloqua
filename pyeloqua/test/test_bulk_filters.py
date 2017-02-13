@@ -1,5 +1,6 @@
 """ Eloqua.Bulk job setup methods (filters) """
 
+from datetime import datetime
 from copy import deepcopy
 from nose.tools import raises
 from mock import patch, Mock
@@ -191,3 +192,27 @@ def test_filter_date_badstr_end(mock_get):
     mock_get.return_value = Mock(ok=True, status_code=200)
     mock_get.return_value.json.return_value = deepcopy(GOOD_CONTACT_FIELDS)
     bulk.filter_date(field='created', end='2017-01- 00:00:00')
+
+
+@patch('pyeloqua.bulk.requests.get')
+def test_filter_datetime_start(mock_get):
+    """ add field filter by stating datetime """
+    bulk = Bulk(test=True)
+    bulk.exports('contacts')
+    mock_get.return_value = Mock(ok=True, status_code=200)
+    mock_get.return_value.json.return_value = deepcopy(GOOD_CONTACT_FIELDS)
+    dtime = datetime.strptime('2017-01-01 00:00:00', '%Y-%m-%d %H:%M:%S')
+    bulk.filter_date(field='createdAt', start=dtime)
+    assert bulk.job['filters'][0] == " '{{Contact.CreatedAt}}' >= '2017-01-01 00:00:00' "
+
+
+@patch('pyeloqua.bulk.requests.get')
+def test_filter_datetime_end(mock_get):
+    """ add field filter by ending datetime """
+    bulk = Bulk(test=True)
+    bulk.exports('contacts')
+    mock_get.return_value = Mock(ok=True, status_code=200)
+    mock_get.return_value.json.return_value = deepcopy(GOOD_CONTACT_FIELDS)
+    dtime = datetime.strptime('2017-01-01 00:00:00', '%Y-%m-%d %H:%M:%S')
+    bulk.filter_date(field='createdAt', end=dtime)
+    assert bulk.job['filters'][0] == " '{{Contact.CreatedAt}}' <= '2017-01-01 00:00:00' "
