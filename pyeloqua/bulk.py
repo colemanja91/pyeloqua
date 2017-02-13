@@ -348,7 +348,7 @@ class Bulk(Eloqua):
 
 
 ###############################################################################
-# Return field set given input set of names and input set of fields
+# Helper functions
 ###############################################################################
 
 def fields_intersect(field_set, field_input):
