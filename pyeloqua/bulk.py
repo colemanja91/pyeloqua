@@ -264,7 +264,7 @@ class Bulk(Eloqua):
         add fields from a lead score model
 
         :param string name: name of lead score model
-        :param int id: id of lead score model
+        :param int model_id: id of lead score model
         """
 
         if model_id is not None:
@@ -284,3 +284,24 @@ class Bulk(Eloqua):
             self.job['fields'].extend(req.json()['items'][0]['fields'])
         else:
             raise Exception('model_id or name required')
+
+    def filter_exists_list(self, list_id=None):
+        """
+        add filter statement for shared list
+
+        :param int list_id: id of shared list
+        :param string name: name of shared list
+        """
+
+        exists_temp = " EXISTS('{statement}') "
+
+        url = self.bulk_base + '/{obj}/lists/{list_id}'.format(
+            obj=self.job['obj_id'],
+            list_id=list_id
+        )
+
+        req = requests.get(url=url, auth=self.auth)
+
+        _elq_error_(req)
+
+        self.job['filters'].append(exists_temp.format(statement=req.json()['statement']))
