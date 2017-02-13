@@ -277,6 +277,32 @@ class Bulk(Eloqua):
         else:
             raise Exception('asset_id or name required')
 
+    def filter_date(self, field, start=None, end=None):
+        """
+        add a filter by start or end date
+
+        :param string field: Field name on which to filter
+        :param string start: Datetime string for date >=
+        :param string end: Datetime string for date <=
+        :param datetime start: Datetime object for date >=
+        :param datetime end: Datetime object for date <=
+        """
+
+        field_stmt = fields_intersect(self.get_fields(), [field])[0]['statement']
+
+        if start is not None:
+            filter_str = " '{statement}' >= '{start}' ".format(
+                statement=field_stmt,
+                start=start
+            )
+        elif end is not None:
+            filter_str = " '{statement}' <= '{end}' ".format(
+                statement=field_stmt,
+                end=end
+            )
+
+        self.job['filters'].append(filter_str)
+
 
 ###############################################################################
 # Return field set given input set of names and input set of fields

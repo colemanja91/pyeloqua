@@ -41,6 +41,36 @@ GOOD_LIST_NAME = {
     "hasMore": False
 }
 
+GOOD_CONTACT_FIELDS = {
+    "items": [
+        {
+            "name": "Email Address",
+            "internalName": "C_EmailAddress",
+            "dataType": "emailAddress",
+            "hasReadOnlyConstraint": False,
+            "hasNotNullConstraint": False,
+            "hasUniquenessConstraint": False,
+            "statement": "{{Contact.Field(C_EmailAddress)}}",
+            "uri": "/contacts/fields/1"
+        },
+        {
+            "name": "First Name",
+            "internalName": "C_FirstName",
+            "dataType": "text",
+            "hasReadOnlyConstraint": False,
+            "hasNotNullConstraint": False,
+            "hasUniquenessConstraint": False,
+            "statement": "{{Contact.Field(C_FirstName)}}",
+            "uri": "/contacts/fields/2"
+        }
+    ],
+    "totalResults": 2,
+    "limit": 1000,
+    "offset": 0,
+    "count": 2,
+    "hasMore": False
+}
+
 ###############################################################################
 # Filter exists by asset
 ###############################################################################
@@ -91,6 +121,7 @@ def test_asset_exists_list_nm_call(mock_get):
     mock_get.assert_called_with(url=bulk.bulk_base + '/contacts/lists?q="name=Test*List*1"',
                                 auth=bulk.auth)
 
+
 @patch('pyeloqua.bulk.requests.get')
 @raises(Exception)
 def test_asset_exists_list_none(mock_get):
@@ -106,12 +137,25 @@ def test_asset_exists_list_none(mock_get):
 # Filter field by date range
 ###############################################################################
 
-@raises(Exception)
+
+@patch('pyeloqua.bulk.requests.get')
 def test_filter_date_start(mock_get):
     """ add field filter by stating date """
     bulk = Bulk(test=True)
     bulk.exports('contacts')
     mock_get.return_value = Mock(ok=True, status_code=200)
-    mock_get.return_value.json.return_value = deepcopy(GOOD)
+    mock_get.return_value.json.return_value = deepcopy(GOOD_CONTACT_FIELDS)
     bulk.filter_date(field='createdAt', start='2017-01-01 00:00:00')
-    assert bulk.job['filters'][0] == " '{{Contact.Field(CreatedAt)}}' >= '2017-01-01 00:00:00' "
+    print(bulk.job['filters'][0])
+    assert bulk.job['filters'][0] == " '{{Contact.CreatedAt}}' >= '2017-01-01 00:00:00' "
+
+
+@patch('pyeloqua.bulk.requests.get')
+def test_filter_date_end(mock_get):
+    """ add field filter by ending date """
+    bulk = Bulk(test=True)
+    bulk.exports('contacts')
+    mock_get.return_value = Mock(ok=True, status_code=200)
+    mock_get.return_value.json.return_value = deepcopy(GOOD_CONTACT_FIELDS)
+    bulk.filter_date(field='createdAt', end='2017-01-01 00:00:00')
+    assert bulk.job['filters'][0] == " '{{Contact.CreatedAt}}' <= '2017-01-01 00:00:00' "
