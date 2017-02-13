@@ -285,7 +285,7 @@ class Bulk(Eloqua):
         else:
             raise Exception('model_id or name required')
 
-    def filter_exists_list(self, list_id=None):
+    def filter_exists_list(self, list_id=None, name=None):
         """
         add filter statement for shared list
 
@@ -295,13 +295,27 @@ class Bulk(Eloqua):
 
         exists_temp = " EXISTS('{statement}') "
 
-        url = self.bulk_base + '/{obj}/lists/{list_id}'.format(
-            obj=self.job['elq_object'],
-            list_id=list_id
-        )
+        if list_id is not None:
+            url = self.bulk_base + '/{obj}/lists/{list_id}'.format(
+                obj=self.job['elq_object'],
+                list_id=list_id
+            )
 
-        req = requests.get(url=url, auth=self.auth)
+            req = requests.get(url=url, auth=self.auth)
 
-        _elq_error_(req)
+            _elq_error_(req)
 
-        self.job['filters'].append(exists_temp.format(statement=req.json()['statement']))
+            self.job['filters'].append(exists_temp.format(
+                statement=req.json()['statement']))
+        elif name is not None:
+            url = self.bulk_base + '/{obj}/lists?q="name={name}"'.format(
+                obj=self.job['elq_object'],
+                name=name.replace(' ', '*')
+            )
+
+            req = requests.get(url=url, auth=self.auth)
+
+            _elq_error_(req)
+
+            self.job['filters'].append(exists_temp.format(
+                statement=req.json()['items'][0]['statement']))
