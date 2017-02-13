@@ -188,7 +188,6 @@ class Bulk(Eloqua):
 
         self.job['fields'].extend(fields_output)
 
-
     def add_linked_fields(self, lnk_obj, field_input):
         """
         add fields from linked objects
@@ -292,7 +291,8 @@ class Bulk(Eloqua):
         :param datetime end: Datetime object for date <=
         """
 
-        field_stmt = fields_intersect(self.get_fields(), [field])[0]['statement']
+        field_stmt = fields_intersect(self.get_fields(), [field])[
+            0]['statement']
 
         if start is not None:
 
@@ -333,7 +333,8 @@ class Bulk(Eloqua):
         :param string value: Field value
         """
 
-        field_stmt = fields_intersect(self.get_fields(), [field])[0]['statement']
+        field_stmt = fields_intersect(self.get_fields(), [field])[
+            0]['statement']
 
         filter_str = " '{statement}' = '{value}' ".format(
             statement=field_stmt,
@@ -341,6 +342,35 @@ class Bulk(Eloqua):
         )
 
         self.job['filters'].append(filter_str)
+
+    def add_options(self, **kwargs):
+        """
+        add import/export options
+        no client-side validation is performed; errors in server-side
+        validation will result in a 400 status code
+        """
+
+        for opt in kwargs.keys():
+            self.job['options'][opt] = kwargs[opt]
+
+    def add_syncaction(self, action, destination):
+        """
+        add sync actions
+        No client-side validation
+
+        :param str action: action to perform
+        :param str destination: target
+        """
+
+        sync_action = {
+            'action': action,
+            'destination': destination
+        }
+
+        if 'syncActions' not in self.job['options'].keys():
+            self.job['options']['syncActions'] = []
+
+        self.job['options']['syncActions'].append(sync_action)
 
     def create_def(self, name):
         """
