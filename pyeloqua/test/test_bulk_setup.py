@@ -58,7 +58,7 @@ def test_setup_actvty():
     """ setup sets obj_id """
     bulk = Bulk(test=True)
     bulk._setup_('imports', 'activities', act_type='EmailOpen')  # pylint: disable=W0212
-    assert bulk.job['act_type'] == 'EmailOpen'    
+    assert bulk.job['act_type'] == 'EmailOpen'
 
 @raises(Exception)
 def test_setup_bad_obj():
