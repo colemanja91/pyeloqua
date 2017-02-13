@@ -6,6 +6,7 @@ from pyeloqua import Bulk
 # Methods to set up job
 ###############################################################################
 
+
 def test_setup_type():
     """ setup set job_type """
     bulk = Bulk(test=True)
@@ -54,11 +55,14 @@ def test_setup_actvty_type_req():
     bulk = Bulk(test=True)
     bulk._setup_('imports', 'activities')  # pylint: disable=W0212
 
+
 def test_setup_actvty():
     """ setup sets obj_id """
     bulk = Bulk(test=True)
-    bulk._setup_('imports', 'activities', act_type='EmailOpen')  # pylint: disable=W0212
+    bulk._setup_('imports', 'activities', # pylint: disable=W0212
+                 act_type='EmailOpen')
     assert bulk.job['act_type'] == 'EmailOpen'
+
 
 @raises(Exception)
 def test_setup_bad_obj():
