@@ -31,8 +31,13 @@ def test_bulk_iselq():
     assert isinstance(bulk, Eloqua)
 
 
+def test_bulk_hasjobdef():
+    """ Has job which is BLANK_JOB """
+    bulk = Bulk(test=True)
+    assert isinstance(bulk.job_def, dict)
+
 def test_bulk_hasjob():
-    """ Has job which is instance of BulkDef """
+    """ Has job_def which is instance of dict """
     bulk = Bulk(test=True)
     assert isinstance(bulk.job, dict)
 
@@ -49,3 +54,11 @@ def test_reset_job():
     bulk.job['job_type'] = 'imports'
     bulk.reset()
     assert bulk.job == BLANK_JOB
+
+
+def test_reset_job_def():
+    """ reset job def """
+    bulk = Bulk(test=True)
+    bulk.job['job_type'] = 'imports'
+    bulk.reset()
+    assert bulk.job_def == {}
