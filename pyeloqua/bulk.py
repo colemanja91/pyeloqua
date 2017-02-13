@@ -476,6 +476,8 @@ class Bulk(Eloqua):
 
         if self.job_sync['status'] in ['pending', 'active']:
             return False
+        elif self.job_sync['status'] in ['success', 'warning', 'error']:
+            return True
 
 
 ###############################################################################
