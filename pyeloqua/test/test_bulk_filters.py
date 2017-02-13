@@ -42,61 +42,61 @@ GOOD_LIST_NAME = {
 }
 
 ###############################################################################
-# Filter exists by list, filter, or segment
+# Filter exists by asset
 ###############################################################################
 
 
 @patch('pyeloqua.bulk.requests.get')
-def test_filter_exists_list_id(mock_get):
+def test_asset_exists_list_id(mock_get):
     """ add exists filter - Shared List by ID """
     bulk = Bulk(test=True)
     bulk.exports('contacts')
     mock_get.return_value = Mock(ok=True, status_code=200)
     mock_get.return_value.json.return_value = deepcopy(GOOD_LIST_ID)
-    bulk.filter_exists_list(list_id=1)
+    bulk.asset_exists(asset='lists', asset_id=1)
     assert bulk.job['filters'][0] == " EXISTS('{{ContactList[1]}}') "
 
 
 @patch('pyeloqua.bulk.requests.get')
-def test_filter_exists_list_id_call(mock_get):
+def test_asset_exists_list_id_call(mock_get):
     """ add exists filter - Shared List by ID, api call """
     bulk = Bulk(test=True)
     bulk.exports('contacts')
     mock_get.return_value = Mock(ok=True, status_code=200)
     mock_get.return_value.json.return_value = deepcopy(GOOD_LIST_ID)
-    bulk.filter_exists_list(list_id=1)
+    bulk.asset_exists(asset='lists', asset_id=1)
     mock_get.assert_called_with(url=bulk.bulk_base + '/contacts/lists/1',
                                 auth=bulk.auth)
 
 
 @patch('pyeloqua.bulk.requests.get')
-def test_filter_exists_list_name(mock_get):
+def test_asset_exists_list_name(mock_get):
     """ add exists filter - Shared List by Name """
     bulk = Bulk(test=True)
     bulk.exports('contacts')
     mock_get.return_value = Mock(ok=True, status_code=200)
     mock_get.return_value.json.return_value = deepcopy(GOOD_LIST_NAME)
-    bulk.filter_exists_list(name='Test List 1')
+    bulk.asset_exists(asset='lists', name='Test List 1')
     assert bulk.job['filters'][0] == " EXISTS('{{ContactList[1]}}') "
 
 
 @patch('pyeloqua.bulk.requests.get')
-def test_filter_exists_list_nm_call(mock_get):
+def test_asset_exists_list_nm_call(mock_get):
     """ add exists filter - Shared List by Name, api call """
     bulk = Bulk(test=True)
     bulk.exports('contacts')
     mock_get.return_value = Mock(ok=True, status_code=200)
     mock_get.return_value.json.return_value = deepcopy(GOOD_LIST_NAME)
-    bulk.filter_exists_list(name='Test List 1')
+    bulk.asset_exists(asset='lists', name='Test List 1')
     mock_get.assert_called_with(url=bulk.bulk_base + '/contacts/lists?q="name=Test*List*1"',
                                 auth=bulk.auth)
 
 @patch('pyeloqua.bulk.requests.get')
 @raises(Exception)
-def test_filter_exists_list_none(mock_get):
+def test_asset_exists_list_none(mock_get):
     """ add exists filter - exception on no params """
     bulk = Bulk(test=True)
     bulk.exports('contacts')
     mock_get.return_value = Mock(ok=True, status_code=200)
     mock_get.return_value.json.return_value = deepcopy(GOOD_LIST_NAME)
-    bulk.filter_exists_list()
+    bulk.asset_exists(asset='lists')

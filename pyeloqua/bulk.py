@@ -285,20 +285,22 @@ class Bulk(Eloqua):
         else:
             raise Exception('model_id or name required')
 
-    def filter_exists_list(self, list_id=None, name=None):
+    def asset_exists(self, asset, asset_id=None, name=None):
         """
         add filter statement for shared list
 
-        :param int list_id: id of shared list
-        :param string name: name of shared list
+        :param string asset: Eloqua asset type: lists, segments, filters
+        :param int asset_id: id of asset
+        :param string name: name of asset
         """
 
         exists_temp = " EXISTS('{statement}') "
 
-        if list_id is not None:
-            url = self.bulk_base + '/{obj}/lists/{list_id}'.format(
+        if asset_id is not None:
+            url = self.bulk_base + '/{obj}/{asset}/{asset_id}'.format(
                 obj=self.job['elq_object'],
-                list_id=list_id
+                asset=asset,
+                asset_id=asset_id
             )
 
             req = requests.get(url=url, auth=self.auth)
@@ -308,8 +310,9 @@ class Bulk(Eloqua):
             self.job['filters'].append(exists_temp.format(
                 statement=req.json()['statement']))
         elif name is not None:
-            url = self.bulk_base + '/{obj}/lists?q="name={name}"'.format(
+            url = self.bulk_base + '/{obj}/{asset}?q="name={name}"'.format(
                 obj=self.job['elq_object'],
+                asset=asset,
                 name=name.replace(' ', '*')
             )
 
@@ -320,4 +323,4 @@ class Bulk(Eloqua):
             self.job['filters'].append(exists_temp.format(
                 statement=req.json()['items'][0]['statement']))
         else:
-            raise Exception('list_id or name required')
+            raise Exception('asset_id or name required')
