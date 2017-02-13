@@ -40,6 +40,10 @@ GOOD_FIELDS = {
     "hasMore": False
 }
 
+ALL_CONTACT_FIELDS = []
+ALL_CONTACT_FIELDS.extend(CONTACT_SYSTEM_FIELDS)
+ALL_CONTACT_FIELDS.extend(GOOD_FIELDS['items'])
+
 GOOD_FIELDS_ACCOUNT = {
     "items": [
         {
@@ -74,6 +78,10 @@ GOOD_FIELDS_ACCOUNT = {
     "count": 2,
     "hasMore": False
 }
+
+ALL_ACCOUNT_FIELDS = []
+ALL_ACCOUNT_FIELDS.extend(ACCOUNT_SYSTEM_FIELDS)
+ALL_ACCOUNT_FIELDS.extend(GOOD_FIELDS_ACCOUNT['items'])
 
 LINKED_ACCOUNT_FIELDS = [
     {
@@ -280,7 +288,7 @@ def test_get_fields_cntcts_return(mock_get):
     mock_get.return_value = Mock(ok=True, status_code=200)
     mock_get.return_value.json.return_value = deepcopy(GOOD_FIELDS)
     fields = bulk.get_fields()
-    assert fields == GOOD_FIELDS['items']
+    assert fields == ALL_CONTACT_FIELDS
 
 
 def test_get_fields_actvty_return():
@@ -299,7 +307,7 @@ def test_get_fields_specify(mock_get):
     mock_get.return_value = Mock(ok=True, status_code=200)
     mock_get.return_value.json.return_value = deepcopy(GOOD_FIELDS)
     fields = bulk.get_fields(elq_object='contacts')
-    assert fields == GOOD_FIELDS['items']
+    assert fields == ALL_CONTACT_FIELDS
 
 ###############################################################################
 # Method to get specified object fields
@@ -338,7 +346,9 @@ def test_add_fields_all(mock_get):
     mock_get.return_value = Mock(ok=True, status_code=200)
     mock_get.return_value.json.return_value = deepcopy(GOOD_FIELDS)
     bulk.add_fields()
-    assert bulk.job['fields'] == GOOD_FIELDS['items']
+    print(len(bulk.job['fields']))
+    print(len(ALL_CONTACT_FIELDS))
+    assert bulk.job['fields'] == ALL_CONTACT_FIELDS
 
 
 @patch('pyeloqua.bulk.requests.get')
@@ -369,40 +379,26 @@ def test_add_fields_actvty():
     bulk.add_fields(fields)
     assert len(bulk.job['fields']) == 2
 
-###############################################################################
-# Add system fields
-###############################################################################
 
-
-def test_cntct_system_fields_all():
-    """ add all contact system fields """
-    bulk = Bulk(test=True)
-    bulk.exports('contacts')
-    bulk.add_system_fields()
-    assert bulk.job['fields'] == CONTACT_SYSTEM_FIELDS
-
-
-def test_accnt_system_fields_all():
-    """ add all account system fields """
-    bulk = Bulk(test=True)
-    bulk.exports('accounts')
-    bulk.add_system_fields()
-    assert bulk.job['fields'] == ACCOUNT_SYSTEM_FIELDS
-
-
-def test_cntct_system_fields_set():
+@patch('pyeloqua.bulk.requests.get')
+def test_cntct_system_fields_set(mock_get):
     """ add some contact system fields """
     bulk = Bulk(test=True)
     bulk.exports('contacts')
-    bulk.add_system_fields(['contactID', 'createdAt'])
+    mock_get.return_value = Mock(ok=True, status_code=200)
+    mock_get.return_value.json.return_value = deepcopy(GOOD_FIELDS)
+    bulk.add_fields(['contactID', 'createdAt'])
     assert len(bulk.job['fields']) == 2
 
 
-def test_accnt_system_fields_set():
+@patch('pyeloqua.bulk.requests.get')
+def test_accnt_system_fields_set(mock_get):
     """ add some account system fields """
     bulk = Bulk(test=True)
     bulk.exports('accounts')
-    bulk.add_system_fields(['accountID', 'createdAt'])
+    mock_get.return_value = Mock(ok=True, status_code=200)
+    mock_get.return_value.json.return_value = deepcopy(GOOD_FIELDS)
+    bulk.add_fields(['accountID', 'createdAt'])
     assert len(bulk.job['fields']) == 2
 
 ###############################################################################

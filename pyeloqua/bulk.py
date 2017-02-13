@@ -144,7 +144,12 @@ class Bulk(Eloqua):
             )
             url_base += '&offset={offset}'
 
-        fields = []
+        if elq_object == 'contacts':
+            fields = deepcopy(CONTACT_SYSTEM_FIELDS)
+        elif elq_object == 'accounts':
+            fields = deepcopy(ACCOUNT_SYSTEM_FIELDS)
+        else:
+            fields = []
 
         has_more = True
 
@@ -175,54 +180,10 @@ class Bulk(Eloqua):
             self.job['fields'].extend(fields)
             return True
 
-        fields_output = []
-
-        for field_name in field_input:
-            match = False
-            for field in fields:
-                if self.job['elq_object'] != 'activities':
-                    if field_name == field['internalName'] or field_name == field['name']:
-                        fields_output.append(field)
-                        match = True
-                else:
-                    if field_name == field['name']:
-                        fields_output.append(field)
-                        match = True
-            if not match:
-                raise Exception('field not found: %s' % field_name)
+        fields_output = fields_intersect(fields, field_input)
 
         self.job['fields'].extend(fields_output)
 
-    def add_system_fields(self, field_input=None):
-        """
-        add object-level system fields to job setup
-
-        :param list field_input: fields to add by name
-        """
-
-        if self.job['elq_object'] == 'contacts':
-            fieldset = CONTACT_SYSTEM_FIELDS
-        elif self.job['elq_object'] == 'accounts':
-            fieldset = ACCOUNT_SYSTEM_FIELDS
-
-        if field_input is None:
-            self.job['fields'].extend(fieldset)
-
-            return True
-
-        fields_output = []
-
-        for field_name in field_input:
-            match = False
-            for field in fieldset:
-                if field_name == field['name']:
-                    fields_output.append(field)
-                    match = True
-
-            if not match:
-                raise Exception('field not found: %s' % field_name)
-
-        self.job['fields'].extend(fields_output)
 
     def add_linked_fields(self, lnk_obj, field_input):
         """
@@ -234,16 +195,7 @@ class Bulk(Eloqua):
 
         fields = self.get_fields(elq_object=lnk_obj)
 
-        fields_output = []
-
-        for field_name in field_input:
-            match = False
-            for field in fields:
-                if field_name == field['internalName'] or field_name == field['name']:
-                    fields_output.append(field)
-                    match = True
-            if not match:
-                raise Exception('field not found: %s' % field_name)
+        fields_output = fields_intersect(fields, field_input)
 
         for field in fields_output:
             if lnk_obj == 'contacts':
@@ -324,3 +276,28 @@ class Bulk(Eloqua):
                 statement=req.json()['items'][0]['statement']))
         else:
             raise Exception('asset_id or name required')
+
+
+###############################################################################
+# Return field set given input set of names and input set of fields
+###############################################################################
+
+def fields_intersect(field_set, field_input):
+    """ Return field set given input set of names and input set of fields """
+    fields_output = []
+
+    for field_name in field_input:
+        match = False
+        for field in field_set:
+            if 'internalName' in field.keys():
+                if field_name == field['internalName'] or field_name == field['name']:
+                    fields_output.append(field)
+                    match = True
+            else:
+                if field_name == field['name']:
+                    fields_output.append(field)
+                    match = True
+        if not match:
+            raise Exception('field not found: %s' % field_name)
+
+    return fields_output
