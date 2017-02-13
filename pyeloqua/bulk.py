@@ -55,11 +55,13 @@ class Bulk(Eloqua):
         Eloqua.__init__(self, username, password, company, test)
         self.job = deepcopy(BLANK_JOB)
         self.job_def = {}
+        self.job_sync = {}
 
     def reset(self):
         """ reset job """
         self.job = deepcopy(BLANK_JOB)
         self.job_def = {}
+        self.job_sync = {}
 
     def _setup_(self, job_type, elq_object, obj_id=None, act_type=None):
         """
@@ -453,6 +455,10 @@ class Bulk(Eloqua):
                             data=dumps({
                                 'syncedInstanceUri': self.job_def['uri']
                             }))
+
+        _elq_error_(req)
+        
+        self.job_sync = req.json()
 
 
 ###############################################################################

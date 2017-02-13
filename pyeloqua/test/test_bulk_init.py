@@ -32,9 +32,14 @@ def test_bulk_iselq():
 
 
 def test_bulk_hasjobdef():
-    """ Has job which is BLANK_JOB """
+    """ Has job_def which is dict """
     bulk = Bulk(test=True)
     assert isinstance(bulk.job_def, dict)
+
+def test_bulk_hasjobsync():
+    """ Has job_sync which is dict """
+    bulk = Bulk(test=True)
+    assert isinstance(bulk.job_sync, dict)
 
 def test_bulk_hasjob():
     """ Has job_def which is instance of dict """
@@ -62,3 +67,10 @@ def test_reset_job_def():
     bulk.job['job_type'] = 'imports'
     bulk.reset()
     assert bulk.job_def == {}
+
+def test_reset_job_sync():
+    """ reset job def """
+    bulk = Bulk(test=True)
+    bulk.job['job_type'] = 'imports'
+    bulk.reset()
+    assert bulk.job_sync == {}

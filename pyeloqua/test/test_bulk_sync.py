@@ -43,7 +43,7 @@ SYNC_RESPONSE = {
 
 @patch('pyeloqua.bulk.requests.post')
 def test_start_sync_export(mock_post):
-    """ start syncing an export """
+    """ start syncing an export - api call """
     bulk = Bulk(test=True)
     bulk.exports('contacts')
     bulk.job_def = EXPORT_JOB_DEF
@@ -57,3 +57,15 @@ def test_start_sync_export(mock_post):
                                          "syncedInstanceUri": "/contacts/exports/1"
                                      }
                                  ))
+
+
+@patch('pyeloqua.bulk.requests.post')
+def test_start_sync_export_add(mock_post):
+    """ start syncing an export - add to Bulk """
+    bulk = Bulk(test=True)
+    bulk.exports('contacts')
+    bulk.job_def = EXPORT_JOB_DEF
+    mock_post.return_value = Mock(ok=True, status_code=201)
+    mock_post.return_value.json.return_value = deepcopy(SYNC_RESPONSE)
+    bulk.start_sync()
+    assert bulk.job_sync == SYNC_RESPONSE
