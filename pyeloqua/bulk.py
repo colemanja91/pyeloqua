@@ -287,7 +287,7 @@ class Bulk(Eloqua):
 
     def asset_exists(self, asset, asset_id=None, name=None):
         """
-        add filter statement for shared list
+        add filter statement for asset
 
         :param string asset: Eloqua asset type: lists, segments, filters
         :param int asset_id: id of asset
