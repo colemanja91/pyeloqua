@@ -100,3 +100,18 @@ def test_asset_exists_list_none(mock_get):
     mock_get.return_value = Mock(ok=True, status_code=200)
     mock_get.return_value.json.return_value = deepcopy(GOOD_LIST_NAME)
     bulk.asset_exists(asset='lists')
+
+
+###############################################################################
+# Filter field by date range
+###############################################################################
+
+@raises(Exception)
+def test_filter_date_start(mock_get):
+    """ add field filter by stating date """
+    bulk = Bulk(test=True)
+    bulk.exports('contacts')
+    mock_get.return_value = Mock(ok=True, status_code=200)
+    mock_get.return_value.json.return_value = deepcopy(GOOD)
+    bulk.filter_date(field='createdAt', start='2017-01-01 00:00:00')
+    assert bulk.job['filters'][0] == " '{{Contact.Field(CreatedAt)}}' >= '2017-01-01 00:00:00' "
