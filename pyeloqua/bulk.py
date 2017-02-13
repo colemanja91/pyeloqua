@@ -457,8 +457,20 @@ class Bulk(Eloqua):
                             }))
 
         _elq_error_(req)
-        
+
         self.job_sync = req.json()
+
+    def check_sync(self):
+        """
+        check a pre-existing sync;
+        update Bulk.job_sync
+        return True if finished, False if not finished
+        """
+
+        req = requests.get(url=self.bulk_base + self.job_sync['uri'],
+                           auth=self.auth)
+
+        _elq_error_(req)
 
 
 ###############################################################################

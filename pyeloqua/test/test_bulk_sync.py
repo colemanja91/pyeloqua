@@ -2,6 +2,7 @@
 
 from copy import deepcopy
 from json import dumps
+from nose.tools import raises
 from mock import patch, Mock
 
 from pyeloqua import Bulk
@@ -28,6 +29,27 @@ EXPORT_JOB_DEF = {
     "updatedAt": "2017-02-13T16:32:31.7020994Z"
 }
 
+IMPORT_JOB_DEF = {
+    "name": "test name",
+    "fields": {
+        "contactID": "{{Contact.Id}}",
+        "createdAt": "{{Contact.CreatedAt}}",
+        "updatedAt": "{{Contact.UpdatedAt}}",
+        "isSubscribed": "{{Contact.Email.IsSubscribed}}",
+        "isBounced": "{{Contact.Email.IsBounced}}",
+        "emailFormat": "{{Contact.Email.Format}}"
+    },
+    "identifierFieldName": "contactID",
+    "isSyncTriggeredOnImport": False,
+    "dataRetentionDuration": "P7D",
+    "isUpdatingMultipleMatchedRecords": False,
+    "uri": "/contacts/imports/1",
+    "createdBy": "testuser",
+    "createdAt": "2017-02-13T16:38:13.3442894Z",
+    "updatedBy": "testuser",
+    "updatedAt": "2017-02-13T16:38:13.3442894Z"
+}
+
 SYNC_RESPONSE = {
     "syncedInstanceUri": "/contacts/exports/1",
     "status": "pending",
@@ -35,6 +57,43 @@ SYNC_RESPONSE = {
     "createdBy": "testuser",
     "uri": "/syncs/1"
 }
+
+SYNC_RESPONSE_ACTIVE = {
+    "syncStartedAt": "2013-07-22T22:17:59.6730000Z",
+    "status": "active",
+    "createdAt": "2015-09-25T18:08:32.3485942Z",
+    "createdBy": "testuser",
+    "uri": "/syncs/1"
+}
+
+SYNC_RESPONSE_SUCCESS = {
+    "syncStartedAt": "2013-07-22T22:17:59.6730000Z",
+    "syncEndedAt": "2013-07-22T22:18:07.6430000Z",
+    "status": "success",
+    "createdAt": "2015-09-25T18:08:32.3485942Z",
+    "createdBy": "testuser",
+    "uri": "/syncs/1"
+}
+
+
+SYNC_RESPONSE_WARNING = {
+    "syncStartedAt": "2013-07-22T22:17:59.6730000Z",
+    "syncEndedAt": "2013-07-22T22:18:07.6430000Z",
+    "status": "warning",
+    "createdAt": "2015-09-25T18:08:32.3485942Z",
+    "createdBy": "testuser",
+    "uri": "/syncs/1"
+}
+
+SYNC_RESPONSE_ERROR = {
+    "syncStartedAt": "2013-07-22T22:17:59.6730000Z",
+    "syncEndedAt": "2013-07-22T22:18:07.6430000Z",
+    "status": "error",
+    "createdAt": "2015-09-25T18:08:32.3485942Z",
+    "createdBy": "testuser",
+    "uri": "/syncs/1"
+}
+
 
 ###############################################################################
 # You sync'd my data ship!
@@ -47,7 +106,7 @@ def test_start_sync_export(mock_post):
     bulk = Bulk(test=True)
     bulk.exports('contacts')
     bulk.job_def = EXPORT_JOB_DEF
-    mock_post.return_value = Mock(ok=True, status_code=201)
+    mock_post.return_value = Mock(ok=True, status_code=200)
     mock_post.return_value.json.return_value = deepcopy(SYNC_RESPONSE)
     bulk.start_sync()
     mock_post.assert_called_with(url=bulk.bulk_base + '/syncs',
@@ -65,7 +124,35 @@ def test_start_sync_export_add(mock_post):
     bulk = Bulk(test=True)
     bulk.exports('contacts')
     bulk.job_def = EXPORT_JOB_DEF
-    mock_post.return_value = Mock(ok=True, status_code=201)
+    mock_post.return_value = Mock(ok=True, status_code=200)
     mock_post.return_value.json.return_value = deepcopy(SYNC_RESPONSE)
     bulk.start_sync()
     assert bulk.job_sync == SYNC_RESPONSE
+
+
+@patch('pyeloqua.bulk.requests.post')
+@raises(Exception)
+def test_start_sync_export_nodef(mock_post):
+    """ except when no job_def """
+    bulk = Bulk(test=True)
+    bulk.exports('contacts')
+    mock_post.return_value = Mock(ok=True, status_code=200)
+    mock_post.return_value.json.return_value = deepcopy(SYNC_RESPONSE)
+    bulk.start_sync()
+
+
+###############################################################################
+# check on the status of those syncs
+###############################################################################
+
+@patch('pyeloqua.bulk.requests.get')
+def test_check_sync_call(mock_get):
+    """ check on status of 'active' sync """
+    bulk = Bulk(test=True)
+    bulk.exports('contacts')
+    bulk.job_sync = SYNC_RESPONSE
+    mock_get.return_value = Mock(ok=True, status_code=200)
+    mock_get.return_value.json.return_value = SYNC_RESPONSE_ACTIVE
+    bulk.check_sync()
+    mock_get.assert_called_with(url=bulk.bulk_base + '/syncs/1',
+                                auth=bulk.auth)
