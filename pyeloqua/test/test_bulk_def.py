@@ -1,6 +1,5 @@
 """ Eloqua.Bulk job setup methods (create definition) """
 
-from collections import OrderedDict
 from copy import deepcopy
 from json import dumps
 from nose.tools import raises
@@ -23,9 +22,8 @@ JOB_EXPORTS_CONTACTS = {
     'options': {}
 }
 
-DATA_EXPORTS_CONTACTS = {
+DATA_EXPORTS_CONTACTS = dumps({
     'name': 'test name',
-    'filters': " '{{Contact.Id}}' = '12345' AND '{{Contact.CreatedAt}}' >= '2017-01-01 00:00:00' ",
     'fields': {
         "contactID": "{{Contact.Id}}",
         "createdAt": "{{Contact.CreatedAt}}",
@@ -33,8 +31,9 @@ DATA_EXPORTS_CONTACTS = {
         "isSubscribed": "{{Contact.Email.IsSubscribed}}",
         "isBounced": "{{Contact.Email.IsBounced}}",
         "emailFormat": "{{Contact.Email.Format}}"
-    }
-}
+    },
+    'filters': " '{{Contact.Id}}' = '12345' AND '{{Contact.CreatedAt}}' >= '2017-01-01 00:00:00' "
+})
 
 JOB_IMPORTS_CONTACTS = {
     'filters': [],
@@ -58,7 +57,7 @@ JOB_IMPORTS_CONTACTS_BAD = {
     'options': {}
 }
 
-DATA_IMPORTS_CONTACTS = {
+DATA_IMPORTS_CONTACTS = dumps({
     'name': 'test name',
     'fields': {
         "contactID": "{{Contact.Id}}",
@@ -69,7 +68,7 @@ DATA_IMPORTS_CONTACTS = {
         "emailFormat": "{{Contact.Email.Format}}"
     },
     'identifierFieldName': 'contactID'
-}
+})
 
 EXPORT_JOB_RESPONSE = {
     "name": "test name",
@@ -135,7 +134,7 @@ def test_create_exports_call(mock_post):
     bulk.create_def('test name')
     url = bulk.bulk_base + '/contacts/exports'
     mock_post.assert_called_with(url=url, auth=bulk.auth,
-                                 data=dumps(DATA_EXPORTS_CONTACTS))
+                                 data=DATA_EXPORTS_CONTACTS)
 
 
 @patch('pyeloqua.bulk.requests.post')
@@ -148,7 +147,7 @@ def test_create_imports_call(mock_post):
     bulk.create_def('test name')
     url = bulk.bulk_base + '/contacts/imports'
     mock_post.assert_called_with(url=url, auth=bulk.auth,
-                                 data=dumps(DATA_IMPORTS_CONTACTS))
+                                 data=DATA_IMPORTS_CONTACTS)
 
 
 @patch('pyeloqua.bulk.requests.post')
