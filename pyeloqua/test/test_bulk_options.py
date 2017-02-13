@@ -45,3 +45,15 @@ def test_syncact_add():
         "action": "add",
         "destination": "{{ContactList[12345]}}"
     }
+
+def test_syncact_add_status():
+    """ add sync action with specified destination, action and status """
+    bulk = Bulk(test=True)
+    bulk.exports('contacts')
+    bulk.add_syncaction(action='add',
+                        destination='{{ActionInstance(f82d).Execution[12345]}}',
+                        status='complete')
+    bulk.job['options']['syncActions'][0] = {
+        "action": "add",
+        "destination": "{{ContactList[12345]}}"
+    }

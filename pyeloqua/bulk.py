@@ -353,19 +353,23 @@ class Bulk(Eloqua):
         for opt in kwargs.keys():
             self.job['options'][opt] = kwargs[opt]
 
-    def add_syncaction(self, action, destination):
+    def add_syncaction(self, action, destination, status=None):
         """
         add sync actions
         No client-side validation
 
         :param str action: action to perform
-        :param str destination: target
+        :param str destination: target,
+        :param str status: set to status
         """
 
         sync_action = {
             'action': action,
             'destination': destination
         }
+
+        if status is not None:
+            sync_action['status'] = status
 
         if 'syncActions' not in self.job['options'].keys():
             self.job['options']['syncActions'] = []
