@@ -1,5 +1,6 @@
 """ Bulk API class """
 from __future__ import print_function
+from datetime import datetime
 from copy import deepcopy
 import requests
 
@@ -291,11 +292,23 @@ class Bulk(Eloqua):
         field_stmt = fields_intersect(self.get_fields(), [field])[0]['statement']
 
         if start is not None:
+
+            try:
+                datetime.strptime(start, '%Y-%m-%d %H:%M:%S')
+            except ValueError:
+                raise Exception('invalid start value')
+
             filter_str = " '{statement}' >= '{start}' ".format(
                 statement=field_stmt,
                 start=start
             )
         elif end is not None:
+
+            try:
+                datetime.strptime(end, '%Y-%m-%d %H:%M:%S')
+            except ValueError:
+                raise Exception('invalid end value')
+
             filter_str = " '{statement}' <= '{end}' ".format(
                 statement=field_stmt,
                 end=end

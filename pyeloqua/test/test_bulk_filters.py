@@ -146,7 +146,6 @@ def test_filter_date_start(mock_get):
     mock_get.return_value = Mock(ok=True, status_code=200)
     mock_get.return_value.json.return_value = deepcopy(GOOD_CONTACT_FIELDS)
     bulk.filter_date(field='createdAt', start='2017-01-01 00:00:00')
-    print(bulk.job['filters'][0])
     assert bulk.job['filters'][0] == " '{{Contact.CreatedAt}}' >= '2017-01-01 00:00:00' "
 
 
@@ -159,3 +158,36 @@ def test_filter_date_end(mock_get):
     mock_get.return_value.json.return_value = deepcopy(GOOD_CONTACT_FIELDS)
     bulk.filter_date(field='createdAt', end='2017-01-01 00:00:00')
     assert bulk.job['filters'][0] == " '{{Contact.CreatedAt}}' <= '2017-01-01 00:00:00' "
+
+
+@patch('pyeloqua.bulk.requests.get')
+@raises(Exception)
+def test_filter_date_nofield(mock_get):
+    """ exception when bad field passed """
+    bulk = Bulk(test=True)
+    bulk.exports('contacts')
+    mock_get.return_value = Mock(ok=True, status_code=200)
+    mock_get.return_value.json.return_value = deepcopy(GOOD_CONTACT_FIELDS)
+    bulk.filter_date(field='created', start='2017-01-01 00:00:00')
+
+
+@patch('pyeloqua.bulk.requests.get')
+@raises(Exception)
+def test_filter_date_badstr_start(mock_get):
+    """ exception when bad datetime string passed - start """
+    bulk = Bulk(test=True)
+    bulk.exports('contacts')
+    mock_get.return_value = Mock(ok=True, status_code=200)
+    mock_get.return_value.json.return_value = deepcopy(GOOD_CONTACT_FIELDS)
+    bulk.filter_date(field='created', start='2017-01- 00:00:00')
+
+
+@patch('pyeloqua.bulk.requests.get')
+@raises(Exception)
+def test_filter_date_badstr_end(mock_get):
+    """ exception when bad datetime string passed - end """
+    bulk = Bulk(test=True)
+    bulk.exports('contacts')
+    mock_get.return_value = Mock(ok=True, status_code=200)
+    mock_get.return_value.json.return_value = deepcopy(GOOD_CONTACT_FIELDS)
+    bulk.filter_date(field='created', end='2017-01- 00:00:00')
