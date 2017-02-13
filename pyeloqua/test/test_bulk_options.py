@@ -1,6 +1,5 @@
 """ Eloqua.Bulk setup methods (add job options) """
 
-from nose.tools import raises
 from mock import patch, Mock
 
 from pyeloqua import Bulk
