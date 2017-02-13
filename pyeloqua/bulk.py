@@ -479,6 +479,19 @@ class Bulk(Eloqua):
         elif self.job_sync['status'] in ['success', 'warning', 'error']:
             return True
 
+    def sync(self):
+        """ run all sync actions; return final status of sync """
+
+        self.start_sync()
+
+        finished = False
+
+        while finished is False:
+
+            finished = self.check_sync()
+
+        return self.job_sync['status']
+
 
 ###############################################################################
 # Helper functions

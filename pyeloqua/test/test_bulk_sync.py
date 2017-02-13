@@ -215,3 +215,22 @@ def test_check_sync_error(mock_get):
     mock_get.return_value.json.return_value = SYNC_RESPONSE_ERROR
     status = bulk.check_sync()
     assert status is True
+
+
+###############################################################################
+# do all the sync needful
+###############################################################################
+
+@patch('pyeloqua.bulk.requests.post')
+@patch('pyeloqua.bulk.requests.get')
+def test_run_sync(mock_get, mock_post):
+    """ fcn to run a sync end-to-end until finished """
+    bulk = Bulk(test=True)
+    bulk.exports('contacts')
+    bulk.job_def = EXPORT_JOB_DEF
+    mock_post.return_value = Mock(ok=True, status_code=200)
+    mock_post.return_value.json.return_value = deepcopy(SYNC_RESPONSE)
+    mock_get.return_value = Mock(ok=True, status_code=200)
+    mock_get.return_value.json.return_value = SYNC_RESPONSE_SUCCESS
+    status = bulk.sync()
+    assert status == 'success'
