@@ -53,9 +53,13 @@ class Eloqua(object):
                     self.company = company
                     self.auth = (company + '\\' + username, password)
                     self.userId = req.json()['user']['id']
+                    self.user_id = req.json()['user']['id']
                     self.userDisplay = req.json()['user']['displayName']
+                    self.user_display = req.json()['user']['displayName']
                     self.urlBase = req.json()['urls']['base']
+                    self.url_base = req.json()['urls']['base']
                     self.siteId = req.json()['site']['id']
+                    self.site_id = req.json()['site']['id']
 
                     self.rest_bs_un = req.json()['urls']['apis'][
                         'rest']['standard']

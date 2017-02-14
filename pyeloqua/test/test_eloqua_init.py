@@ -135,6 +135,15 @@ def test_elq_set_userid(mock_get):
 
 
 @patch('pyeloqua.pyeloqua.requests.get')
+def test_elq_set_user_id(mock_get):
+    """ set user_id """
+    mock_get.return_value = Mock(ok=True, status_code=200)
+    mock_get.return_value.json.return_value = ELQ_LOGIN
+    elq = Eloqua(company='test', username='test', password='test')
+    assert elq.user_id == 111
+
+
+@patch('pyeloqua.pyeloqua.requests.get')
 def test_elq_set_userdisplay(mock_get):
     """ set user display name """
     mock_get.return_value = Mock(ok=True, status_code=200)
@@ -144,12 +153,30 @@ def test_elq_set_userdisplay(mock_get):
 
 
 @patch('pyeloqua.pyeloqua.requests.get')
-def test_elq_set_url_base(mock_get):
+def test_elq_set_user_display(mock_get):
+    """ set user display name """
+    mock_get.return_value = Mock(ok=True, status_code=200)
+    mock_get.return_value.json.return_value = ELQ_LOGIN
+    elq = Eloqua(company='test', username='test', password='test')
+    assert elq.user_display == 'testing mctestface'
+
+
+@patch('pyeloqua.pyeloqua.requests.get')
+def test_elq_set_urlbase(mock_get):
     """ set URL base """
     mock_get.return_value = Mock(ok=True, status_code=200)
     mock_get.return_value.json.return_value = ELQ_LOGIN
     elq = Eloqua(company='test', username='test', password='test')
     assert elq.urlBase == 'https://secure.p01.eloqua.com'
+
+
+@patch('pyeloqua.pyeloqua.requests.get')
+def test_elq_set_url_base(mock_get):
+    """ set url_base """
+    mock_get.return_value = Mock(ok=True, status_code=200)
+    mock_get.return_value.json.return_value = ELQ_LOGIN
+    elq = Eloqua(company='test', username='test', password='test')
+    assert elq.url_base == 'https://secure.p01.eloqua.com'
 
 
 @patch('pyeloqua.pyeloqua.requests.get')
@@ -159,6 +186,15 @@ def test_elq_set_siteid(mock_get):
     mock_get.return_value.json.return_value = ELQ_LOGIN
     elq = Eloqua(company='test', username='test', password='test')
     assert elq.siteId == 1234
+
+
+@patch('pyeloqua.pyeloqua.requests.get')
+def test_elq_set_site_id(mock_get):
+    """ set site_id """
+    mock_get.return_value = Mock(ok=True, status_code=200)
+    mock_get.return_value.json.return_value = ELQ_LOGIN
+    elq = Eloqua(company='test', username='test', password='test')
+    assert elq.site_id == 1234
 
 
 @patch('pyeloqua.pyeloqua.requests.get')
