@@ -51,3 +51,15 @@ def test_post_data_call(mock_post):
     mock_post.assert_called_with(url=bulk.bulk_base + '/contacts/imports/1/data',
                                  auth=bulk.auth,
                                  data=dumps(IMPORT_TEST_DATA))
+
+
+@patch('pyeloqua.bulk.requests.post')
+@raises(Exception)
+def test_post_data_except(mock_post):
+    """ post data to an import definition """
+    bulk = Bulk(test=True)
+    bulk.imports('contacts')
+    bulk.job_def = IMPORT_JOB_DEF
+    mock_post.return_value = Mock(ok=False, status_code=400)
+    mock_post.return_value.json.return_value = {}
+    bulk.post_data(IMPORT_TEST_DATA)
