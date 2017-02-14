@@ -36,6 +36,24 @@ IMPORT_TEST_DATA = [
     }
 ]
 
+EXPORT_JOB_DEF = {
+    "name": "test name",
+    "fields": {
+        "contactID": "{{Contact.Id}}",
+        "createdAt": "{{Contact.CreatedAt}}",
+        "updatedAt": "{{Contact.UpdatedAt}}",
+        "isSubscribed": "{{Contact.Email.IsSubscribed}}",
+        "isBounced": "{{Contact.Email.IsBounced}}",
+        "emailFormat": "{{Contact.Email.Format}}"
+    },
+    "dataRetentionDuration": "PT12H",
+    "uri": "/contacts/exports/1",
+    "createdBy": "testuser",
+    "createdAt": "2017-02-13T16:32:31.7020994Z",
+    "updatedBy": "testuser",
+    "updatedAt": "2017-02-13T16:32:31.7020994Z"
+}
+
 ###############################################################################
 # testing the things
 ###############################################################################
@@ -56,10 +74,20 @@ def test_post_data_call(mock_post):
 @patch('pyeloqua.bulk.requests.post')
 @raises(Exception)
 def test_post_data_except(mock_post):
-    """ post data to an import definition """
+    """ post data server error """
     bulk = Bulk(test=True)
     bulk.imports('contacts')
     bulk.job_def = IMPORT_JOB_DEF
     mock_post.return_value = Mock(ok=False, status_code=400)
     mock_post.return_value.json.return_value = {}
+    bulk.post_data(IMPORT_TEST_DATA)
+
+@patch('pyeloqua.bulk.requests.post')
+@raises(Exception)
+def test_post_data_except_import(mock_post):
+    """ post data to an export definition """
+    bulk = Bulk(test=True)
+    bulk.exports('contacts')
+    bulk.job_def = EXPORT_JOB_DEF
+    mock_post.return_value = Mock(ok=True, status_code=201)
     bulk.post_data(IMPORT_TEST_DATA)

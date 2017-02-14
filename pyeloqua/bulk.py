@@ -504,6 +504,9 @@ class Bulk(Eloqua):
     def post_data(self, data):
         """ post data to bulk import """
 
+        if self.job['job_type'] == 'exports':
+            raise Exception('cannot POST data for an export')
+
         url = self.bulk_base + self.job_def['uri'] + '/data'
 
         req = requests.post(url=url, auth=self.auth, data=dumps(data))
