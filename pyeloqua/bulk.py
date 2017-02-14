@@ -496,10 +496,20 @@ class Bulk(Eloqua):
             sleep(sleeptime)
             time_elapsed += sleeptime
 
-            if time_elapsed>=timeout:
+            if time_elapsed >= timeout:
                 raise Exception('sync not finished after %s seconds' % time_elapsed)
 
         return self.job_sync['status']
+
+    def post_data(self, data):
+        """ post data to bulk import """
+
+        url = self.bulk_base + self.job_def['uri'] + '/data'
+
+        req = requests.post(url=url, auth=self.auth, data=dumps(data))
+
+        _elq_error_(req)
+
 
 
 ###############################################################################
