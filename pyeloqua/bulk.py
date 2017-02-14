@@ -480,7 +480,7 @@ class Bulk(Eloqua):
         elif self.job_sync['status'] in ['success', 'warning', 'error']:
             return True
 
-    def sync(self, timeout=600, sleep=5):
+    def sync(self, timeout=600, sleeptime=5):
         """ run all sync actions; return final status of sync """
 
         self.start_sync()
@@ -489,15 +489,15 @@ class Bulk(Eloqua):
 
         time_elapsed = 0
 
-        while finished is False and time_elapsed < timeout:
+        while finished is False:
 
             finished = self.check_sync()
 
-            sleep(sleep)
-            time_elapsed += sleep
+            sleep(sleeptime)
+            time_elapsed += sleeptime
 
-        if time_elapsed>=timeout:
-            raise Exception('sync not finished after %s seconds' % time_elapsed)
+            if time_elapsed>=timeout:
+                raise Exception('sync not finished after %s seconds' % time_elapsed)
 
         return self.job_sync['status']
 

@@ -232,7 +232,7 @@ def test_run_sync_success(mock_get, mock_post):
     mock_post.return_value.json.return_value = deepcopy(SYNC_RESPONSE)
     mock_get.return_value = Mock(ok=True, status_code=200)
     mock_get.return_value.json.return_value = SYNC_RESPONSE_SUCCESS
-    status = bulk.sync()
+    status = bulk.sync(sleeptime=0.01)
     assert status == 'success'
 
 
@@ -247,7 +247,7 @@ def test_run_sync_warning(mock_get, mock_post):
     mock_post.return_value.json.return_value = deepcopy(SYNC_RESPONSE)
     mock_get.return_value = Mock(ok=True, status_code=200)
     mock_get.return_value.json.return_value = SYNC_RESPONSE_WARNING
-    status = bulk.sync()
+    status = bulk.sync(sleeptime=0.01)
     assert status == 'warning'
 
 
@@ -262,5 +262,5 @@ def test_run_sync_error(mock_get, mock_post):
     mock_post.return_value.json.return_value = deepcopy(SYNC_RESPONSE)
     mock_get.return_value = Mock(ok=True, status_code=200)
     mock_get.return_value.json.return_value = SYNC_RESPONSE_ERROR
-    status = bulk.sync()
+    status = bulk.sync(sleeptime=0.01)
     assert status == 'error'
