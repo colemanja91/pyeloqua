@@ -1,7 +1,6 @@
 """ all methods of GETting data for Eloqua.Bulk """
 
 from copy import deepcopy
-from json import dumps
 from nose.tools import raises
 from mock import patch, Mock
 
@@ -58,10 +57,33 @@ RETURN_DATA = {
             "updatedAt": "2017-01-01 00:00:00"
         }
     ],
-    "totalResults": 2,
+    "totalResults": 1,
     "limit": 1000,
     "offset": 0,
-    "count": 2,
+    "count": 1,
+    "hasMore": False
+}
+
+RETURN_SYNC_REJECTS = {
+    "items": [
+        {
+            "fieldValues": {
+                "contactID": "12345",
+                "createdAt": "2017-01-01 00:00:00",
+                "updatedAt": "2017-01-01 00:00:00"
+            },
+            "message": "Multiple matches.",
+            "statusCode": "ELQ-00026",
+            "recordIndex": 111,
+            "invalidFields": [
+                "emailAddress"
+            ]
+        },
+    ],
+    "totalResults": 1,
+    "limit": 1000,
+    "offset": 0,
+    "count": 1,
     "hasMore": False
 }
 
@@ -211,6 +233,7 @@ def test_get_export_data_rt(mock_data):
     data = bulk.get_export_data()
     assert data == RETURN_DATA['items']
 
+
 @patch('pyeloqua.bulk.Bulk.get_data')
 @raises(Exception)
 def test_get_export_data_notexp(mock_data):
@@ -247,6 +270,7 @@ def test_get_sync_logs_rt(mock_data):
     data = bulk.get_sync_logs()
     assert data == RETURN_SYNC_LOGS['items']
 
+
 @patch('pyeloqua.bulk.Bulk.get_data')
 @raises(Exception)
 def test_get_sync_logs_notexp(mock_data):
@@ -255,3 +279,39 @@ def test_get_sync_logs_notexp(mock_data):
     bulk.imports('contacts')
     mock_data.return_value = RETURN_SYNC_LOGS['items']
     bulk.get_sync_logs()
+
+
+###############################################################################
+# get sync rejects
+###############################################################################
+
+@patch('pyeloqua.bulk.Bulk.get_data')
+def test_get_sync_rejects_call(mock_data):
+    """ get logs from a sync - method call """
+    bulk = Bulk(test=True)
+    bulk.exports('contacts')
+    bulk.job_sync = SYNC_RESPONSE_SUCCESS
+    mock_data.return_value = RETURN_SYNC_REJECTS['items']
+    bulk.get_sync_rejects()
+    mock_data.assert_called_with(endpoint='/syncs/1/rejects')
+
+
+@patch('pyeloqua.bulk.Bulk.get_data')
+def test_get_sync_rejects_rt(mock_data):
+    """ get logs from a sync - return data """
+    bulk = Bulk(test=True)
+    bulk.exports('contacts')
+    bulk.job_sync = SYNC_RESPONSE_SUCCESS
+    mock_data.return_value = RETURN_SYNC_REJECTS['items']
+    data = bulk.get_sync_rejects()
+    assert data == RETURN_SYNC_REJECTS['items']
+
+
+@patch('pyeloqua.bulk.Bulk.get_data')
+@raises(Exception)
+def test_get_sync_rejects_notexp(mock_data):
+    """ get logs from a sync - exception """
+    bulk = Bulk(test=True)
+    bulk.imports('contacts')
+    mock_data.return_value = RETURN_SYNC_REJECTS['items']
+    bulk.get_sync_rejects()

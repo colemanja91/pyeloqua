@@ -574,6 +574,20 @@ class Bulk(Eloqua):
 
         return return_data
 
+    def get_sync_rejects(self):
+        """
+        retrieve all sync rejects
+        """
+
+        if self.job_sync == {}:
+            raise Exception('no sync available')
+
+        endpoint = self.job_sync['uri'] + '/rejects'
+
+        return_data = self.get_data(endpoint=endpoint)
+
+        return return_data
+
 
 ###############################################################################
 # Helper functions
