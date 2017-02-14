@@ -11,6 +11,8 @@ from pyeloqua import Bulk
 # Constants
 ###############################################################################
 
+POST_HEADERS = {'Content-Type': 'application/json'}
+
 EXPORT_JOB_DEF = {
     "name": "test name",
     "fields": {
@@ -114,8 +116,9 @@ def test_start_sync_export(mock_post):
                                  data=dumps(
                                      {
                                          "syncedInstanceUri": "/contacts/exports/1"
-                                     }
-                                 ))
+                                     },
+                                 ensure_ascii=False).encode('utf8'),
+                                 headers=POST_HEADERS)
 
 
 @patch('pyeloqua.bulk.requests.post')

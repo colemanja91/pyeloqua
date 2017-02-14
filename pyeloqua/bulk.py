@@ -457,7 +457,8 @@ class Bulk(Eloqua):
                             auth=self.auth,
                             data=dumps({
                                 'syncedInstanceUri': self.job_def['uri']
-                            }))
+                            }, ensure_ascii=False).encode('utf8'),
+                            headers=POST_HEADERS)
 
         _elq_error_(req)
 
