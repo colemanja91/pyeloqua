@@ -441,7 +441,8 @@ class Bulk(Eloqua):
                 req_data[option] = self.job['options'][option]
 
         req = requests.post(url=url, auth=self.auth, data=dumps(
-            req_data, ensure_ascii=False).encode('utf8'))
+            req_data, ensure_ascii=False).encode('utf8'),
+            headers=POST_HEADERS)
 
         _elq_error_(req)
 
@@ -512,7 +513,8 @@ class Bulk(Eloqua):
         url = self.bulk_base + self.job_def['uri'] + '/data'
 
         req = requests.post(url=url, auth=self.auth, data=dumps(
-            data, ensure_ascii=False).encode('utf8'))
+            data, ensure_ascii=False).encode('utf8'),
+            headers=POST_HEADERS)
 
         _elq_error_(req)
 

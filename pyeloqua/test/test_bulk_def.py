@@ -11,6 +11,8 @@ from pyeloqua import Bulk, CONTACT_SYSTEM_FIELDS
 # Constants
 ###############################################################################
 
+POST_HEADERS = {'Content-Type': 'application/json'}
+
 JOB_EXPORTS_CONTACTS = {
     'filters': [" '{{Contact.Id}}' = '12345' ",
                 " '{{Contact.CreatedAt}}' >= '2017-01-01 00:00:00' "],
@@ -134,7 +136,8 @@ def test_create_exports_call(mock_post):
     bulk.create_def('test name')
     url = bulk.bulk_base + '/contacts/exports'
     mock_post.assert_called_with(url=url, auth=bulk.auth,
-                                 data=DATA_EXPORTS_CONTACTS)
+                                 data=DATA_EXPORTS_CONTACTS,
+                                 headers=POST_HEADERS)
 
 
 @patch('pyeloqua.bulk.requests.post')
@@ -147,7 +150,8 @@ def test_create_imports_call(mock_post):
     bulk.create_def('test name')
     url = bulk.bulk_base + '/contacts/imports'
     mock_post.assert_called_with(url=url, auth=bulk.auth,
-                                 data=DATA_IMPORTS_CONTACTS)
+                                 data=DATA_IMPORTS_CONTACTS,
+                                 headers=POST_HEADERS)
 
 
 @patch('pyeloqua.bulk.requests.post')
