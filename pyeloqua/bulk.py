@@ -1,5 +1,6 @@
 """ Bulk API class """
 from __future__ import print_function
+from time import sleep
 from datetime import datetime
 from copy import deepcopy
 from json import dumps
@@ -479,16 +480,24 @@ class Bulk(Eloqua):
         elif self.job_sync['status'] in ['success', 'warning', 'error']:
             return True
 
-    def sync(self):
+    def sync(self, timeout=600, sleep=5):
         """ run all sync actions; return final status of sync """
 
         self.start_sync()
 
         finished = False
 
-        while finished is False:
+        time_elapsed = 0
+
+        while finished is False and time_elapsed < timeout:
 
             finished = self.check_sync()
+
+            sleep(sleep)
+            time_elapsed += sleep
+
+        if time_elapsed>=timeout:
+            raise Exception('sync not finished after %s seconds' % time_elapsed)
 
         return self.job_sync['status']
 
