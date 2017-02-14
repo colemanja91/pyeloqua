@@ -60,3 +60,15 @@ def test_get_data_call(mock_get):
     bulk.get_data(endpoint='/dummyurl')
     mock_get.assert_called_with(url=bulk.bulk_base + '/dummyurl?limit=1000&offset=0',
                                 auth=bulk.auth)
+
+
+@patch('pyeloqua.bulk.requests.get')
+def test_get_data_return(mock_get):
+    """ get data from an endpoint - return data """
+    bulk = Bulk(test=True)
+    bulk.exports('contacts')
+    bulk.job_def = EXPORT_JOB_DEF
+    mock_get.return_value = Mock(ok=True, status_code=200)
+    mock_get.return_value.json.return_value = deepcopy(RETURN_DATA)
+    return_data = bulk.get_data(endpoint='/dummyurl')
+    assert return_data == RETURN_DATA['items']
