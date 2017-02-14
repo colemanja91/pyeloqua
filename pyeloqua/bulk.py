@@ -519,6 +519,7 @@ class Bulk(Eloqua):
         this simplifies the looping process that would otherwise be repeated
 
         :param str endpoint: endpoint to be appended to bulk_base
+        :param bool csv: whether or not to return data as CSV
         """
 
         url_base = self.bulk_base + endpoint + '?limit=1000&offset={offset}'

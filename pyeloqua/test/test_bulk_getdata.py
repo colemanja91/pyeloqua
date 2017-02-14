@@ -206,7 +206,6 @@ def test_get_data_return(mock_get):
     return_data = bulk.get_data(endpoint='/dummyurl')
     assert return_data == RETURN_DATA['items']
 
-
 ###############################################################################
 # get sunk'd export data
 ###############################################################################
