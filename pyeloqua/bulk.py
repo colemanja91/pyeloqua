@@ -440,7 +440,8 @@ class Bulk(Eloqua):
             for option in self.job['options'].keys():
                 req_data[option] = self.job['options'][option]
 
-        req = requests.post(url=url, auth=self.auth, data=dumps(req_data))
+        req = requests.post(url=url, auth=self.auth, data=dumps(
+            req_data, ensure_ascii=False).encode('utf8'))
 
         _elq_error_(req)
 
@@ -497,7 +498,8 @@ class Bulk(Eloqua):
             time_elapsed += sleeptime
 
             if time_elapsed >= timeout:
-                raise Exception('sync not finished after %s seconds' % time_elapsed)
+                raise Exception(
+                    'sync not finished after %s seconds' % time_elapsed)
 
         return self.job_sync['status']
 
@@ -509,7 +511,8 @@ class Bulk(Eloqua):
 
         url = self.bulk_base + self.job_def['uri'] + '/data'
 
-        req = requests.post(url=url, auth=self.auth, data=dumps(data))
+        req = requests.post(url=url, auth=self.auth, data=dumps(
+            data, ensure_ascii=False).encode('utf8'))
 
         _elq_error_(req)
 
@@ -545,7 +548,6 @@ class Bulk(Eloqua):
             has_more = req.json()['hasMore']
 
         return return_data
-
 
     def get_export_data(self):
         """

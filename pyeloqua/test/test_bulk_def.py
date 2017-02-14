@@ -33,7 +33,7 @@ DATA_EXPORTS_CONTACTS = dumps({
         "emailFormat": "{{Contact.Email.Format}}"
     },
     'filters': " '{{Contact.Id}}' = '12345' AND '{{Contact.CreatedAt}}' >= '2017-01-01 00:00:00' "
-})
+}, ensure_ascii=False).encode('utf8')
 
 JOB_IMPORTS_CONTACTS = {
     'filters': [],
@@ -68,7 +68,7 @@ DATA_IMPORTS_CONTACTS = dumps({
         "emailFormat": "{{Contact.Email.Format}}"
     },
     'identifierFieldName': 'contactID'
-})
+}, ensure_ascii=False).encode('utf8')
 
 EXPORT_JOB_RESPONSE = {
     "name": "test name",
