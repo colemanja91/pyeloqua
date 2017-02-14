@@ -65,6 +65,96 @@ RETURN_DATA = {
     "hasMore": False
 }
 
+RETURN_SYNC_LOGS = {
+    "items": [
+        {
+            "syncUri": "/syncs/845824",
+            "count": 30000,
+            "severity": "information",
+            "statusCode": "ELQ-00130",
+            "message": "Total records staged for import.",
+            "createdAt": "2016-11-12T00:02:37.0770000Z"
+        },
+        {
+            "syncUri": "/syncs/845824",
+            "count": 0,
+            "severity": "information",
+            "statusCode": "ELQ-00137",
+            "message": "Ready for data import processing.",
+            "createdAt": "2016-11-12T00:02:37.0770000Z"
+        },
+        {
+            "syncUri": "/syncs/845824",
+            "count": 0,
+            "severity": "information",
+            "statusCode": "ELQ-00101",
+            "message": "Sync processed for sync , resulting in Warning status.",
+            "createdAt": "2016-11-12T00:02:52.0870000Z"
+        },
+        {
+            "syncUri": "/syncs/845824",
+            "count": 30000,
+            "severity": "information",
+            "statusCode": "ELQ-00001",
+            "message": "Total records processed.",
+            "createdAt": "2016-11-12T00:02:37.7000000Z"
+        },
+        {
+            "syncUri": "/syncs/845824",
+            "count": 21000,
+            "severity": "warning",
+            "statusCode": "ELQ-00026",
+            "message": "Duplicate identifier.",
+            "createdAt": "2016-11-12T00:02:46.2700000Z"
+        },
+        {
+            "syncUri": "/syncs/845824",
+            "count": 9000,
+            "severity": "information",
+            "statusCode": "ELQ-00003",
+            "message": "Total records remaining after duplicates are rejected.",
+            "createdAt": "2016-11-12T00:02:46.2700000Z"
+        },
+        {
+            "syncUri": "/syncs/845824",
+            "count": 0,
+            "severity": "information",
+            "statusCode": "ELQ-00004",
+            "message": "Contacts created.",
+            "createdAt": "2016-11-12T00:02:46.2700000Z"
+        },
+        {
+            "syncUri": "/syncs/845824",
+            "count": 9000,
+            "severity": "information",
+            "statusCode": "ELQ-00022",
+            "message": "Contacts updated.",
+            "createdAt": "2016-11-12T00:02:46.2700000Z"
+        },
+        {
+            "syncUri": "/syncs/845824",
+            "count": 0,
+            "severity": "information",
+            "statusCode": "ELQ-00071",
+            "createdAt": "2016-11-12T00:02:46.2700000Z"
+        }
+    ],
+    "totalResults": 9,
+    "limit": 1000,
+    "offset": 0,
+    "count": 9,
+    "hasMore": False
+}
+
+SYNC_RESPONSE_SUCCESS = {
+    "syncStartedAt": "2013-07-22T22:17:59.6730000Z",
+    "syncEndedAt": "2013-07-22T22:18:07.6430000Z",
+    "status": "success",
+    "createdAt": "2015-09-25T18:08:32.3485942Z",
+    "createdBy": "testuser",
+    "uri": "/syncs/1"
+}
+
 ###############################################################################
 # grab some datas
 ###############################################################################
@@ -129,4 +219,39 @@ def test_get_export_data_notexp(mock_data):
     bulk.imports('contacts')
     bulk.job_def = IMPORT_JOB_DEF
     mock_data.return_value = RETURN_DATA['items']
-    data = bulk.get_export_data()
+    bulk.get_export_data()
+
+
+###############################################################################
+# get sync logs
+###############################################################################
+
+@patch('pyeloqua.bulk.Bulk.get_data')
+def test_get_sync_logs_call(mock_data):
+    """ get logs from a sync - method call """
+    bulk = Bulk(test=True)
+    bulk.exports('contacts')
+    bulk.job_sync = SYNC_RESPONSE_SUCCESS
+    mock_data.return_value = RETURN_SYNC_LOGS['items']
+    bulk.get_sync_logs()
+    mock_data.assert_called_with(endpoint='/syncs/1/logs')
+
+
+@patch('pyeloqua.bulk.Bulk.get_data')
+def test_get_sync_logs_rt(mock_data):
+    """ get logs from a sync - return data """
+    bulk = Bulk(test=True)
+    bulk.exports('contacts')
+    bulk.job_sync = SYNC_RESPONSE_SUCCESS
+    mock_data.return_value = RETURN_SYNC_LOGS['items']
+    data = bulk.get_sync_logs()
+    assert data == RETURN_SYNC_LOGS['items']
+
+@patch('pyeloqua.bulk.Bulk.get_data')
+@raises(Exception)
+def test_get_sync_logs_notexp(mock_data):
+    """ get logs from a sync - exception """
+    bulk = Bulk(test=True)
+    bulk.imports('contacts')
+    mock_data.return_value = RETURN_SYNC_LOGS['items']
+    bulk.get_sync_logs()
