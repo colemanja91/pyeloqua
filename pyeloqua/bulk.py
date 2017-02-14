@@ -513,6 +513,40 @@ class Bulk(Eloqua):
 
         _elq_error_(req)
 
+    def get_data(self, endpoint):
+        """
+        get data from a given endpoint
+        this simplifies the looping process that would otherwise be repeated
+
+        :param str endpoint: endpoint to be appended to bulk_base
+        """
+
+        url_base = self.bulk_base + endpoint + '?limit=1000&offset={offset}'
+
+        has_more = True
+
+        offset = 0
+
+        return_data = []
+
+        while has_more:
+
+            url = url_base.format(offset=offset)
+
+            req = requests.get(url=url, auth=self.auth)
+
+            _elq_error_(req)
+
+            return_data.extend(req.json()['items'])
+
+            offset += 1000
+
+            has_more = req.json()['hasMore']
+
+        return return_data
+
+
+
 
 
 ###############################################################################
