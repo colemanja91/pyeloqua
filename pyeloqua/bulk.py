@@ -546,7 +546,19 @@ class Bulk(Eloqua):
         return return_data
 
 
+    def get_export_data(self):
+        """
+        retrieve all synced data for an export
+        """
 
+        if self.job['job_type'] == 'imports':
+            raise Exception('not an export')
+
+        endpoint = self.job_def['uri'] + '/data'
+
+        return_data = self.get_data(endpoint=endpoint)
+
+        return return_data
 
 
 ###############################################################################
