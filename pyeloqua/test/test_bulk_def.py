@@ -24,6 +24,16 @@ JOB_EXPORTS_CONTACTS = {
     'options': {}
 }
 
+JOB_EXPORTS_CONTACTS_F1 = {
+    'filters': [" '{{Contact.Id}}' = '12345' "],
+    'fields': CONTACT_SYSTEM_FIELDS,
+    'job_type': 'exports',
+    'elq_object': 'contacts',
+    'obj_id': None,
+    'act_type': None,
+    'options': {}
+}
+
 DATA_EXPORTS_CONTACTS = dumps({
     'name': 'test name',
     'fields': {
@@ -34,7 +44,20 @@ DATA_EXPORTS_CONTACTS = dumps({
         "isBounced": "{{Contact.Email.IsBounced}}",
         "emailFormat": "{{Contact.Email.Format}}"
     },
-    'filters': " '{{Contact.Id}}' = '12345' AND '{{Contact.CreatedAt}}' >= '2017-01-01 00:00:00' "
+    'filter': " '{{Contact.Id}}' = '12345' AND '{{Contact.CreatedAt}}' >= '2017-01-01 00:00:00' "
+}, ensure_ascii=False).encode('utf8')
+
+DATA_EXPORTS_CONTACTS_F1 = dumps({
+    'name': 'test name',
+    'fields': {
+        "contactID": "{{Contact.Id}}",
+        "createdAt": "{{Contact.CreatedAt}}",
+        "updatedAt": "{{Contact.UpdatedAt}}",
+        "isSubscribed": "{{Contact.Email.IsSubscribed}}",
+        "isBounced": "{{Contact.Email.IsBounced}}",
+        "emailFormat": "{{Contact.Email.Format}}"
+    },
+    'filter': " '{{Contact.Id}}' = '12345' "
 }, ensure_ascii=False).encode('utf8')
 
 JOB_IMPORTS_CONTACTS = {
@@ -137,6 +160,20 @@ def test_create_exports_call(mock_post):
     url = bulk.bulk_base + '/contacts/exports'
     mock_post.assert_called_with(url=url, auth=bulk.auth,
                                  data=DATA_EXPORTS_CONTACTS,
+                                 headers=POST_HEADERS)
+
+
+@patch('pyeloqua.bulk.requests.post')
+def test_create_exports_call_sgfilt(mock_post):
+    """ api call for create export - single filter """
+    bulk = Bulk(test=True)
+    bulk.job = JOB_EXPORTS_CONTACTS_F1
+    mock_post.return_value = Mock(ok=True, status_code=201)
+    mock_post.return_value.json.return_value = deepcopy(EXPORT_JOB_RESPONSE)
+    bulk.create_def('test name')
+    url = bulk.bulk_base + '/contacts/exports'
+    mock_post.assert_called_with(url=url, auth=bulk.auth,
+                                 data=DATA_EXPORTS_CONTACTS_F1,
                                  headers=POST_HEADERS)
 
 
