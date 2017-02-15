@@ -1,8 +1,9 @@
 from datetime import datetime
-import requests
 import json
 import time
 import warnings
+import requests
+
 from . import system_fields
 
 API_VERSION = '2.0'
@@ -21,19 +22,16 @@ class Eloqua(object):
     """
 
     def __init__(self, username=None, password=None, company=None,
-                 bulk_api_version=API_VERSION,
-                 rest_api_version=API_VERSION, test=False):
+                 test=False):
         """
         Create an Eloqua session given the following arguments:
 
         Arguments:
 
-        * username -- Eloqua username to authenticate against
-        * password -- Password associated with above user
-        * company -- Company/Instance name for above user
-        * bulk_api_version -- Version of Eloqua Bulk API to use; defaults to 2.0
-        * rest_api_version -- Version of Eloqua REST API to use; defaults to 2.0
-        * test -- if True, sets up dummy Eloqua instance; helpful for testing
+        :param string username: Eloqua username
+        :param string password: Eloqua password
+        :param string company: Eloqua company instance
+        :param bool test: Sets up test instance; does not connect to Eloqua
         """
 
         if not test:
@@ -43,35 +41,43 @@ class Eloqua(object):
                 url = 'https://login.eloqua.com/id'
                 req = requests.get(url, auth=(company + '\\' + username,
                                               password))
-                if req.status_code == 200:
-                    if req.json() == 'Not authenticated.':
-                        raise ValueError('Invalid login credentials')
-                    else:
-                        self.username = username
-                        self.password = password
-                        self.company = company
-                        self.auth = (company + '\\' + username, password)
-                        self.userId = req.json()['user']['id']
-                        self.userDisplay = req.json()['user']['displayName']
-                        self.urlBase = req.json()['urls']['base']
-                        self.siteId = req.json()['site']['id']
 
-                        restBase = req.json()['urls']['apis'][
-                            'rest']['standard']
-                        self.restBase = restBase.format(
-                            version=rest_api_version)
+                # check if any error codes
+                req.raise_for_status()
 
-                        bulkBase = req.json()['urls']['apis']['rest']['bulk']
-                        self.bulkBase = bulkBase.format(
-                            version=bulk_api_version)
+                if req.json() == 'Not authenticated.':
+                    raise ValueError('Invalid login credentials')
                 else:
-                    raise Exception('Unknown authentication error')
+                    self.username = username
+                    self.password = password
+                    self.company = company
+                    self.auth = (company + '\\' + username, password)
+                    self.userId = req.json()['user']['id']
+                    self.user_id = req.json()['user']['id']
+                    self.userDisplay = req.json()['user']['displayName']
+                    self.user_display = req.json()['user']['displayName']
+                    self.urlBase = req.json()['urls']['base']
+                    self.url_base = req.json()['urls']['base']
+                    self.siteId = req.json()['site']['id']
+                    self.site_id = req.json()['site']['id']
+
+                    self.rest_bs_un = req.json()['urls']['apis'][
+                        'rest']['standard']
+                    self.restBase = self.rest_bs_un.format(
+                        version=API_VERSION) #will deprecate this
+                    self.rest_base = self.rest_bs_un.format(
+                        version=API_VERSION)
+
+                    self.bulk_bs_un = req.json()['urls']['apis']['rest']['bulk']
+                    self.bulkBase = self.bulk_bs_un.format(
+                        version=API_VERSION) #will deprecate this
+                    self.bulk_base = self.bulk_bs_un.format(
+                        version=API_VERSION)
             else:
-                raise ValueError(
+                raise Exception(
                     'Please enter all required login details: company, username, password')
 
         else:
-
             self.username = 'test'
             self.password = 'test'
             self.company = 'test'
@@ -82,6 +88,16 @@ class Eloqua(object):
             self.siteId = 1
             self.restBase = "https://secure.p01.eloqua.com/API/REST/2.0/"
             self.bulkBase = "https://secure.p01.eloqua.com/API/BULK/2.0/"
+            self.rest_base = "https://secure.p01.eloqua.com/API/REST/2.0/"
+            self.bulk_base = "https://secure.p01.eloqua.com/API/BULK/2.0/"
+            self.rest_bs_un = "https://secure.p01.eloqua.com/API/REST/{version}/"
+            self.bulk_bs_un = "https://secure.p01.eloqua.com/API/BULK/{version}/"
+
+    def set_bulk_version(self, version):
+        """ update bulk version """
+
+        self.bulk_base = self.bulk_bs_un.format(version=version)
+
 
     '''
         ###################################################
@@ -101,6 +117,7 @@ class Eloqua(object):
             * fields -- list of specific fields to retrieve,
                 either by 'Display Name' or 'Database Name'; optional
         """
+        warnings.warn('DEPRECATED: Please use the new Bulk class methods')
 
         if entity not in ['contacts', 'customObjects', 'accounts']:
             raise ValueError(
@@ -163,6 +180,7 @@ class Eloqua(object):
             * addLinkedAccountFields -- List of fields to add in Contact record exports
             * addAll -- ALL OF THE THINGS!!!!
         """
+        warnings.warn('DEPRECATED: Please use the new Bulk class methods')
 
         if (entity in ['contacts', 'customObjects', 'accounts'] and fields == '' and len(addSystemContactFields) == 0 and len(addLinkedContactFields) == 0 and len(addSystemFields) == 0 and len(addLinkedAccountFields) == 0 and not addAll):
             raise Exception(
@@ -286,6 +304,7 @@ class Eloqua(object):
             * cdoName -- verbatim name of CDO; case insensitive
 
         """
+        warnings.warn('DEPRECATED: Please use the new Bulk class methods')
 
         cdoName = cdoName.replace(' ', '*')
 
@@ -307,6 +326,7 @@ class Eloqua(object):
         '''
             Returns model ID for a given lead score model
         '''
+        warnings.warn('DEPRECATED: Please use the new Bulk class methods')
 
         modelName = modelName.replace(' ', '*')
 
@@ -332,6 +352,7 @@ class Eloqua(object):
             * existsType -- type of existence; one of ContactFilter, ContactList, ContactSegment, or AccountList
 
         """
+        warnings.warn('DEPRECATED: Please use the new Bulk class methods')
 
         name = name.replace(' ', '*')
 
@@ -370,6 +391,7 @@ class Eloqua(object):
             * listName --
             * listType --
         '''
+        warnings.warn('DEPRECATED: Please use the new Bulk class methods')
 
         if action == 'setStatus' and destination == '':
             raise Exception("must specify a destination for setStatus")
@@ -421,6 +443,7 @@ class Eloqua(object):
             * cdoID -- identifier of specific CDO; required if entity = 'customObjects'; use method GetCdoId to retrieve
 
         '''
+        warnings.warn('DEPRECATED: Please use the new Bulk class methods')
 
         if (start == '' and end == ''):
             raise ValueError(
@@ -489,6 +512,7 @@ class Eloqua(object):
             * syncActions -- list of actions to take on contacts with sync import
 
         """
+        warnings.warn('DEPRECATED: Please use the new Bulk class methods')
 
         if (defType not in ['imports', 'exports']):
             raise Exception(
@@ -591,6 +615,7 @@ class Eloqua(object):
             * defURI -- URI of pre-existing import/export definition; optional if selecting all
             * defType -- Definition type to retrieve; optional if defURI is provided
         '''
+        warnings.warn('DEPRECATED: Please use the new Bulk class methods')
 
         defs = []
 
@@ -639,6 +664,7 @@ class Eloqua(object):
             * defURI -- URI of pre-existing import/export definition; optional if defObject is provided
 
         """
+        warnings.warn('DEPRECATED: Please use the new Bulk class methods')
 
         if ('uri' not in defObject):
 
@@ -681,6 +707,7 @@ class Eloqua(object):
             * interval -- wait time between checking status
 
         """
+        warnings.warn('DEPRECATED: Please use the new Bulk class methods')
         if ('uri' not in syncObject):
             if (len(syncURI) == 0):
                 raise Exception("Must include a valid syncObject or syncURI")
@@ -717,6 +744,7 @@ class Eloqua(object):
             * defURI -- URI of pre-existing import/export definition; optional if defObject is provided
 
         '''
+        warnings.warn('DEPRECATED: Please use the new Bulk class methods')
 
         if ('uri' not in defObject):
             if (len(defURI) == 0):
@@ -743,6 +771,7 @@ class Eloqua(object):
             * syncURI -- URI of pre-existing sync; optional if syncObject is provided
             * maxRecords -- maximum number of records to query; capped at 1000; use 1 to just get # of rejects
         '''
+        warnings.warn('DEPRECATED: Please use the new Bulk class methods')
 
         if ('uri' not in syncObject):
             if (len(syncURI) == 0):
@@ -793,6 +822,7 @@ class Eloqua(object):
             * initOffset -- Starting offset to retrieve from; optional
             * retrieveLimit -- Max number of records to retrieve (total); optional
         """
+        warnings.warn('DEPRECATED: Please use the new Bulk class methods')
         if ('uri' not in defObject):
             if (len(defURI) == 0):
                 raise Exception("Must include a valid defObject or defURI")
@@ -836,6 +866,7 @@ class Eloqua(object):
             * syncCount -- threshold for syncing posted data
 
         """
+        warnings.warn('DEPRECATED: Please use the new Bulk class methods')
         if ('uri' not in defObject):
             if (len(defURI) == 0):
                 raise Exception("Must include a valid defObject or defURI")

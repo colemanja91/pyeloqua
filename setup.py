@@ -1,10 +1,13 @@
+""" pyeloqua """
+
 from setuptools import setup, find_packages
 
-__version__ = '0.3.5'
+__version__ = '0.4.0'
 
 def readme():
-    with open('README.md') as f:
-        return f.read()
+    """ open readme for long_description """
+    with open('README.md') as fle:
+        return fle.read()
 
 setup(
     name='pyeloqua',
@@ -22,5 +25,5 @@ setup(
         'six'
     ],
     zip_safe=False,
-    keywords = 'eloqua marketing automation api bulk'
+    keywords='eloqua marketing automation api bulk'
 )
