@@ -1,3 +1,7 @@
+## 2017-02-15 v0.4.0
+- MAJOR FEATURE: New `Bulk` class for interacting with Bulk API; see README and examples for more info
+- DEPRECATION: Old Bulk API methods in `Eloqua` now give deprecation warnings
+
 ## 2017-02-02 v0.3.5
 - BUGFIX: fix dependency install by switching around where `__version__` was stored (now in setup.py)
 - FEATURE: add `updateRule` optional argument to `CreateDef`
