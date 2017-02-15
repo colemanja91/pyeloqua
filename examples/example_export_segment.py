@@ -36,6 +36,8 @@ bulk.asset_exists('segments', name='My Segment')
 
 # Now we're ready to export the data
 
+bulk.create_def('my export')
+
 bulk.sync() # creates a sync which tells Eloqua to prepare the data
 
 contact_records = bulk.get_export_data() # retrieve the prepared data
