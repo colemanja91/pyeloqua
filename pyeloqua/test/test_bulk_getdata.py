@@ -64,6 +64,14 @@ RETURN_DATA = {
     "hasMore": False
 }
 
+RETURN_NORESULTS = {
+    "totalResults": 1,
+    "limit": 1000,
+    "offset": 0,
+    "count": 1,
+    "hasMore": False
+}
+
 RETURN_SYNC_REJECTS = {
     "items": [
         {
@@ -205,6 +213,18 @@ def test_get_data_return(mock_get):
     mock_get.return_value.json.return_value = deepcopy(RETURN_DATA)
     return_data = bulk.get_data(endpoint='/dummyurl')
     assert return_data == RETURN_DATA['items']
+
+
+@patch('pyeloqua.bulk.requests.get')
+def test_get_data_nodata(mock_get):
+    """ get data from an endpoint - no results data """
+    bulk = Bulk(test=True)
+    bulk.exports('contacts')
+    bulk.job_def = EXPORT_JOB_DEF
+    mock_get.return_value = Mock(ok=True, status_code=200)
+    mock_get.return_value.json.return_value = deepcopy(RETURN_NORESULTS)
+    return_data = bulk.get_data(endpoint='/dummyurl')
+    assert return_data == []
 
 ###############################################################################
 # get sunk'd export data
