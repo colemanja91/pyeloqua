@@ -16,7 +16,10 @@ def _elq_error_(request):
         except Exception: # pylint: disable=broad-except
             content = request.text
 
-        raise Exception(request.status_code, content)
+        raise EloquaValidationError(request.status_code, content)
+
+    if request.status_code >= 500:
+        raise EloquaServerError(request.status_code)
 
     else:
 
@@ -24,4 +27,12 @@ def _elq_error_(request):
 
 class EloquaBulkSyncTimeout(Exception):
     """ Exception class for Bulk sync timeouts """
+    pass
+
+class EloquaValidationError(Exception):
+    """ Exception class for 400 errors """
+    pass
+
+class EloquaServerError(Exception):
+    """ Exception class for 5xx errors """
     pass
