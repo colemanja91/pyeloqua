@@ -1,3 +1,9 @@
+## 2017-02-16 v0.4.1
+- FEATURE: `Bulk.write_job` and `Bulk.read_job` classes to save a job for later reuse
+- FEATURE: `EloquaBulkSyncTimeout` exception class for syncs not finished in specified time period
+- FEATURE: `EloquaValidationError` for API 400 codes
+- FEATURE: `EloquaServerError` for API 5xx codes
+
 ## 2017-02-15 v0.4.0
 - MAJOR FEATURE: New `Bulk` class for interacting with Bulk API; see README and examples for more info
 - DEPRECATION: Old Bulk API methods in `Eloqua` now give deprecation warnings
