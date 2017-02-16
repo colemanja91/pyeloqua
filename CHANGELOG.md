@@ -1,3 +1,6 @@
+## 2017-02-16 v0.4.2
+- BUGFIX: `Bulk.get_data` would throw an KeyError when no records because Eloqua doesn't give `items` as part of the return.
+
 ## 2017-02-16 v0.4.1
 - FEATURE: `Bulk.write_job` and `Bulk.read_job` classes to save a job for later reuse
 - FEATURE: `EloquaBulkSyncTimeout` exception class for syncs not finished in specified time period

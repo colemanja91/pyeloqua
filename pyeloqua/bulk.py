@@ -563,7 +563,8 @@ class Bulk(Eloqua):
 
             _elq_error_(req)
 
-            return_data.extend(req.json()['items'])
+            if 'items' in req.json().keys():
+                return_data.extend(req.json()['items'])
 
             offset += 1000
 
