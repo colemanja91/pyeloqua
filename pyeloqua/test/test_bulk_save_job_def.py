@@ -1,6 +1,6 @@
 """ save job def for later re-use """
 
-from mock import patch, Mock
+from mock import patch
 
 from pyeloqua import Bulk, CONTACT_SYSTEM_FIELDS
 
