@@ -3,7 +3,7 @@ from __future__ import print_function
 from time import sleep
 from datetime import datetime
 from copy import deepcopy
-from json import dumps
+from json import dumps, dump, load
 import requests
 
 from .pyeloqua import Eloqua
@@ -113,6 +113,27 @@ class Bulk(Eloqua):
         """
         self._setup_(job_type='exports', elq_object=elq_object, obj_id=obj_id,
                      act_type=act_type)
+
+    def write_job(self, path):
+        """
+        Write Bulk.job to a JSON file for later use
+
+        :param str path: export path for job file
+        """
+
+        with open(path, 'w') as fopen:
+            dump(self.job, fopen)
+
+    def read_job(self, path):
+        """
+        Read a previously exported Bulk.job from a JSON file
+
+        :param str path: import path for job file
+        """
+
+        with open(path, 'r') as fopen:
+            self.job = load(fopen)
+
 
     ###########################################################################
     # Helper methods
@@ -441,8 +462,7 @@ class Bulk(Eloqua):
                 req_data[option] = self.job['options'][option]
 
         req = requests.post(url=url, auth=self.auth, data=dumps(
-            req_data, ensure_ascii=False).encode('utf8'),
-            headers=POST_HEADERS)
+            req_data, ensure_ascii=False).encode('utf8'), headers=POST_HEADERS)
 
         _elq_error_(req)
 
@@ -514,8 +534,7 @@ class Bulk(Eloqua):
         url = self.bulk_base + self.job_def['uri'] + '/data'
 
         req = requests.post(url=url, auth=self.auth, data=dumps(
-            data, ensure_ascii=False).encode('utf8'),
-            headers=POST_HEADERS)
+            data, ensure_ascii=False).encode('utf8'), headers=POST_HEADERS)
 
         _elq_error_(req)
 
