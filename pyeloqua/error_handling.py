@@ -21,3 +21,7 @@ def _elq_error_(request):
     else:
 
         request.raise_for_status()
+
+class EloquaBulkSyncTimeout(Exception):
+    """ Exception class for Bulk sync timeouts """
+    pass

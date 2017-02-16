@@ -5,7 +5,7 @@ from json import dumps
 from nose.tools import raises
 from mock import patch, Mock
 
-from pyeloqua import Bulk
+from pyeloqua import Bulk, EloquaBulkSyncTimeout
 
 ###############################################################################
 # Constants
@@ -267,3 +267,17 @@ def test_run_sync_error(mock_get, mock_post):
     mock_get.return_value.json.return_value = SYNC_RESPONSE_ERROR
     status = bulk.sync(sleeptime=0.01)
     assert status == 'error'
+
+@patch('pyeloqua.bulk.requests.post')
+@patch('pyeloqua.bulk.requests.get')
+@raises(EloquaBulkSyncTimeout)
+def test_run_sync_timeout(mock_get, mock_post):
+    """ fcn to run a sync end-to-end until finished - timeout """
+    bulk = Bulk(test=True)
+    bulk.exports('contacts')
+    bulk.job_def = EXPORT_JOB_DEF
+    mock_post.return_value = Mock(ok=True, status_code=200)
+    mock_post.return_value.json.return_value = deepcopy(SYNC_RESPONSE)
+    mock_get.return_value = Mock(ok=True, status_code=200)
+    mock_get.return_value.json.return_value = SYNC_RESPONSE_ACTIVE
+    bulk.sync(sleeptime=0.03, timeout=0.01)

@@ -8,7 +8,7 @@ import requests
 
 from .pyeloqua import Eloqua
 from .system_fields import ACTIVITY_FIELDS, CONTACT_SYSTEM_FIELDS, ACCOUNT_SYSTEM_FIELDS
-from .error_handling import _elq_error_
+from .error_handling import _elq_error_, EloquaBulkSyncTimeout
 
 ############################################################################
 # Constant definitions
@@ -520,7 +520,7 @@ class Bulk(Eloqua):
             time_elapsed += sleeptime
 
             if time_elapsed >= timeout:
-                raise Exception(
+                raise EloquaBulkSyncTimeout(
                     'sync not finished after %s seconds' % time_elapsed)
 
         return self.job_sync['status']
