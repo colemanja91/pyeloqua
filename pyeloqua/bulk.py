@@ -318,6 +318,9 @@ class Bulk(Eloqua):
         field_stmt = fields_intersect(self.get_fields(), [field])[
             0]['statement']
 
+        filter_str_start = None
+        filter_str_end = None
+
         if start is not None:
 
             if isinstance(start, str):
@@ -328,11 +331,12 @@ class Bulk(Eloqua):
             elif isinstance(start, datetime):
                 start = start.strftime('%Y-%m-%d %H:%M:%S')
 
-            filter_str = " '{statement}' >= '{start}' ".format(
+            filter_str_start = " '{statement}' >= '{start}' ".format(
                 statement=field_stmt,
                 start=start
             )
-        elif end is not None:
+
+        if end is not None:
 
             if isinstance(end, str):
                 try:
@@ -342,10 +346,17 @@ class Bulk(Eloqua):
             elif isinstance(end, datetime):
                 end = end.strftime('%Y-%m-%d %H:%M:%S')
 
-            filter_str = " '{statement}' <= '{end}' ".format(
+            filter_str_end = " '{statement}' <= '{end}' ".format(
                 statement=field_stmt,
                 end=end
             )
+
+        if filter_str_start is not None and filter_str_end is not None:
+            filter_str = filter_str_start + 'AND' + filter_str_end
+        elif filter_str_start is not None:
+            filter_str = filter_str_start
+        else:
+            filter_str = filter_str_end
 
         self.job['filters'].append(filter_str)
 

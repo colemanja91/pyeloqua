@@ -1,3 +1,6 @@
+## 2017-02-28 v0.4.3
+- BUGFIX: `Bulk.filter_date` would only include `start` if both `start` and `end` were included.
+
 ## 2017-02-16 v0.4.2
 - BUGFIX: `Bulk.get_data` would throw an KeyError when no records because Eloqua doesn't give `items` as part of the return.
 
