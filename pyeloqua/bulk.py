@@ -41,7 +41,8 @@ ELQ_OBJECTS = ['accounts', 'activities', 'contacts', 'customobjects',
 class Bulk(Eloqua):
     """ Extension for Bulk API operations """
 
-    def __init__(self, username=None, password=None, company=None, test=False):
+    def __init__(self, username=None, password=None, company=None, test=False,
+                 **kwargs):
         """
         Initialize bulk class:
 
@@ -51,12 +52,14 @@ class Bulk(Eloqua):
         :param string password: Eloqua password
         :param string company: Eloqua company instance
         :param bool test: Sets up test instance; does not connect to Eloqua
+        :param **kwargs: additional arguments to pass to requests module
         :return: Bulk object
         """
-        Eloqua.__init__(self, username, password, company, test)
+        Eloqua.__init__(self, username, password, company, test, **kwargs)
         self.job = deepcopy(BLANK_JOB)
         self.job_def = {}
         self.job_sync = {}
+        self.kwargs = kwargs
 
     def reset(self):
         """ reset job """
@@ -134,7 +137,6 @@ class Bulk(Eloqua):
         with open(path, 'r') as fopen:
             self.job = load(fopen)
 
-
     ###########################################################################
     # Helper methods
     ###########################################################################
@@ -185,7 +187,7 @@ class Bulk(Eloqua):
 
         while has_more:
             url = url_base.format(offset=offset)
-            req = requests.get(url=url, auth=self.auth)
+            req = requests.get(url=url, auth=self.auth, **self.kwargs)
             _elq_error_(req)
             fields.extend(req.json()['items'])
             offset += 1
@@ -249,7 +251,7 @@ class Bulk(Eloqua):
         if model_id is not None:
             url = self.bulk_base + \
                 '/contacts/scoring/models/{0}'.format(model_id)
-            req = requests.get(url=url, auth=self.auth)
+            req = requests.get(url=url, auth=self.auth, **self.kwargs)
             _elq_error_(req)
 
             self.job['fields'].extend(req.json()['fields'])
@@ -257,7 +259,7 @@ class Bulk(Eloqua):
             url = self.bulk_base + \
                 '/contacts/scoring/models?q="name={name}"'.format(
                     name=name.replace(' ', '*'))
-            req = requests.get(url=url, auth=self.auth)
+            req = requests.get(url=url, auth=self.auth, **self.kwargs)
             _elq_error_(req)
 
             self.job['fields'].extend(req.json()['items'][0]['fields'])
@@ -282,7 +284,7 @@ class Bulk(Eloqua):
                 asset_id=asset_id
             )
 
-            req = requests.get(url=url, auth=self.auth)
+            req = requests.get(url=url, auth=self.auth, **self.kwargs)
 
             _elq_error_(req)
 
@@ -295,7 +297,7 @@ class Bulk(Eloqua):
                 name=name.replace(' ', '*')
             )
 
-            req = requests.get(url=url, auth=self.auth)
+            req = requests.get(url=url, auth=self.auth, **self.kwargs)
 
             _elq_error_(req)
 
@@ -427,7 +429,7 @@ class Bulk(Eloqua):
                 list_name=list_name.replace(' ', '*')
             )
 
-            req = requests.get(url=url, auth=self.auth)
+            req = requests.get(url=url, auth=self.auth, **self.kwargs)
 
             _elq_error_(req)
 
@@ -473,7 +475,7 @@ class Bulk(Eloqua):
                 req_data[option] = self.job['options'][option]
 
         req = requests.post(url=url, auth=self.auth, data=dumps(
-            req_data, ensure_ascii=False).encode('utf8'), headers=POST_HEADERS)
+            req_data, ensure_ascii=False).encode('utf8'), headers=POST_HEADERS, **self.kwargs)
 
         _elq_error_(req)
 
@@ -489,7 +491,8 @@ class Bulk(Eloqua):
                             data=dumps({
                                 'syncedInstanceUri': self.job_def['uri']
                             }, ensure_ascii=False).encode('utf8'),
-                            headers=POST_HEADERS)
+                            headers=POST_HEADERS,
+                            **self.kwargs)
 
         _elq_error_(req)
 
@@ -503,7 +506,7 @@ class Bulk(Eloqua):
         """
 
         req = requests.get(url=self.bulk_base + self.job_sync['uri'],
-                           auth=self.auth)
+                           auth=self.auth, **self.kwargs)
 
         _elq_error_(req)
 
@@ -545,7 +548,7 @@ class Bulk(Eloqua):
         url = self.bulk_base + self.job_def['uri'] + '/data'
 
         req = requests.post(url=url, auth=self.auth, data=dumps(
-            data, ensure_ascii=False).encode('utf8'), headers=POST_HEADERS)
+            data, ensure_ascii=False).encode('utf8'), headers=POST_HEADERS, **self.kwargs)
 
         _elq_error_(req)
 
@@ -570,7 +573,7 @@ class Bulk(Eloqua):
 
             url = url_base.format(offset=offset)
 
-            req = requests.get(url=url, auth=self.auth)
+            req = requests.get(url=url, auth=self.auth, **self.kwargs)
 
             _elq_error_(req)
 

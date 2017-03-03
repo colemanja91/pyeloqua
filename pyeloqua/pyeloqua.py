@@ -22,7 +22,7 @@ class Eloqua(object):
     """
 
     def __init__(self, username=None, password=None, company=None,
-                 test=False):
+                 test=False, **kwargs):
         """
         Create an Eloqua session given the following arguments:
 
@@ -32,6 +32,7 @@ class Eloqua(object):
         :param string password: Eloqua password
         :param string company: Eloqua company instance
         :param bool test: Sets up test instance; does not connect to Eloqua
+        :param **kwargs: additional arguments to pass to requests module
         """
 
         if not test:
@@ -40,7 +41,7 @@ class Eloqua(object):
 
                 url = 'https://login.eloqua.com/id'
                 req = requests.get(url, auth=(company + '\\' + username,
-                                              password))
+                                              password), **kwargs)
 
                 # check if any error codes
                 req.raise_for_status()
