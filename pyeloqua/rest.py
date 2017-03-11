@@ -33,7 +33,7 @@ class Rest(Eloqua):
         :param string password: Eloqua password
         :param string company: Eloqua company instance
         :param bool test: Sets up test instance; does not connect to Eloqua
-        :return: Bulk object
+        :return: Rest object
         """
         Eloqua.__init__(self, username, password, company, test)
         self.page = None
@@ -41,6 +41,17 @@ class Rest(Eloqua):
         self.depth = None
 
     def reset(self):
+        """ reset class instance """
         self.page = None
         self.count = None
         self.depth = None
+
+    def get_asset(self, asset_type, id=None, name=None):
+        """
+        get an asset definition
+
+        Arguments:
+        :param str asset_type: Eloqua asset type
+        :param int id: Asset ID
+        :param str name: Asset name
+        """
