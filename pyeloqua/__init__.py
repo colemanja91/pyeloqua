@@ -3,5 +3,6 @@
 
 from .pyeloqua import Eloqua
 from .bulk import Bulk
+from .rest import Rest
 from .system_fields import ACTIVITY_FIELDS, CONTACT_SYSTEM_FIELDS, ACCOUNT_SYSTEM_FIELDS
 from .error_handling import EloquaBulkSyncTimeout, EloquaValidationError
