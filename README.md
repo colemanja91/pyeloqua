@@ -30,6 +30,16 @@ bulk.site_id # Eloqua site ID
 bulk.user_display # Your displayed username
 ```
 
+To work with small batches of form data, use the `Form` class
+*NOTE: for large batches of form data that do not need to be close to realtime,
+use Bulk for an Activity export*
+```python
+from pyeloqua import Form
+
+form = Form(company='mycompany', username='myusername', password='mypassword',
+            form_id=1234)
+```
+
 ## More examples
 
 There are examples in the `/examples` directory:
@@ -41,6 +51,7 @@ There are examples in the `/examples` directory:
 - Export a set of custom object data records
 - Import a set of custom object data records
 - Export a set of activity data
+- Export form submission data via REST API (with the `Form` class)
 
 ## Youtube tutorials
 
