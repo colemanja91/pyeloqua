@@ -1,3 +1,7 @@
+## 2017-05-19 v0.5.0
+- FEATURE: `Form` object added to allow pulling form submission data via REST API
+  + Allows future room for structured form submissions as well (likely coming in v0.5.x)
+
 ## 2017-02-28 v0.4.3
 - BUGFIX: `Bulk.filter_date` would only include `start` if both `start` and `end` were included.
 
