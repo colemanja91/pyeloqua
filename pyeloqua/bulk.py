@@ -518,10 +518,11 @@ class Bulk(Eloqua):
         elif self.job_sync['status'] in ['success', 'warning', 'error']:
             return True
 
-    def sync(self, timeout=600, sleeptime=5):
+    def sync(self, timeout=600, sleeptime=5, start_new=True):
         """ run all sync actions; return final status of sync """
 
-        self.start_sync()
+        if start_new is True:
+            self.start_sync()
 
         finished = False
 
