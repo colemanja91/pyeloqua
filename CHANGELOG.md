@@ -1,3 +1,6 @@
+## 2017-05-22 v0.5.1
+- FEATURE: add parameter `uri` to `Bulk.check_sync`, allowing a check-later model of syncing
+
 ## 2017-05-19 v0.5.0
 - FEATURE: `Form` object added to allow pulling form submission data via REST API
   + Allows future room for structured form submissions as well (likely coming in v0.5.x)

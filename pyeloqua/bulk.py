@@ -495,14 +495,18 @@ class Bulk(Eloqua):
 
         self.job_sync = req.json()
 
-    def check_sync(self):
+    def check_sync(self, uri=None):
         """
         check a pre-existing sync;
         update Bulk.job_sync
+        :param str uri: pre-existing sync URI
         return True if finished, False if not finished
         """
 
-        req = requests.get(url=self.bulk_base + self.job_sync['uri'],
+        if uri is None:
+            uri = self.job_sync['uri']
+
+        req = requests.get(url=self.bulk_base + uri,
                            auth=self.auth)
 
         _elq_error_(req)
