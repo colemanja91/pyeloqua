@@ -1,3 +1,7 @@
+## 2017-08-30 v0.5.3
+- FEATURE: add method `Bulk.handle_sync()` to raise error exceptions or log warnings on sync issues
+- MINOR: added logger to `Bulk` class file; need to add standard logging to most methods
+
 ## 2017-05-22 v0.5.1
 - FEATURE: add parameter `uri` to `Bulk.check_sync`, allowing a check-later model of syncing
 
