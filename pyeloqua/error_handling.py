@@ -25,6 +25,10 @@ def _elq_error_(request):
 
         request.raise_for_status()
 
+class EloquaSyncError(Exception):
+    """ error on Eloqua Bulk Sync """
+    pass
+
 class EloquaBulkSyncTimeout(Exception):
     """ Exception class for Bulk sync timeouts """
     pass

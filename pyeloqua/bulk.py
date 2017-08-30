@@ -4,11 +4,12 @@ from time import sleep
 from datetime import datetime
 from copy import deepcopy
 from json import dumps, dump, load
+import logging
 import requests
 
 from .pyeloqua import Eloqua
 from .system_fields import ACTIVITY_FIELDS, CONTACT_SYSTEM_FIELDS, ACCOUNT_SYSTEM_FIELDS
-from .error_handling import _elq_error_, EloquaBulkSyncTimeout
+from .error_handling import _elq_error_, EloquaBulkSyncTimeout, EloquaSyncError
 
 ############################################################################
 # Constant definitions
@@ -32,6 +33,10 @@ OBJECT_REQ_TYPE = ['activities']
 
 ELQ_OBJECTS = ['accounts', 'activities', 'contacts', 'customobjects',
                'emailaddresses', 'events']
+
+logging.basicConfig(level=logging.WARN)
+
+LOGGER = logging.getLogger(__name__)
 
 ############################################################################
 # Bulk class
@@ -540,6 +545,27 @@ class Bulk(Eloqua):
                     'sync not finished after %s seconds' % time_elapsed)
 
         return self.job_sync['status']
+
+    def handle_sync(self, **kwargs):
+        """
+        sync and handle errors; raise errors or log warnings
+
+        :param **kwargs: keyword arguments for `Bulk.sync()`
+        """
+        status = self.sync(**kwargs)
+
+        if status in ['warning', 'error']:
+
+            logs = self.get_sync_logs()
+
+            if status == 'warning':
+                # keep processing if just a warning
+                LOGGER.warning('status=warning')
+                LOGGER.warning(logs)
+            else:
+                # throw exception otherwise
+                LOGGER.error('status=error')
+                raise EloquaSyncError(logs)
 
     def post_data(self, data):
         """ post data to bulk import """
