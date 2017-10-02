@@ -93,6 +93,10 @@ class Bulk(Eloqua):
         self.job['obj_id'] = obj_id
         self.job['act_type'] = act_type
 
+        # If activity export, set export type
+        if elq_object == 'activities':
+            self.filter_equal('ActivityType', act_type)
+
     def imports(self, elq_object, obj_id=None, act_type=None):
         """
         setup a job with job_type == 'imports'

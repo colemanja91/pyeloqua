@@ -1,3 +1,7 @@
+## 2017-10-02 v0.5.4
+- FEATURE: add system fields for bulk activity Bounceback which were made available in the 491 release
+- BUGFIX: auto-set filter on `ActivityType` if exporting an activity
+
 ## 2017-08-30 v0.5.3
 - FEATURE: add method `Bulk.handle_sync()` to raise error exceptions or log warnings on sync issues
 - MINOR: added logger to `Bulk` class file; need to add standard logging to most methods

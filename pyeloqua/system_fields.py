@@ -131,7 +131,12 @@ ACTIVITY_FIELDS = {
         {"name": "AssetType", "statement": "{{Activity.Asset.Type}}"},
         {"name": "AssetName", "statement": "{{Activity.Asset.Name}}"},
         {"name": "CampaignId", "statement": "{{Activity.Campaign.Id}}"},
-        {"name": "ExternalId", "statement": "{{Activity.ExternalId}}"}
+        {"name": "ExternalId", "statement": "{{Activity.ExternalId}}"},
+        {"name": "EmailRecipientId", "statement": "{{Activity.Field(EmailRecipientId)}}"},
+        {"name": "EmailDeploymentId", "statement": "{{Activity.Field(EmailDeploymentId)}}"},
+        {"name": "SmtpErrorCode", "statement": "{{Activity.Field(SmtpErrorCode)}}"},
+        {"name": "SmtpStatusCode", "statement": "{{Activity.Field(SmtpStatusCode)}}"},
+        {"name": "SmtpMessage", "statement": "{{Activity.Field(SmtpMessage)}}"}
     ],
     "WebVisit": [
         {"name": "ActivityId", "statement": "{{Activity.Id}}"},
