@@ -1,4 +1,4 @@
-## 2017-10-02 v0.5.4
+## 2017-10-02 v0.5.5
 - FEATURE: add system fields for bulk activity Bounceback which were made available in the 491 release
 - BUGFIX: auto-set filter on `ActivityType` if exporting an activity
 
