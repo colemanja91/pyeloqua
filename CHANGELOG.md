@@ -1,3 +1,7 @@
+## 2017-10-20 v0.5.6
+- FEATURE: Added `max_recs` parameter to `Bulk.get_export_data()` which limits the count of records which will be returned
+- CLEANUP: refactored a few small lines of code
+
 ## 2017-10-02 v0.5.5
 - FEATURE: add system fields for bulk activity Bounceback which were made available in the 491 release
 - BUGFIX: auto-set filter on `ActivityType` if exporting an activity
