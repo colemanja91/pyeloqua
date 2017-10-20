@@ -239,7 +239,8 @@ def test_get_export_data_call(mock_data):
     bulk.job_def = EXPORT_JOB_DEF
     mock_data.return_value = RETURN_DATA['items']
     bulk.get_export_data()
-    mock_data.assert_called_with(endpoint='/contacts/exports/1/data')
+    mock_data.assert_called_with(endpoint='/contacts/exports/1/data',
+                                 max_recs=None)
 
 
 @patch('pyeloqua.bulk.Bulk.get_data')
