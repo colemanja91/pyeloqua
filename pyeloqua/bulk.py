@@ -394,7 +394,7 @@ class Bulk(Eloqua):
         validation will result in a 400 status code
         """
 
-        for opt in kwargs.keys():
+        for opt in kwargs:
             self.job['options'][opt] = kwargs[opt]
 
     def add_syncaction(self, action, destination=None, status=None):
@@ -468,7 +468,7 @@ class Bulk(Eloqua):
             'fields': {}
         }
 
-        if len(self.job['filters']) > 0:
+        if self.job['filters']:
             req_data['filter'] = 'AND'.join(self.job['filters'])
 
         for field in self.job['fields']:
@@ -477,7 +477,7 @@ class Bulk(Eloqua):
             else:
                 req_data['fields'][field['name']] = field['statement']
 
-        if len(self.job['options']) > 0:
+        if self.job['options']:
             for option in self.job['options'].keys():
                 req_data[option] = self.job['options'][option]
 
