@@ -584,18 +584,18 @@ class Bulk(Eloqua):
 
         _elq_error_(req)
 
-    def get_data(self, endpoint):
+    def get_data(self, endpoint, max_recs=None):
         """
         get data from a given endpoint
         this simplifies the looping process that would otherwise be repeated
 
         :param str endpoint: endpoint to be appended to bulk_base
-        :param bool csv: whether or not to return data as CSV
+        :param int max_recs: Max number of records to return
         """
 
-        url_base = self.bulk_base + endpoint + '?limit=1000&offset={offset}'
+        url_base = self.bulk_base + endpoint + '?limit={limit}&offset={offset}'
 
-        has_more = True
+        limit, has_more = self._set_limit(max_recs, 0, True)
 
         offset = 0
 
@@ -603,7 +603,7 @@ class Bulk(Eloqua):
 
         while has_more:
 
-            url = url_base.format(offset=offset)
+            url = url_base.format(limit=limit, offset=offset)
 
             req = requests.get(url=url, auth=self.auth)
 
@@ -614,13 +614,35 @@ class Bulk(Eloqua):
 
             offset += 1000
 
-            has_more = req.json()['hasMore']
+            if max_recs is None:
+
+                has_more = req.json()['hasMore']
+
+            limit, has_more = self._set_limit(max_recs, len(return_data),
+                                              req.json()['hasMore'])
 
         return return_data
 
-    def get_export_data(self):
+
+    def _set_limit(self, max_recs, row_ct, has_more):
+        """  """
+
+        # default limit return 1000
+        # Used when pulling all data
+        if max_recs is None:
+            return 1000, has_more
+
+        if (max_recs - row_ct) >= 1000:
+            return 1000, True
+
+        return (max_recs - row_ct), False
+
+
+    def get_export_data(self, max_recs=None):
         """
         retrieve all synced data for an export
+
+        :param int limit: Max number of records to return from export
         """
 
         if self.job['job_type'] == 'imports':
@@ -628,7 +650,7 @@ class Bulk(Eloqua):
 
         endpoint = self.job_def['uri'] + '/data'
 
-        return_data = self.get_data(endpoint=endpoint)
+        return_data = self.get_data(endpoint=endpoint, max_recs=max_recs)
 
         return return_data
 
