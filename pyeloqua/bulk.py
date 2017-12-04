@@ -584,7 +584,7 @@ class Bulk(Eloqua):
 
         _elq_error_(req)
 
-    def get_data(self, endpoint, max_recs=None):
+    def get_data(self, endpoint, max_recs=None, offset=0):
         """
         get data from a given endpoint
         this simplifies the looping process that would otherwise be repeated
@@ -596,8 +596,6 @@ class Bulk(Eloqua):
         url_base = self.bulk_base + endpoint + '?limit={limit}&offset={offset}'
 
         limit, has_more = self._set_limit(max_recs, 0, True)
-
-        offset = 0
 
         return_data = []
 
@@ -638,7 +636,7 @@ class Bulk(Eloqua):
         return (max_recs - row_ct), False
 
 
-    def get_export_data(self, max_recs=None):
+    def get_export_data(self, max_recs=None, offset=0):
         """
         retrieve all synced data for an export
 
@@ -650,7 +648,7 @@ class Bulk(Eloqua):
 
         endpoint = self.job_def['uri'] + '/data'
 
-        return_data = self.get_data(endpoint=endpoint, max_recs=max_recs)
+        return_data = self.get_data(endpoint=endpoint, max_recs=max_recs, offset=offset)
 
         return return_data
 
