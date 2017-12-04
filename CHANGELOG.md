@@ -1,3 +1,6 @@
+## 2017-12-03 v0.5.7
+- FEATURE: Added `offset` paramater to `Bulk.get_data()` and `Bulk.get_export_data()` to allow results to be returned in chunks instead of all at once for larger data sets.
+
 ## 2017-10-20 v0.5.6
 - FEATURE: Added `max_recs` parameter to `Bulk.get_export_data()` which limits the count of records which will be returned
 - CLEANUP: refactored a few small lines of code
