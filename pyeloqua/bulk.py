@@ -665,7 +665,7 @@ class Bulk(Eloqua):
 
         url = '{}{}/data?limit=0'.format(
             self.bulk_base,
-            self.endpoint
+            self.job_def['uri']
         )
 
         req = requests.get(url=url, auth=self.auth)
