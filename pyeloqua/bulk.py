@@ -663,7 +663,7 @@ class Bulk(Eloqua):
         if self.job['job_type'] == 'imports':
             raise Exception('not an export')
 
-        url = '{}{}/data?limit=0'.format(
+        url = '{}{}/data?limit=1'.format(
             self.bulk_base,
             self.job_def['uri']
         )

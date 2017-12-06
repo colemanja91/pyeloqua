@@ -1,4 +1,4 @@
-## 2017-12-06 v0.5.9
+## 2017-12-06 v0.5.10
 - FEATURE: Added `Bulk.get_export_count` method to return total number of exported records
 
 ## 2017-12-03 v0.5.7
