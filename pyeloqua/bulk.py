@@ -652,6 +652,27 @@ class Bulk(Eloqua):
 
         return return_data
 
+
+    def get_export_count(self):
+        """
+        retrieve count of synced data records
+
+        :return int:
+        """
+
+        if self.job['job_type'] == 'imports':
+            raise Exception('not an export')
+
+        url = '{}{}/data?limit=0'.format(
+            self.bulk_base,
+            self.endpoint
+        )
+
+        req = requests.get(url=url, auth=self.auth)
+
+        return req.json()['totalResults']
+
+
     def get_sync_logs(self):
         """
         retrieve all sync logs

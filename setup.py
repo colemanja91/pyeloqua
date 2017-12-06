@@ -2,7 +2,7 @@
 
 from setuptools import setup, find_packages
 
-__version__ = '0.5.7'
+__version__ = '0.5.8'
 
 def readme():
     """ open readme for long_description """

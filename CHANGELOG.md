@@ -1,3 +1,6 @@
+## 2017-12-06 v0.5.8
+- FEATURE: Added `Bulk.get_export_count` method to return total number of exported records
+
 ## 2017-12-03 v0.5.7
 - FEATURE: Added `offset` paramater to `Bulk.get_data()` and `Bulk.get_export_data()` to allow results to be returned in chunks instead of all at once for larger data sets.
 
