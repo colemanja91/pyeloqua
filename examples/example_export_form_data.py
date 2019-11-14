@@ -42,7 +42,7 @@ COUNT = FORM.get_count(start=START.timestamp(), end=END.timestamp())
 print(COUNT) # show count of form submits
 
 # Now export individual rows
-DATA = FORM.get_data(start=START.timestamp(), end=END.timestamp())
+DATA = FORM.get_data(start=int(START.timestamp()), end=int(END.timestamp()))
 
 # look at output form submissions
 for row in DATA:
