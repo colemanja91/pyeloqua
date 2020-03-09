@@ -336,7 +336,7 @@ class Bulk(Eloqua):
                 try:
                     datetime.strptime(start, '%Y-%m-%d %H:%M:%S')
                 except ValueError:
-                    raise Exception('invalid start value')
+                    raise Exception(f'invalid start value {start}, required format %Y-%m-%d %H:%M:%S')
             elif isinstance(start, datetime):
                 start = start.strftime('%Y-%m-%d %H:%M:%S')
 
