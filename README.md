@@ -1,3 +1,7 @@
+# NOTICE - No longer maintained
+
+I have not worked in Eloqua since 2017, and therefore have not maintained this package. I have used alcohol to erase as much of my working memory of Eloqua as possible. If you still have to work with Eloqua, you have my condolences. Please feel free to fork this repo and continue the work (if you do, please consider sharing with the community of other folks who currently suffer the same fate). 
+
 # pyeloqua
 
 Python wrapper functions for Eloqua APIs, tested with Python 2.7 and Python 3.3 - 3.6.
