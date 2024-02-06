@@ -584,7 +584,7 @@ class Bulk(Eloqua):
 
         _elq_error_(req)
 
-    def get_data(self, endpoint, max_recs=None, offset=0):
+    def get_data(self, endpoint, max_recs=1000, offset=0):
         """
         get data from a given endpoint
         this simplifies the looping process that would otherwise be repeated
@@ -595,13 +595,13 @@ class Bulk(Eloqua):
 
         url_base = self.bulk_base + endpoint + '?limit={limit}&offset={offset}'
 
-        limit, has_more = self._set_limit(max_recs, 0, True)
+        has_more = True
 
         return_data = []
 
         while has_more:
 
-            url = url_base.format(limit=limit, offset=offset)
+            url = url_base.format(limit=max_recs, offset=offset)
 
             req = requests.get(url=url, auth=self.auth)
 
@@ -610,33 +610,14 @@ class Bulk(Eloqua):
             if 'items' in req.json().keys():
                 return_data.extend(req.json()['items'])
 
-            offset += 1000
+            offset += max_recs
 
-            if max_recs is None:
-
-                has_more = req.json()['hasMore']
-
-            limit, has_more = self._set_limit(max_recs, len(return_data),
-                                              req.json()['hasMore'])
+            has_more = req.json()['hasMore']
 
         return return_data
 
 
-    def _set_limit(self, max_recs, row_ct, has_more):
-        """  """
-
-        # default limit return 1000
-        # Used when pulling all data
-        if max_recs is None:
-            return 1000, has_more
-
-        if (max_recs - row_ct) >= 1000:
-            return 1000, True
-
-        return (max_recs - row_ct), False
-
-
-    def get_export_data(self, max_recs=None, offset=0):
+    def get_export_data(self, max_recs=1000, offset=0):
         """
         retrieve all synced data for an export
 
